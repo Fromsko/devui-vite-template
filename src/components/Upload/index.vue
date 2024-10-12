@@ -1,6 +1,6 @@
 <template>
   <div id="upload-layout">
-    <file-pond
+    <!-- <file-pond
       name="test"
       ref="pond"
       label-idle="Drop files here..."
@@ -9,11 +9,11 @@
       server="/api"
       v-bind:files="myFiles"
       v-on:init="handleFilePondInit"
-    />
+    /> -->
   </div>
 </template>
 
-<script>
+<!-- <script>
 // Import Vue FilePond
 import vueFilePond from 'vue-filepond'
 
@@ -51,8 +51,8 @@ export default {
   components: {
     FilePond,
   },
-}
-</script>
+} -->
+<!-- </script> -->
 
 <style lang="scss" scoped>
 .upload-layout {

@@ -1,5 +1,7 @@
 # element-plus-vite-starter
 
+![alt text](figs/README-image.png)
+
 ## Project setup
 
 ```bash

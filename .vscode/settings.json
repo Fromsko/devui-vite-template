@@ -1,0 +1,14 @@
+{
+    // "search.exclude": {
+    //     "**/node_modules": true,
+    //     "build/": true,
+    // },
+    "files.exclude": {
+        "**/node_modules": true,
+        "**/*.lock*": true,
+        "**/public": true,
+        "**/.git*": true,
+        "**/index.html": true,
+        "**/*.d.ts": true,
+    }
+}

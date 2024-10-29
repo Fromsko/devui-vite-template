@@ -1,4 +1,3 @@
-// src/routers/index.ts
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
 
 
@@ -14,13 +13,14 @@ const routes: Array<RouteRecordRaw> = [
                 meta: {
                     title: "首页"
                 },
-                component: () => import('~/views/Home/Home.vue')
+                component: () => import('@/views/portal/index.vue')
             }
         ]
     },
     {
         path: "/dashboard/system",
         name: "系统",
+        component: () => import("@/views/dashboard/index.vue"),
         children: [
             {
                 path: "about",
@@ -28,43 +28,27 @@ const routes: Array<RouteRecordRaw> = [
                 meta: {
                     title: "关于页面"
                 },
-                component: () => import('~/views/about/About.vue'),
+                component: () => import('@/views/dashboard/about/index.vue'),
             },
             {
                 path: "setting",
                 name: "设置",
                 children: [
-                    // {
-                    //     path: "one",
-                    //     name: "第一项",
-                    //     meta: {
-                    //         title: "Demo页面"
-                    //     },
-                    //     component: () => import('~/components/Custom/index.vue'),
-                    // },
-                    // {
-                    //     path: "demo",
-                    //     name: "示例",
-                    //     meta: {
-                    //         title: "展示页"
-                    //     },
-                    //     component: () => import('~/views/ShowRouter.vue'),
-                    // },
                     {
                         path: "custom",
                         name: "自定义",
                         meta: {
                             title: "轮播图页面"
                         },
-                        component: () => import('~/components/Carousel/index.vue'),
+                        component: () => import('@/components/Carousel/index.vue'),
                     },
                     {
-                        path: 'upload_file',
+                        path: 'upload',
                         name: '上传',
                         meta: {
                             title: "上传页面"
                         },
-                        component: () => import('~/components/Upload/index.vue'),
+                        component: () => import('@/components/Upload/index.vue'),
                     },
                 ]
             },

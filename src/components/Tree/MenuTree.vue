@@ -1,5 +1,5 @@
 <template>
-  <d-menu mode="vertical" :router="true" default-select-keys="/home">
+  <d-menu mode="vertical" :router="true" default-select-keys="/dashboard/system/home">
     <template v-for="menuItem in menuItems" :key="menuItem.key">
       <MenuItem :menu-item="menuItem" />
     </template>
@@ -21,7 +21,7 @@
 
   const menuItems: MenuItemType[] = [
     {
-      key: '/home',
+      key: '/dashboard/system/home',
       label: '首页',
       icon: 'icon-homepage',
     },
@@ -61,15 +61,12 @@
     },
   ]
 
-  // 层级分析函数
   const analyzeMenu = (items: MenuItemType[]): RouteRecordRaw[] => {
     const result: RouteRecordRaw[] = []
 
     items.forEach((item) => {
-      // 添加当前菜单项
       result.push({ path: item.key, name: item.label, component: () => { } })
 
-      // 如果有子菜单，递归处理
       if (item.subMenu) {
         result.push(...analyzeMenu(item.subMenu))
       }
@@ -84,10 +81,8 @@
 
     if (analyzedMenuItems && Array.isArray(analyzedMenuItems)) {
       analyzedMenuItems.forEach((menuItem) => {
-        // 判断路由是否存在
         if (router.hasRoute(menuItem.name as string)) return
 
-        // 模板组件
         let templateComponent = () => {
           let component = defineComponent({
             setup() {
@@ -105,18 +100,9 @@
           return component
         }
 
-        // 为路由添加组件
         menuItem.component = () => Promise.resolve(templateComponent())
-        // 动态增加路由
         router.addRoute(menuItem)
-
-        console.log('动态创建了路由!', menuItem.name, router.getRoutes())
       })
     }
-    console.log(router.getRoutes())
   })
 </script>
-
-<style scoped>
-  /* 这里可以添加自定义样式 */
-</style>

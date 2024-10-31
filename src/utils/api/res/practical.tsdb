@@ -1,0 +1,8296 @@
+
+《《完整 界面交互/传参/回调 实例》》
+《《
+--@荼山
+
+--以下代码写在A界面
+--A界面
+activity.newActivity("B界面",{"荼山很帅？", 300}) --跳转B界面，并且传入了两个参数
+--activity.finish() --千万不要关闭A界面，不然B界面再关闭，就直接退出程序了
+
+
+
+
+
+
+--以下代码写在B界面
+--B界面
+value1,value2=...   --接受A界面传过来的参数
+print(value1,value2)
+
+--这个是将要离开的界面，它传回了一个intpath值
+local intpath = "荼山最帅！他的梦想是赚到"..value2.."万"    --利用A界面传来的参数
+local redata = Intent()  --Intent
+redata.putExtra("path",intpath);  --设置put携带的值，第一个是是键名，第二个是内容
+activity.setResult(32678,redata); --一个值是int类型(多用于判断是哪个界面传过来的值，一般一个界面会设置专属于它的数字，切莫冲突)，第二个是put(也就是要传的值)
+activity.finish() --关闭此界面
+
+
+
+
+
+--以下代码写在A界面
+--A页面 回调
+--此时，B界面关闭，回到了A界面，A界面利用onActivityResult回调收到了B界面传过来的值
+function onActivityResult(req, res, intent)
+ if res == 32678 then  --类型判断，可随意设置
+    if intent then
+      local pathstr = intent.getStringExtra("path");
+      if pathstr then
+      print("收到了B界面传过来的内容："..pathstr)
+      end
+    end
+  end
+end
+
+
+》》
+
+
+
+《《多主题切换》》
+《《require "import"
+import "android.app.*"
+import "android.os.*"
+import "android.widget.*"
+import "android.view.*"
+ThemeTabe={
+  {"贴吧蓝",0xFF2196F3},
+  {"酷安绿",0xFF109D58},
+  {"哔哩粉",0xFFF06292},
+  {"红",0xFFF44336},
+  {"颐堤蓝",0xFF3F51B5},
+  {"水鸭青",0xFF009688},
+  {"伊藤橙",0xFFFF9800},
+  {"基佬紫",0xFF673AB7},
+  {"古铜棕",0xFF795548},
+  {"低调灰",0xFF607D8B},
+  --{"A屏黑",0xff000000},
+  --{"自定义",0xff009688},
+};
+--默认主题
+if this.getSharedData("主题")==nil then
+  this.setSharedData("主题",1)
+end
+activity.setTheme(android.R.style.Theme_DeviceDefault_Light)--设置md主题
+activity.ActionBar.hide()
+if Build.VERSION.SDK_INT >= 21 then
+  activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS).setStatusBarColor(ThemeTabe[this.getSharedData("主题")][2]);
+end
+layout={
+  LinearLayout;
+  layout_width="-1";
+  layout_height="-1";
+  orientation="vertical";
+  backgroundColor="#ff4285f4";
+  id="toolbar";
+  {
+    LinearLayout;
+    layout_width="match_parent";
+    layout_marginTop=bar_height;
+
+    {
+      LinearLayout;
+      orientation="horizontal";
+      gravity="center";
+      layout_height="56dp";
+      layout_width="match_parent";
+      {
+        LinearLayout;
+        layout_height="match_parent";
+        gravity="center";
+        id="back";
+        style="?android:attr/buttonBarButtonStyle";
+        onClick=function
+          activity.finish()
+        end;
+        {
+          CardView;
+          layout_height="80dp";
+          PreventCornerOverlap=false;
+          layout_marginLeft="-15dp";
+          CardElevation="0dp";
+          background="#00000000";
+          radius="40dp";
+          UseCompatPadding=false;
+          layout_width="80dp";
+          {
+            ImageView;
+            layout_height="match_parent";
+            layout_margin="-10dp";
+
+            colorFilter="#ffffffff";
+            background="#00000000";
+            padding="38dp";
+            src="res/back.png";
+            layout_width="match_parent";
+          };
+        };
+      };
+      {
+        TextView;
+        lines="1" ;
+        ellipsize="end";
+        gravity="center|left";
+        singleLine=true;
+        layout_marginLeft="-15dp";
+        layout_width="match_parent";
+        text="主题";
+        id="Title";
+        Typeface=Bold;
+        textSize="19dp";
+        ellipsize="end";
+        layout_height="match_parent";
+        layout_weight="1";
+        textColor="#ffffffff";
+      };
+
+    };
+  };
+
+
+  {
+    LinearLayout;
+    layout_height="fill";
+    layout_width="fill";
+    backgroundColor="#ffffffff";
+    orientation="vertical";
+    {
+      GridView;
+      layout_height="match_parent";
+      numColumns=1;
+      id="list";
+      layout_width="match_parent";
+    };
+
+  };
+
+
+};
+--item项目布局
+item={
+  LinearLayout;
+  layout_height="48dp";
+  layout_width="-1";
+  {
+    CardView;
+    layout_marginLeft="12dp";
+    layout_height="30dp";
+    elevation="1dp";
+    layout_gravity="start|center";
+    layout_width="30dp";
+    radius="50dp";
+    id="cr";
+  };
+  {
+    TextView;
+    layout_gravity="start|center";
+    layout_marginLeft="12dp";
+    id="name";
+    textSize="18sp";
+  };
+  {
+    LinearLayout;
+    layout_height="48dp";
+    layout_width="match_parent";
+    gravity="center|right";
+    {
+      ImageView;
+      visibility=8;
+      layout_marginRight="12dp";
+      src="res/true.png";
+      layout_width="24dp";
+      layout_height="24dp";
+      id="ty";
+    };
+  };
+};
+
+activity.setContentView(loadlayout(layout))
+
+
+
+toolbar.backgroundColor=ThemeTabe[this.getSharedData("主题")][2]
+
+data={}
+adp=LuaAdapter(activity,data,item)
+list.setAdapter(adp)
+
+function Them()
+  adp.clear()
+  for i=1,#ThemeTabe do
+    if i==this.getSharedData("主题") then
+      状态=0
+     else
+      状态=8
+    end
+    adp.add({
+      cr={
+        CardBackgroundColor=ThemeTabe[i][2]
+      },
+      name={
+        Text=ThemeTabe[i][1],
+        textColor=ThemeTabe[i][2]
+      },
+      ty={
+        colorFilter=ThemeTabe[i][2],
+        Visibility=状态
+      }
+    })
+
+  end
+end
+
+Them()
+
+list.onItemClick=function(l,v,p,i)
+  --储存选择的主题值
+  this.setSharedData("主题",i)
+  --设置顶栏
+  toolbar.backgroundColor=ThemeTabe[i][2]
+  --设置状态栏
+  if Build.VERSION.SDK_INT >= 21 then
+    activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS).setStatusBarColor(ThemeTabe[this.getSharedData("主题")][2]);
+  end
+  --刷新适配器
+  Them()
+end》》
+
+
+
+《《自绘制开关》》
+《《require "import"
+import "android.app.*"
+import "android.os.*"
+import "android.widget.*"
+import "android.view.*"
+import "android.graphics.drawable.GradientDrawable"
+
+activity.setTitle('AndroLua+')
+activity.setTheme(android.R.style.Theme_DeviceDefault_Light)--设置md主题
+activity.setContentView(loadlayout({
+  LinearLayout;
+  gravity="center";
+  layout_height="fill";
+  layout_width="fill";
+  orientation="vertical";
+  --BackgroundColor="#ffffff00",
+  id="fhhk";
+  {
+    Switch;
+    id="Grt";
+  };
+  {
+    Switch;
+    id="Grt1";
+  };
+  {
+    Switch;
+    id="Grt2";
+  };
+  {
+    Switch;
+    id="Grt3";
+  };
+  {
+    Switch;
+  };
+}))
+
+--转换像素单位
+dip={toPx=function(context, dpValue)
+    scale = context.getResources().getDisplayMetrics().density;
+    return dpValue * scale + 0.5
+end}
+
+function CircleBack_SeekDra(InsideColor,Ad_Size,ble,Colorse3)
+  local colors = InsideColor
+  local Sizes=dip.toPx(this,Ad_Size)--设置开关大小
+  local Stroke=dip.toPx(this,7)--设置拖块边距
+  local Track_Stroke=dip.toPx(this,0)--设置背景边距
+  local drawable = GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,{});
+  drawable.setCornerRadius(Sizes/2);
+  drawable.setColor(InsideColor)
+  if ble
+    drawable.setStroke(Stroke, 0x00ffffff)
+    drawable.setSize(Sizes,Sizes)
+   else
+    drawable.setAlpha(60)
+    drawable.setStroke(Track_Stroke, 0x00ffffff)
+  end
+  drawable.setGradientType(GradientDrawable.RECTANGLE);
+  return drawable
+end
+
+Switch_x=function(view,Colors,Colors2,Colors3,Ad_Size)
+  pcall(function()
+    if view.isChecked()
+      Colorse=Colors
+      Colorse2=Colors
+     else
+      Colorse=Colors2
+      Colorse2=Colors3
+    end
+    local padd_W=dip.toPx(this,Ad_Size/2.5)
+    view.setThumbDrawable(CircleBack_SeekDra(Colorse,Ad_Size,true))
+    .setTrackDrawable(CircleBack_SeekDra(Colorse2,Ad_Size,false))
+    .setPadding(padd_W,padd_W,padd_W,padd_W)
+  end)
+end
+
+Grt.setOnCheckedChangeListener({
+  onCheckedChanged=function(buttonView, isChecked)
+    Switch_x(Grt,Ad_Color,Ad_Color2,Ad_Color3,Ad_Size,Ad_Padding)--更新状态
+end})
+Grt1.setOnCheckedChangeListener({
+  onCheckedChanged=function(buttonView, isChecked)
+    Switch_x(Grt1,0xffff6e17,0xFFECECEC,0xff000000,35,7)--预加载
+end})
+Grt2.setOnCheckedChangeListener({
+  onCheckedChanged=function(buttonView, isChecked)
+    Switch_x(Grt2,0xff2ecbff,0xFFECECEC,0xff000000,45,7)--预加载
+end})
+Grt3.setOnCheckedChangeListener({
+  onCheckedChanged=function(buttonView, isChecked)
+    Switch_x(Grt3,0xffae5dff,0xFFECECEC,0xff000000,55,7)--预加载
+end})
+
+Ad_Color=0xffff0000--边框颜色与拖块选中颜色
+Ad_Color3=0xff000000--设置底部背景未选中颜色
+Ad_Color2=0xFFECECEC
+Ad_Size=25--按钮的大小dip
+Ad_Padding=7--设置拖块边距范围dip
+Switch_x(Grt,Ad_Color,Ad_Color2,Ad_Color3,Ad_Size,Ad_Padding)--预加载
+Switch_x(Grt1,0xffff6e17,0xFFECECEC,0xff000000,35,7)--预加载
+Switch_x(Grt2,0xff2ecbff,0xFFECECEC,0xff000000,45,7)--预加载
+Switch_x(Grt3,0xffae5dff,0xFFECECEC,0xff000000,55,7)--预加载》》
+
+
+
+《《自绘制气泡拖动条》》
+《《require "import"
+import "android.app.*"
+import "android.os.*"
+import "android.widget.*"
+import "android.view.*"
+
+activity.setTitle('自绘制气泡拖动条')
+activity.setTheme(android.R.style.Theme_DeviceDefault_Light)--设置md主题
+
+activity.setContentView(loadlayout({
+  ScrollView;
+  layout_height="fill";
+  layout_width="fill";
+  {
+    LinearLayout;
+    layout_width="fill";
+    gravity="top";
+    layout_height="fill";
+    orientation="vertical";
+    {
+      TextView;
+      layout_width="fill";
+      padding="15dp";
+      id="t1";
+    };
+    {
+      View;
+      layout_width="fill";
+      layout_height="35dp";
+      id="animseekBar";
+    };
+    {
+      TextView;
+      layout_width="fill";
+      padding="15dp";
+      id="t2";
+    };
+  };
+}
+))
+
+import "android.graphics.*"
+import "android.graphics.Paint$Style"
+import "android.view.animation.*"
+import "android.animation.ObjectAnimator"
+import "android.animation.PropertyValuesHolder"
+
+dip2px=function(dpValue)
+  local scale = activity.getResources().getDisplayMetrics().density;
+  return dpValue * scale + 0.5
+end
+
+sp2px=function(spValues)
+  local fontScale = activity.getResources().getDisplayMetrics().scaledDensity;
+  return spValues * fontScale+ 0.5
+end
+
+getStatusBarHeight=function()
+  _,statusBarHeight2=xpcall(function()
+    local clazz=Class.forName("com.android.internal.R$dimen")
+    local object = clazz.newInstance();
+    local height = Integer.parseInt(tostring(clazz.getField("status_bar_height").get(object)))
+    return this.getResources().getDimensionPixelSize(height);
+  end,
+
+  function(a)
+    _,statusBarHeight1=pcall(function()
+      local resourceId = this.getResources().getIdentifier("status_bar_height", "dimen", "android");
+      if resourceId > 0
+        return this.getResources().getDimensionPixelSize(resourceId);
+      end
+    end,
+    function(e)
+    end,nil)
+
+  end,
+  nil)
+  if type(statusBarHeight2):lower()=="number"
+    return statusBarHeight2
+   elseif type(statusBarHeight1):lower()=="number"
+    return statusBarHeight1
+   else
+    return 0
+  end
+end
+
+BgColor=0xFFBDBDBD--背景色
+TopColor=0xFF9C27B0--进度条颜色
+TopHandleColor=0xFF9C27B0--滑块颜色
+BubblesColor=0xffffffff--气泡字体颜色
+BgHeight=dip2px(3)--背景高度
+TopHeight=dip2px(4)--进度条高度
+TopHandle=dip2px(8)--滑块半径
+Max=100--最大值
+Dragprogress=0--当前进度
+CanvasMargin=dip2px(48)--边距
+bubblesTextSize=sp2px(12)--气泡内文字大小
+Seekbarids=animseekBar
+
+import "android.content.Context"
+mWindowManager = activity.getSystemService(Context.WINDOW_SERVICE);
+
+IndicatorWindow=function(getH,getW)
+  local mLayoutParams = WindowManager.LayoutParams();
+  mLayoutParams.gravity = Gravity.START | Gravity.BOTTOM;
+  mLayoutParams.width =getW;
+  mLayoutParams.height = getH;
+  mLayoutParams.format = PixelFormat.TRANSLUCENT;
+  mLayoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+  | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+  | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED;
+  --MIUI禁止了开发者使用TYPE_TOAST，Android 7.1.1 对TYPE_TOAST的使用更严格
+  if Build.MANUFACTURER:lower()~="xiaomi" or Build.VERSION.SDK_INT >= 25
+    mLayoutParams.type = WindowManager.LayoutParams.TYPE_APPLICATION;
+   else
+    mLayoutParams.type = WindowManager.LayoutParams.TYPE_TOAST;
+  end
+  return mLayoutParams
+end
+
+
+ShowBubbles=function(ids)
+  local mBubbleView=
+  {
+    LinearLayout;
+    layout_width="fill";
+    layout_height="fill";
+    id="Mcft_Main",
+    {
+      View,
+      id=ids,
+      layout_width="54dp";
+      layout_height="55dp";
+      Visibility=View.GONE,
+    }
+  }
+  mWindowManager.addView(loadlayout(mBubbleView), IndicatorWindow(0,0) );
+end
+
+PaintBubbles=function(progess)
+  newPaint=Paint()
+  newPaint.setTextSize(bubblesTextSize)
+  TextMin=newPaint.measureText(tostring(progess))
+  Indicator=sp2px(24)
+  BubblesSize=bubblesTextSize+sp2px(3)
+  local Paintd=LuaDrawable(function(canvas,paint)
+    local cW=canvas.Width
+    local cH=canvas.Height
+    paint.setAntiAlias(true)
+    paint.setStyle(Style.FILL);
+
+    paint.setFakeBoldText(false)
+    paint.setTextSize(bubblesTextSize)
+
+    paint.setColor(TopHandleColor)
+    local path =Path()
+    path.moveTo(Indicator/2,(cH/1.75))
+    path.lineTo(cW-(Indicator/2),cH/1.75)
+    path.lineTo(cW/2,cH)
+    path.close()
+    canvas.drawPath(path, paint)
+
+    canvas.drawCircle(cW/2,cH/2,BubblesSize, paint);
+
+    paint.setColor(BubblesColor)
+    canvas.drawText(tostring(progess),(cW/2)-(TextMin/2),(cH/2)+(bubblesTextSize/2.5),paint)
+  end)
+  return {draw=Paintd,Circlesize=(BubblesSize*2)+Indicator}
+end
+
+
+
+locationUpdate=function(views,getX,getY,progess)
+  local outRect1 = Rect();
+  activity.getWindow().getDecorView().getWindowVisibleDisplayFrame(outRect1);
+  local WidowHeight=outRect1.height()
+  -Seekbarids.getParent().getHeight()
+  local clazz=Class.forName("com.android.internal.R$dimen")
+  local object = clazz.newInstance();
+  local height = Integer.parseInt(tostring(clazz.getField("status_bar_height").get(object)))
+  local status_bar_height = this.getResources().getDimensionPixelSize(height);
+
+  local BuDraw=PaintBubbles(progess)
+  views.setBackground(BuDraw.draw)
+  views.setX(getX+((CanvasMargin/2)-(views.getWidth()/2)))
+  views.setY((getY+status_bar_height)-(views.getHeight()/2))
+  --views.setImageDrawable(BuDraw.draw)
+  local newParams=IndicatorWindow(outRect1.height(),Seekbarids.getParent().getWidth())
+  mWindowManager.updateViewLayout(views.getParent(), newParams);
+
+end
+
+LogoutBubble=function(view)
+  mWindowManager.removeViewImmediate(view.getParent());
+end
+
+
+PropertyS=function(a,b,view,isType)
+  local Attribute_definition = PropertyValuesHolder.ofFloat("method",{ a,b})
+  local mValueAnimator = ObjectAnimator.ofPropertyValuesHolder({Attribute_definition})
+  .setStartDelay(0)
+  .setInterpolator(AnticipateOvershootInterpolator())
+  .setDuration(500)
+  mValueAnimator.addUpdateListener({
+    onAnimationUpdate=function(animation)
+      local Animationaprogress=animation.getAnimatedValue()
+      if isType
+        view.setVisibility(View.VISIBLE)
+      end
+      view.setAlpha(Animationaprogress)
+      view.setPivotY(view.getHeight()*1.4)
+      .setPivotX(view.getWidth()/2)
+      .setScaleX(Animationaprogress)
+      .setScaleY(Animationaprogress)
+      --.setRotationX(-90+(Animationaprogress*90))
+      AnimFolatN=Animationaprogress
+      SeekbarAmin.invalidateSelf()
+    end,
+  });
+  mValueAnimator.addListener({
+    onAnimationEnd=function()
+      if not isType
+        view.setVisibility(View.GONE)
+        LogoutBubble(view)
+      end
+    end
+  }).start()
+end
+
+
+--mBubbleView.setVisibility(GONE); --防闪烁
+
+--mLayoutParams.x = (mBubbleCenterRawX + 0.5f);
+--mWindowManager.updateViewLayout(mBubbleView, mLayoutParams);
+
+
+getWidthPercentage=function(w,max,proges)
+  local WidthDivision=(w/max)*proges
+  return {TowX=WidthDivision,Proges=proges}
+end
+
+AnimFolatN=0
+SeekbarAmin=LuaDrawable(function(canvas,piant,d)
+  canvasWidth=canvas.getWidth()-CanvasMargin
+  canvasHeight=canvas.getHeight()
+
+  canvas.translate(CanvasMargin/2,0)
+
+  piant.setStrokeCap(Paint.Cap.ROUND)
+  piant.setAntiAlias(true)
+
+  --画背景进度条
+  piant.setColor(BgColor);
+  piant.setStrokeWidth(BgHeight);
+  canvas.drawLines({0,canvasHeight/2,canvasWidth,canvasHeight/2},piant)
+
+  --画顶部进度条
+  piant.setColor(TopColor);
+  piant.setStrokeWidth(TopHeight+((TopHeight/4)*AnimFolatN));
+  canvas.drawLines({0,canvasHeight/2,getWidthPercentage(canvasWidth,Max,Dragprogress).TowX,canvasHeight/2},piant)
+
+  --画滑块
+  piant.setColor(0x23000000);
+  canvas.drawCircle(getWidthPercentage(canvasWidth,Max,Dragprogress).TowX,canvasHeight/2,((TopHandle*1.7)*AnimFolatN), piant);
+  piant.setColor(TopHandleColor);
+  canvas.drawCircle(getWidthPercentage(canvasWidth,Max,Dragprogress).TowX,canvasHeight/2,TopHandle-((TopHandle)*AnimFolatN), piant);
+end)
+
+Seekbarids.background=SeekbarAmin
+
+getPView=function(a)
+  a=a.getParent()
+  while a~=nil and not tostring(a):find("ScrollView")
+    a=a.getParent()
+  end
+  return a==nil and 0 or a.getScrollY()
+end
+
+Seekbarids.onTouch=function(v,event)
+  local Maction=event.getAction()
+  if Maction==MotionEvent.ACTION_DOWN
+    if event.getX()>CanvasMargin/2 and event.getX()<v.getWidth()-CanvasMargin/2
+      and event.getY()>(v.getHeight()/2)-TopHandle and event.getY()<(v.getHeight()/2)+TopHandle
+      WithinRange=true
+      ShowBubbles("bubbles")
+      PropertyS(0,1,bubbles,true)
+      v.getParent().requestDisallowInterceptTouchEvent(true);
+     else
+      WithinRange=false
+    end
+   elseif Maction==MotionEvent.ACTION_MOVE
+    if WithinRange
+      v.getParent().requestDisallowInterceptTouchEvent(true);
+      local getXTo=event.getX()
+      local ranger=(event.getX()-CanvasMargin/2)/(v.getWidth()-CanvasMargin)
+      --计算百分比
+      Dragprogress=tointeger((ranger<=0 and 0 or (ranger>=1 and 1 or ranger))*Max)
+      locationUpdate(bubbles,getWidthPercentage(Seekbarids.getWidth()-CanvasMargin,Max,Dragprogress).TowX
+      ,Seekbarids.getY()-getPView(v),Dragprogress)
+      SeekbarAmin.invalidateSelf()
+    end
+   elseif Maction==MotionEvent.ACTION_UP
+    v.getParent().requestDisallowInterceptTouchEvent(false);
+    pcall(function()
+      if bubbles and WithinRange
+        PropertyS(1,0,bubbles,false)
+      end
+    end)
+  end
+  return true;
+end
+
+t1.text=[[
+Android一词的本义指“机器人”，同时也是Google于2007年11月5日宣布的基于Linux平台的开源手机操作系统的名称，该平台由操作系统、中间件、用户界面和应用软件组成。
+]]
+t2.text=[[
+2003年10月，Andy Rubin等人创建Android公司，并组建Android团队。
+2005年8月17日，Google低调收购了成立仅22个月的高科技企业Android及其团队。安迪鲁宾成为Google公司工程部副总裁，继续负责Android项目。
+2007年11月5日，谷歌公司正式向外界展示了这款名为Android的操作系统，并且在这天谷歌宣布建立一个全球性的联盟组织，该组织由34家手机制造商、软件开发商、电信运营商以及芯片制造商共同组成，并与84家硬件制造商、软件开发商及电信营运商组成开放手持设备联盟（Open Handset Alliance）来共同研发改良Android系统，这一联盟将支持谷歌发布的手机操作系统以及应用软件，Google以Apache免费开源许可证的授权方式，发布了Android的源代码。[3] [4]
+2008年，在GoogleI/O大会上，谷歌提出了AndroidHAL架构图，在同年8月18号，Android获得了美国联邦通信会（FCC）的批准，在2008年9月，谷歌正式发布了Android 1.0系统，这也是Android系统最早的版本。
+2009年4月，谷歌正式推出了Android 1.5这款手机，从Android 1.5版本开始，谷歌开始将Android的版本以甜品的名字命名，Android 1.5命名为Cupcake（纸杯蛋糕）。该系统与Android 1.0相比有了很大的改进。
+2009年9月，谷歌发布了Android 1.6的正式版，并且推出了搭载Android 1.6正式版的手机HTC Hero（G3），凭借着出色的外观设计以及全新的Android 1.6操作系统，HTC Hero（G3）成为当时全球最受欢迎的手机。Android 1.6也有一个有趣的甜品名称，它被称为Donut（甜甜圈）。
+2010年2月，Linux内核开发者Greg Kroah-Hartman将Android的驱动程序从Linux内核“状态树”（“staging tree”）上除去，从此，Android与Linux开发主流将分道扬镳。在同年5月份，谷歌正式发布了Android 2.2操作系统。谷歌将Android 2.2操作系统命名为Froyo，翻译完名为冻酸奶。
+2010年10月，谷歌宣布Android系统达到了第一个里程碑，即电子市场上获得官方数字认证的Android应用数量已经达到了10万个，Android系统的应用增长非常迅速。在2010年12月，谷歌正式发布了Android 2.3操作系统Gingerbread （姜饼）。
+2011年1月，谷歌称每日的Android设备新用户数量达到了30万部，到2011年7月，这个数字增长到55万部，而Android系统设备的用户总数达到了1.35亿，Android系统已经成为智能手机领域占有量最高的系统。
+2011年8月2日，Android手机已占据全球智能机市场48%的份额，并在亚太地区市场占据统治地位，终结了Symbian（塞班系统）的霸主地位，跃居全球第一。
+2011年9月，Android系统的应用数目已经达到了48万，而在智能手机市场，Android系统的占有率已经达到了43%。继续在排在移动操作系统首位。谷歌将会发布全新的Android 4.0操作系统，这款系统被谷歌命名为Ice Cream Sandwich（冰激凌三明治）。
+2012年1月6日，谷歌Android Market已有10万开发者推出超过40万活跃的应用，大多数的应用程序为免费。Android Market应用程序商店目录在新年首周周末突破40万基准，距离突破30万应用仅4个月。在2011年早些时候，Android Market从20万增加到30万应用也花了四个月。[5]
+2013年11月1日，Android4.4正式发布，从具体功能上讲，Android4.4提供了各种实用小功能，新的Android系统更智能，添加更多的Emoji表情图案，UI的改进也更现代，如全新的HelloiOS7半透明效果。
+2015年，网络安全公司Zimperium研究人员警告，安卓(Android)存在“致命”安全漏洞,黑客发送一封彩信便能在用户毫不知情的情况下完全控制手机。[6]
+2018年10月，谷歌表示，将于2018年12月6日停止Android系统中的Nearby Notifications（附近通知）服务，因为Android用户收到太多的附近商家推销信息的邮件。[7]
+2020年3月，谷歌的Android安全公告中提到，新更新已经提供了CVE-2020-0069补丁来解决针对联发科芯片的一个严重安全漏洞。[8]
+]]》》
+
+《《远程代码》》
+《《local function 远程代码(package)
+ local k = package:find('^http')
+ if k then
+  Http.get(package,nil,"utf8",nil,function(code,content,cookie,header)
+   if code==200 then
+    --pcall(function()
+    print(content)--打印
+    print(content:match("@(.-)@") )--截取
+    loadstring(content:match("@(.-)@"))()--执行代码
+    -- end)
+   end
+  end)
+  return package
+ end
+end
+远程代码("https://wds.ecsxs.com/208812.html")》》
+
+
+
+《《递归查找文件》》
+《《function outPath(ret) 
+for i,p in pairs(luajava.astable(ret)) do
+print(p)
+end
+end
+function find(catalog,name)
+ local n=0
+ local t=os.clock()
+ local ret={}
+ require "import"
+ import "java.io.File" 
+ import "java.lang.String"
+ function FindFile(catalog,name)
+   local name=tostring(name)
+   local ls=catalog.listFiles() or File{}
+   for 次数=0,#ls-1 do
+     --local 目录=tostring(ls[次数])
+     local f=ls[次数]
+     if f.isDirectory() then--如果是文件夹则继续匹配
+       FindFile(f,name)
+     else--如果是文件则
+       n=n+1
+       if n%1000==0 then
+         print(n,os.clock()-t)
+       end
+      local nm=f.Name
+       if string.find(nm,name) then
+         --thread(insert,目录)
+         table.insert(ret,tostring(f))
+       end
+     end
+   luajava.clear(f)
+   end
+ end
+ FindFile(catalog,name)
+ call("outPath",ret)
+end
+
+import "java.io.File"
+
+catalog=File("/sdcard/GameLua")
+name=".j?pn?g"
+thread(find,catalog,name)》》
+
+
+《《打开已安装app》》
+《《--导入包
+import "android.content.*"
+
+intent = Intent();
+componentName = ComponentName("com.qiu.gameluaplus","com.qiu.Welcome"); 
+intent.setComponent(componentName); 
+activity.startActivity(intent);》》
+
+
+
+
+
+《《Activity部分Api参考》》
+《《setContentView(layout, env)
+设置布局表layout为当前activity的主视图，env是保存视图ID的表，默认是_G
+getLuaDir()
+返回脚本当前目录
+getLuaDir(name)
+返回脚本当前目录的子目录
+getLuaExtDir()
+返回AndLua+在SD的工作目录
+getLuaExtDir(name)
+返回AndLua+在SD的工作目录的子目录
+getWidth()
+返回屏幕宽度
+getHeight()
+返回屏幕高度，不包括状态栏与导航栏
+loadDex(path)
+加载当前目录dex或jar，返回DexClassLoader
+loadLib(path)
+加载当前目录c模块，返回载入后模块的返回值(通常是包含模块函数的包)
+registerReceiver(filter)
+注册一个广播接收者，当再次调用该方法时将移除上次注册的过滤器
+newActivity(req, path, enterAnim, exitAnim, arg)
+打开一个新activity，运行路径为path的Lua文件，其他参数为可选，arg为表，接受脚本为变长参数
+result{...}
+向来源activity返回数据，在源activity的onResult回调
+newTask(func[, update], callback)
+新建一个Task异步任务，在线程中执行func函数，其他两个参数可选，执行结束回调callback，在任务调用update函数时在UI线程回调该函数
+新建的Task在调用execute{}时通过表传入参数，在func以unpack形式接收，执行func可以返回多个值
+newThread(func, arg)
+新建一个线程，在线程中运行func函数，可以以表的形式传入arg，在func以unpack形式接收
+新建的线程调用start()方法运行，线程为含有loop线程，在当前activity结束后自动结束loop
+newTimer(func, arg)
+新建一个定时器，在线程中运行func函数，可以以表的形式传入arg，在func以unpack形式接收
+调用定时器的start(delay, period)开始定时器，stop()停止定时器，Enabled暂停恢复定时器，Period属性改变定时器间隔》》
+
+
+
+
+
+
+《《Lua调试(debug)》》
+《《Lua 提供了 debug 库用于提供创建我们自定义调速器的功能。Lua 本身并未有内置的调速器，但很多开发者共享了他们的 Lua 调速器代码。
+Lua 中 debug 库包含以下函数：
+
+sethook ([thread,] hook, mask [, count]):
+
+1.debug():
+进入一个用户交互模式，运行用户输入的每个字符串。 使用简单的命令以及其它调试设置，用户可以检阅全局变量和局部变量， 改变变量的值，计算一些表达式，等等。
+输入一行仅包含 cont 的字符串将结束这个函数， 这样调用者就可以继续向下运行。
+
+2.getfenv(object):
+返回对象的环境变量。
+
+3.gethook(optional thread):
+返回三个表示线程钩子设置的值： 当前钩子函数，当前钩子掩码，当前钩子计数
+
+4.getinfo ([thread,] f [, what]):
+返回关于一个函数信息的表。 你可以直接提供该函数， 也可以用一个数字 f 表示该函数。 数字 f 表示运行在指定线程的调用栈对应层次上的函数： 0 层表示当前函数（getinfo 自身）； 1 层表示调用 getinfo 的函数 （除非是尾调用，这种情况不计入栈）；等等。 如果 f 是一个比活动函数数量还大的数字， getinfo 返回 nil。
+
+5.debug.getlocal ([thread,] f, local):
+此函数返回在栈的 f 层处函数的索引为 local 的局部变量 的名字和值。 这个函数不仅用于访问显式定义的局部变量，也包括形参、临时变量等。
+
+6.getmetatable(value):
+把给定索引指向的值的元表压入堆栈。如果索引无效，或是这个值没有元表，函数将返回 0 并且不会向栈上压任何东西。
+
+7.getregistry():
+返回注册表表，这是一个预定义出来的表， 可以用来保存任何 C 代码想保存的 Lua 值。
+
+8.getupvalue (f, up)
+此函数返回函数 f 的第 up 个上值的名字和值。 如果该函数没有那个上值，返回 nil 。
+以 '(' （开括号）打头的变量名表示没有名字的变量 （去除了调试信息的代码块）。
+
+10.将一个函数作为钩子函数设入。 字符串 mask 以及数字 count 决定了钩子将在何时调用。 掩码是由下列字符组合成的字符串，每个字符有其含义：
+'c': 每当 Lua 调用一个函数时，调用钩子；
+'r': 每当 Lua 从一个函数内返回时，调用钩子；
+'l': 每当 Lua 进入新的一行时，调用钩子。
+
+11.setlocal ([thread,] level, local, value):
+这个函数将 value 赋给 栈上第 level 层函数的第 local 个局部变量。 如果没有那个变量，函数返回 nil 。 如果 level 越界，抛出一个错误。
+
+12.setmetatable (value, table):
+将 value 的元表设为 table （可以是 nil）。 返回 value。
+
+13.setupvalue (f, up, value):
+这个函数将 value 设为函数 f 的第 up 个上值。 如果函数没有那个上值，返回 nil 否则，返回该上值的名字。
+
+14.traceback ([thread,] [message [, level]]):
+如果 message 有，且不是字符串或 nil， 函数不做任何处理直接返回 message。 否则，它返回调用栈的栈回溯信息。 字符串可选项 message 被添加在栈回溯信息的开头。 数字可选项 level 指明从栈的哪一层开始回溯 （默认为 1 ，即调用 traceback 的那里）。
+
+上表列出了我们常用的调试函数，接下来我们可以看些简单的例子：
+
+function myfunction ()
+print(debug.traceback("Stack trace"))
+print(debug.getinfo(1))
+print("Stack trace end")
+    return 10
+end
+myfunction ()
+print(debug.getinfo(1))
+
+执行以上代码输出结果为：
+
+Stack trace
+stack traceback:
+    test2.lua:2: in function 'myfunction'
+    test2.lua:8: in main chunk
+    [C]: ?
+table: 0054C6C8
+Stack trace end
+
+在以实例中，我们使用到了 debug 库的 traceback 和 getinfo 函数， getinfo 函数用于返回函数信息的表。 》》
+
+
+
+《《动画结束回调》》
+《《--导入包
+import "android.view.animation.*"
+import "android.view.animation.Animation$AnimationListener"
+--控件动画
+控件.startAnimation(AlphaAnimation(1,0).setDuration(400).setFillAfter(true).setAnimationListener(AnimationListener{
+onAnimationEnd=function()
+print"动画结束")
+end}))》》
+
+
+《《LuaAdapter适配器》》
+《《--构建方法
+adapter=LuaAdapter(activity,data,layout)
+--构建适配器，activity 当前活动，data 列表数据，layout 列表项目布局。
+--data格式为{{id=value},{id=value}}格式的数组表。
+
+adapter.add(data)
+--添加数据，data 为列表项目数据，格式为{id=value}。
+
+adapter.insert(idx,{id=value})
+--插入数据，idx 为从0计数的插入位置，data 为列表项目数据，格式为{id=value}。
+
+adapter.remove(idx)
+--删除数据，idx 为从0计数的删除位置。
+
+adapter.clear()
+--清空数据。
+
+adapter.notifyDataSetChanged()
+--更新数据。
+
+--也可以使用table.insert/table.remove直接对data表操作，table库操作从1开始计数，改操作需要手动更新列表。
+
+--在使用LuaAdapter的ListView的onItemClick/onItemLongClick回调函数中，第三个参数为从0开始的项目序号，第四个参数为从1开始的项目序号。》》
+
+
+
+
+
+《《Http 异步网络模块实例》》
+《《--获取内容 get函数
+Http.get(url,cookie,charset,header,callback)
+
+--[[
+url 网络请求的链接网址
+cookie 使用的cookie，也就是服务器的身份识别信息
+charset 内容编码
+header 请求头
+callback 请求完成后执行的函数
+]]
+
+--除了url和callback其他参数都不是必须的
+
+--[[
+回调函数接受四个参数值分别是
+code 响应代码，2xx表示成功，4xx表示请求错误，5xx表示服务器错误，-1表示出错
+content 内容，如果code是-1，则为出错信息
+cookie 服务器返回的用户身份识别信息
+header 服务器返回的头信息
+]]
+
+
+
+--向服务器发送数据 post函数
+Http.post(url,data,cookie,charset,header,callback)
+--除了增加了一个data外，其他参数和get完全相同
+--data 向服务器发送的数据
+
+
+--下载文件      download函数
+Http.download(url,path,cookie,header,callback)
+--参数中没有编码参数，其他同get，
+--path 文件保存路径
+
+--需要特别注意一点，只支持同时有127个网络请求，否则会出错
+
+
+--Http其实是对Http.HttpTask的封装，Http.HttpTask使用的更加通用和灵活的形式
+--参数格式如下
+Http.HttpTask( url, String method, cookie, charset, header,  callback) 
+--所有参数都是必选，没有则传入nil
+
+
+--[[
+url 请求的网址
+method 请求方法可以是get，post，put，delete等
+cookie 身份验证信息
+charset 内容编码
+header 请求头
+callback 回调函数
+]]
+
+
+--该函数返回的是一个HttpTask对象，
+--需要调用execute方法才可以执行，
+--t=Http.HttpTask(xxx)
+--t.execute{data}
+
+--注意调用的括号是花括号，内容可以是字符串或者byte数组，
+--使用这个形式可以自己封装异步上传函数》》
+
+
+《《线程的简单使用》》
+《《--[[
+
+需导入import模块，参看thread,timer与task函数说明。
+线程中使用独立环境运行，不能使用外部变量与函数，需要使用参数和回调与外部交互。
+任务
+
+task(str,args,callback)
+
+str 为任务执行代码，args 为参数，callback 为回调函数，任务返回值将传递到回调方法
+线程
+
+t=thread(str,args)
+
+str 为线程中执行的代码，args 为初始传入参数
+调用线程中方法
+call(t,fn,args)
+t 为线程，fn 为方法名称，args 为参数
+设置线程变量
+set(t,fn,arg)
+t 为线程，fn 为变量名称，arg 为变量值
+线程调用主线程中方法
+call(fn,args)
+fn 为方法名称，args 为参数
+线程设置主线程变量
+set(fn,arg)
+fn 为变量名称，arg 为变量值
+
+注. 参数类型为 字符串，数值，Java对象，布尔值与nil
+线程要使用quit结束线程。
+
+t=timer(func,delay,period,args)
+
+func 为定时器执行的函数，delay 为定时器延时，period 为定时器间隔，args 为初始化参数
+t.Enable=false 暂停定时器
+t.Enable=true 启动定时器
+t.stop() 停止定时器
+
+注意：定时器函数定义run函数时定时器重复执行run函数，否则重复执行构建时的func函数
+
+]]》》
+
+
+
+《《快速入门》》
+《《--[[
+
+  GameLua+是一个使用Lua语法编写可以使用安卓API的轻型脚本编程工具，使用它可以快速编写安卓应用。
+   第一次打开程序默认创建main.lua，并添加以下代码
+
+   require "gamelua"  --这个库里包含了一些GameLua特性
+   import "android.widget."
+   import "android.view."
+
+   require "gamelua" 是导入import模块，该模块集成了很多实用的函数，可以大幅度减轻写代码负担，详细函数说明参考程序帮助。
+   import "android.widget.*" 是导入Java包。
+   这里导入了android的widget和view两个包。
+
+   导入包后使用类是很容易的，新建类实例和调用Lua的函数一样。
+   比如新建一个TextView
+   tv=TextView(activity)
+   activity表示当前活动的context。
+   同理新建按钮 btn=Button(activity)
+
+   给视图设置属性也非常简单
+   btn.text="按钮"
+   btn.backgroundColor=0xff0000ff
+
+   添加视图事件回调函数
+   btn.onClick=function(v)
+     print(v)
+   end
+   函数参数v是视图本身。
+
+   安卓的视图需要添加到布局才能显示到活动，一般我们常用LinearLayout
+   layout=LinearLayout(activity)
+
+   用addView添加视图
+   layout.addView(btn)
+
+   最后调用activity的setContentView方法显示内容
+   activity.setContentView(layout)
+   这里演示GameLua+基本用法，通常我们需要新建一个项目来开发，代码的用法是相同的，具体细节请详细阅读后面的内容。
+
+]]》》
+
+
+
+
+《《程序回调方法》》
+《《--在活动文件添加以下函数，这些函数可以在活动的特定状态执行。
+function main(...)
+    --...：newActivity传递过来的参数。
+    print("入口函数",...)
+    end
+
+function onCreate()
+    print("窗口创建")
+    end
+
+function onStart()
+    print("活动开始")
+    end
+  
+function onResume()
+    print("返回程序")
+    end
+
+function onPause()
+    print("活动暂停")
+    end
+
+function onStop()
+    print("活动停止")
+    end
+
+function onDestroy()
+    print("程序已退出")
+    end
+
+function onResult(name,...)
+  --name：返回的活动名称
+  --...：返回的参数
+  print("返回活动",name,...)
+  end
+
+function onCreateOptionsMenu(menu)
+    --menu：选项菜单。
+    menu.add("菜单")
+    end
+
+function onOptionsItemSelected(item)
+    --item：选中的菜单项
+    print(item.Title)
+    end
+
+function onConfigurationChanged(config)
+    --config：配置信息
+    print("屏幕方向关闭")
+    end
+  
+function onKeyDown(keycode,event)
+    --keycode：键值
+    --event：事件
+    print("按键按下",keycode)
+    end
+
+function onKeyUp(keycode,event)
+    --keycode：键值
+    --event：事件
+    print("按键抬起",keycode)
+    end
+
+function onKeyLongPress(keycode,event)
+    --keycode：键值
+    --event：事件
+    print("按键长按",keycode)
+    end
+
+function onTouchEvent(event)
+    --event：事件
+    print("触摸事件",event)
+    end》》
+
+
+
+
+《《utf8库集合》》
+《《local s1 = "我是utf-8编码的字符串ABC"
+
+-- s1的长度：16
+print("s1的长度：" .. utf8.len(s1))
+
+-- 在第3个字处插入：我是hello哈utf-8编码的字符串ABC
+print(utf8.insert(s1, 3, "hello哈"))
+-- 在字符串末尾插入：我是utf-8编码的字符串ABChello哈
+print(utf8.insert(s1, 0, "hello哈"))
+print(utf8.insert(s1, "hello哈"))
+-- 在字符串末尾前1个字处插入：我是utf-8编码的字符串ABhello哈C
+print(utf8.insert(s1, -1, "hello哈"))
+-- 在字符串开头插入：hello哈我是utf-8编码的字符串ABC
+print(utf8.insert(s1, -utf8.len(s1), "hello哈"))
+
+-- 大写字母变成小写：我是utf-8编码的字符串abc
+print(utf8.lower(s1))
+print(utf8.fold(s1))
+
+-- 小写字母变成大写：我是UTF-8编码的字符串ABC
+print(utf8.upper(s1))
+print(utf8.title(s1))
+
+-- 反转字符串：CBA串符字的码编8-ftu是我
+print(utf8.reverse(s1))
+
+-- 截取子串：我是utf-8编码
+print(utf8.sub(s1, 1, 9))
+
+-- 返回子串的码值：25105    26159   117
+print(utf8.byte(s1, 1, 3))
+-- 返回码值对应的字符：我
+print(utf8.char(25105))
+
+-- 查找第一次匹配到的字符串（默认从第1个字符起开始查找）：字符串
+print(utf8.match(s1, "字符串"))
+-- 返回第一次匹配到的字符串的开始和结束位置（默认从第1个字符起开始查找）：11   13
+print(utf8.find(s1, "字符串"))
+
+--打印第一个字的字符位置（以字节为单位）及Unicode码值：1   25105
+print(utf8.next(s1))
+for pos, code in utf8.next, s1 do
+  -- 循环打印字符串中每个字的编码位置及编码值
+  print("处于第"..pos.."位的字符Unicode码为: "..code)
+end
+
+-- Unicode码转义为utf-8编码
+local u = utf8.escape
+-- 中文%123?d%u榄
+print(u"%20013%25991%%123%?%d%%u%27012")
+
+print(utf8.escape("%123%u123%{123}%u{123}%xABD%x{ABD}"))
+
+作者：cherishpf
+链接：https://www.jianshu.com/p/dcbb6b47bb32
+來源：简书
+简书著作权归作者所有，任何形式的转载都请联系作者获得授权并注明出处。》》
+
+
+《《去除注释》》
+《《require "import"
+import "android.app.*"
+import "android.os.*"
+import "android.widget.*"
+import "android.view.*"
+import "layout"
+--activity.setTitle('AndroLua+')
+--activity.setTheme(android.R.style.Theme_Holo_Light)
+--activity.setContentView(loadlayout(layout))
+function deleteComment(str)
+local str_arr={}
+local len=utf8.len(str)
+local pos=0
+local delta
+local function eat()
+  pos=pos+1
+
+  if pos>len then
+    return false
+  end
+  return true
+end
+
+local function look(delta)
+  delta = pos + (delta or 0)
+  return utf8.sub(str,delta, delta)
+end
+local function get()
+  eat()
+  return look()
+end
+
+local function skip()
+  eat()
+    if look()=="[" and get()=="[" then
+      while(true)do
+        if (look()=="]" and get()=="]")or( not eat() )then
+         
+          break
+        end
+      end
+     else
+      while(true)do
+        if look()=="\n" or (not eat()) then
+          break
+          end
+      end
+    end
+end
+
+while (pos<len) do
+  local t=look()
+  if t=="-" and get()=="-" then
+skip()
+  else
+  str_arr[#str_arr+1]=t
+  end
+eat()
+end
+return table.concat(str_arr)
+end
+》》
+
+
+《《TCP接收与发送》》
+《《require "import"
+import "android.app.*"
+import "android.os.*"
+import "android.widget.*"
+import "android.view.*"
+
+import "java.net.ServerSocket";
+
+import "java.net.InetAddress"
+import "java.net.SocketAddress"
+import "java.net.InetSocketAddress"
+import "java.io.OutputStreamWriter"
+import "java.io.PrintWriter"
+activity.setTitle('elua')
+activity.setTheme(android.R.style.Theme_Holo_Light)
+activity.setContentView(loadlayout({
+  LinearLayout;
+  layout_width="fill";
+  layout_height="fill";
+  orientation="vertical";
+   {
+    TextView;
+    layout_width="fill";
+    layout_margin="222";
+    id="v";
+    text="释放端口";
+  };
+  {
+    TextView;
+    layout_width="fill";
+    layout_margin="222";
+    id="vv";
+    text="连接";
+  };
+  {
+    TextView;
+    layout_width="fill";
+    layout_margin="222";
+    id="vvv";
+    text="发送信息。";
+  };
+  {
+    TextView;
+    layout_width="fill";
+    layout_margin="222";
+    id="vvvv";
+    text="退出。";
+  };
+};
+))
+----------------接收--------------
+
+function ai(a)
+  vv.Text=a
+  print(a)
+end
+
+function aa(a)
+  require "import"
+  import "java.io.BufferedReader"
+  import "java.io.InputStreamReader"
+  import "java.net.ServerSocket"
+  pcall(function()ss = ServerSocket(22222)end)
+  if not ss then
+    a("端口被占用！")
+    return
+  end
+
+  socket = ss.accept()
+  a("已连接。")
+  iin = socket.getInputStream();
+  isr = InputStreamReader(iin, "UTF-8");
+  br = BufferedReader(isr);
+  while(true)
+    Thread.sleep(500)
+    xx= br.readLine()
+    if xx then
+      print(xx)
+    end
+  end
+end
+
+
+
+----------------发送--------------
+
+function bi(a)
+  out = a.getOutputStream();
+  osw = OutputStreamWriter(out, "UTF-8");
+  pw = PrintWriter(osw, true);
+  vv.Text="已连接"
+end
+
+function bb(a)
+  require "import"
+  import "java.net.Socket";
+  pcall(function() socket=Socket("127.0.0.1",22222)end);
+
+  if socket then
+    a(socket)
+   else
+    print"连接失败！"
+  end
+end
+
+v.onClick=function()
+  if pcall(function()ServerSocket(22222).close()end)then
+    v.setEnabled(false)
+    thread(aa,ai)
+    v.Text="已释放，等待连接..."
+    print"已释放，等待连接..."
+   else
+    print"端口被占用"
+  end
+end
+
+vv.onClick=function()
+  if vv.Text=="连接" then
+    vv.Text="正在连接..."
+    vv.setEnabled(false)
+    thread(bb,bi)
+    print"正在连接.."
+   else
+    print"端口被占用！"
+  end
+end
+
+
+vvv.onClick=function()
+  if pw then
+    pw.println("你好，shiJie！" .. math.random(11111,22222));
+   else
+    print("未连接")
+  end
+end
+
+vvvv.onClick=function()
+  os.exit()
+end
+
+
+
+vvv.onTouch=function(a,b)
+  switch b.getAction()
+   case 1 vvv.BackgroundColor = 0x00000000
+   case 2 vvv.BackgroundColor = 0xFF00E9FF
+  end
+end
+--没有用lua实现的，用的Android原生Socket。
+--by:二哈》》
+
+
+
+
+《《帧动画》》
+《《local parentPath=activity.getLuaDir().."/pictures/"
+
+local fileList=io.ls(parentPath)
+
+--print(dump(fileList))
+
+
+import "android.graphics.drawable.AnimationDrawable"
+import "android.graphics.drawable.BitmapDrawable"
+
+local mAnimationDrawable=AnimationDrawable()
+
+
+for k, v in ipairs(fileList) do
+  if v ~= "." and v ~= ".." then
+    mAnimationDrawable.addFrame(BitmapDrawable(loadbitmap(parentPath..v)), 123)
+  end
+end
+
+
+mAnimationDrawable.setOneShot(false)
+img.setImageDrawable(mAnimationDrawable)
+
+st.onClick=function(v)
+  mAnimationDrawable.start()
+end
+
+sp.onClick=function(v)
+  mAnimationDrawable.stop()
+end》》
+
+
+《《纵向pageViewdemo重写》》
+《《require "import"
+import "android.app.*"
+import "android.os.*"
+import "android.widget.*"
+import "android.view.*"
+
+--activity.setTitle('AndroLua+')
+--activity.setTheme(android.R.style.Theme_Holo_Light)
+activity.setContentView(loadlayout({
+  LinearLayout;
+  layout_height="fill";
+  orientation="vertical";
+  layout_width="fill";
+  id="li";
+  
+};
+))
+function swapXY(ev)
+
+  width = page.getWidth();
+  height = page.getHeight();
+
+  newX = (ev.getY() / height) * width;
+  newY = (ev.getX() / width) * height;
+
+  ev.setLocation(newX, newY);
+
+  return ev;
+end
+trs=PageView.PageTransformer{
+  transformPage=function(view,position)
+    if (position < -1) then
+      -- This page is way off-screen to the left.
+      view.setAlpha(0);
+
+     elseif (position <= 1) then
+      view.setAlpha(1);
+
+      -- Counteract the default slide transition
+      view.setTranslationX(view.getWidth() * -position);
+
+      --set Y position to swipe in from top
+       yPosition = position * view.getHeight();
+      view.setTranslationY(yPosition);
+
+     else
+      --This page is way off-screen to the right.
+      view.setAlpha(0);
+    end
+  end
+}
+page=luajava.override(PageView,{
+
+  onInterceptTouchEvent=function(super,event)
+    
+    swapXY(event)
+    return super(swapXY(event))
+
+  end,
+onTouchEvent=function(super,ev)
+  
+  return super(swapXY(ev))
+  end
+
+})
+page.setOverScrollMode(PageView.OVER_SCROLL_NEVER)
+page.setPageTransformer(true,trs)
+li.addView(page,ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT))
+tex=TextView(activity)
+tex.text="ggggg"
+tex2=TextView(activity)
+tex2.text="666666"
+
+adp=ArrayPageAdapter({tex,tex2})
+page.setAdapter(adp)
+》》
+
+
+
+
+《《线程携程集合》》
+《《
+--java线程
+Thread(Runnable({
+  run=function()
+    print(1)
+  end
+})).start()
+
+
+--LuaActivity线程
+activity.thread(function(arg1, arg2)
+  print(arg1, arg2)
+end, {1, 2}).excute()
+
+
+--Lua线程 (和第二个差不多)
+thread(function(arg1, arg2)
+  print(arg1, arg2)
+end, 1, 2)
+
+
+--真Lua线程 (和前面似乎都一样)
+LuaThread(activity, function(arg1, arg2)
+  print(arg1, arg2)
+end, {3, 4}).start()
+
+
+--LuaActivity协程
+activity.task(function(arg1, arg2)
+  print(arg1, arg2)
+  return 1
+end, {5, 6}, function(re)
+  print(re)
+end)
+--.execute()  有一个协程了，会报错
+
+
+--Lua线程 (和上面一样，不过这个有用)
+task(function(arg1, arg2)
+  print(arg1, arg2)
+  return 1
+end, 5, 6, function(re)
+  print(re)
+end)
+
+--真Lua线程
+local tasks=LuaAsyncTask(activity, function(arg1, arg2)
+  print(arg1, arg2)
+  return 00
+end, function(re)
+print(re)
+end)
+tasks.execute({11, 22})
+
+--还有LuaRunnable, LuaAsyncTask里的一些其他方法没有写，协程可以定义代码运行延迟，综上
+--大部分是重复，就是Thread和AsyncTask
+--我觉着task和java线程还ok》》
+
+
+
+《《lua代码字符串混淆》》
+《《require "import"
+import "android.app.*"
+import "android.os.*"
+import "android.widget.*"
+import "android.view.*"
+--activity.setTitle('AndroLua+')
+activity.setTheme(require "autotheme"())
+--activity.setContentView(loadlayout('layout'))
+
+
+local code=[=[
+--[[
+
+]]
+themecolor={
+  ztl="#00796B";
+  btl="#009688";
+  ann="#4DB6AC";
+}
+
+
+--打印输出
+function toast(str)
+  Toast.makeText(activity,tostring(str),Toast.LENGTH_SHORT).show()
+end
+
+
+file={}--文件操作
+--检查文件
+function file.check(path)
+  local file=io.open(path,"r")
+  if not file then
+    return false
+  else
+    file:close()
+    return true
+  end
+end
+
+--写入文件
+function file.write(path,string)
+  import "java.io.File"
+  local file = File(tostring(path))
+  file.getParentFile().mkdirs()
+  local open = io.open(tostring(path),"w")
+  local open = open:write(tostring(string))
+  local open = open:close()
+  return true
+end
+
+
+--字符常量
+APP_PACKAGENAME=activity.getPackageName()
+APP_CACHEPATH=tostring(activity.getExternalCacheDir())
+
+
+--代码查错
+function codecheck(code)
+  src=tostring(code)
+  local _,data=loadstring(src)
+  if data then
+    local _,_,line,data=data:find(".(%d+).(.+)")
+    editor.gotoLine(tonumber(line))
+    toast("代码出错："..line.."：".. data)
+  else
+    return true
+  end
+end
+
+
+local funcs={
+  线性布局="LinearLayout",文本控件="TextView",
+  导包="require",引用="import",函数="function",
+  如果="if",那么="then",大于=">",
+  小于="<",等于="==",否则="else",
+  结束="end",打印="print",加载布局="loadlayout",
+  否则如果="elseif",返回="return",设置视图内容="setContentView",
+  真="true",假="false",活动="activity",
+}
+
+
+--运行代码
+function runcode(code)
+  for key, value in pairs(funcs) do
+    code = string.gsub(code,key, value)
+  end
+
+  if codecheck(code) then
+    file.write(APP_CACHEPATH.."/test.lua",code)
+    activity.newActivity(APP_CACHEPATH.."/test.lua")
+  end
+end
+
+
+a=[[
+1643
+]]
+
+--自动主题
+function switchtheme(pattern,layout)--主题模式(不填则自动)、布局表(aly文件路径或表)
+  local h=tonumber(os.date("%H"))
+  if Build.VERSION.SDK_INT >= 21 then
+    if pattern == "白天" then
+      this.setTheme(android.R.style.Theme_Material_Light_DarkActionBar)
+      this.ActionBar.setBackgroundDrawable(ColorDrawable(Color.parseColor(themecolor.btl)))
+      this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS).setStatusBarColor(Color.parseColor(themecolor.ztl))
+    elseif pattern == "夜间" then
+      this.setTheme(android.R.style.Theme_Material)
+    else
+      if h<=6 or h>=22 then
+        this.setTheme(android.R.style.Theme_Material)
+      else
+        this.setTheme(android.R.style.Theme_Material_Light_DarkActionBar)
+        this.ActionBar.setBackgroundDrawable(ColorDrawable(Color.parseColor(themecolor.btl)))
+        this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS).setStatusBarColor(Color.parseColor(themecolor.ztl))
+      end
+      this.ActionBar.setElevation(6)
+    end
+  else
+    if pattern == "白天" then
+      this.setTheme(android.R.style.Theme_Holo_Light_DarkActionBar)
+      this.ActionBar.setBackgroundDrawable(ColorDrawable(Color.parseColor(themecolor.btl)))
+    elseif pattern == "夜间" then
+      this.setTheme(android.R.style.Theme_Holo)
+    else
+      if h<=6 or h>=22 then
+        this.setTheme(android.R.style.Theme_Holo)
+      else
+        this.setTheme(android.R.style.Theme_Holo_Light_DarkActionBar)
+        this.ActionBar.setBackgroundDrawable(ColorDrawable(Color.parseColor(themecolor.btl)))
+      end
+    end
+  end
+  if layout~=nil then
+    this.setContentView(loadlayout(layout))
+  end
+end
+]=]
+
+lexer=LuaLexer(code)
+local z=0
+local s={}
+local tmp={}
+while z~=nil do
+  z=lexer.advance()
+--  print(z,lexer.yytext()) 
+   if tostring(z)=="STRING" then
+    table.insert(s,[[loadstring("]]
+    ..string.dump(load
+    ("return "..lexer.yytext())
+    )..[[")()]])       
+        elseif tostring(z)=="LONG_STRING" 
+    table.insert(s,[[loadstring("]]
+    ..string.dump(load
+    ("return "..lexer.yytext())
+    )..[[")()]])
+       else
+    table.insert(s,lexer.yytext())
+  
+  end
+
+end
+--print(table.concat(s))
+--print(dump(themecolor))
+lexer=LuaLexer(code)
+local z=0
+local 开始=0
+local 结束=0
+local s={}
+local d={}
+while z~=nil do
+  z=lexer.advance()
+--  print(z,lexer.yytext())
+  if tostring(z)=="LCURLY" then
+    开始=开始+1
+    table.insert(s,lexer.yytext())
+    continue
+  end
+  if tostring(z)=="RCURLY" and 开始==结束+1 then
+     结束=结束+1
+     table.insert(s,lexer.yytext())
+     table.insert(d,table.concat(s))
+     table.clear(s)
+   elseif tostring(z)=="RCURLY" then
+    结束=结束+1
+    table.insert(s,lexer.yytext())
+    continue
+  end
+
+  if 结束<开始 then
+    table.insert(s,lexer.yytext())
+  end
+end
+
+print(table.concat(d,"\n\n"))
+
+
+
+》》
+
+
+《《安装apk》》
+《《activity.installApk(activity.getLuaDir("a.apk"))》》
+
+
+
+《《apk提取》》
+《《require "import"
+import "android.app.*"
+import "android.os.*"
+import "android.widget.*"
+import "android.view.*"
+import "android.graphics.Typeface"
+import "java.io.File"
+activity.setContentView(loadlayout({
+  LinearLayout;
+  layout_height="fill";
+  layout_width="fill";
+  orientation="vertical";
+  {
+    ListView;
+    id="lv";
+    layout_height="fill";
+    layout_width="fill";
+  };
+}))
+if Build.VERSION.SDK_INT >= 23 then
+  --状态栏颜色
+  activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS).setStatusBarColor(0xFFFAFAFA);
+  --状态栏暗亮色
+  activity.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+end
+--LuaAdapter(Lua适配器)
+--创建自定义项目视图
+
+item=
+
+{
+  LinearLayout;
+  layout_height="fill";
+  layout_width="fill";
+  orientation="horizontal";
+  {
+    ImageView;
+    id="图";
+    layout_height="60dp";
+    layout_width="60dp";
+    layout_marginLeft="20dp";
+    layout_marginRight="20dp";
+    padding="5dp";
+  };
+  {
+    LinearLayout;
+    layout_height="60dp";
+    layout_width="-1";
+    orientation="vertical";
+    {
+      TextView;
+      id="字1";
+      layout_height="30dp";
+      layout_width="-1";
+      gravity="bottom";
+      singleLine="true";
+      typeface=Typeface.DEFAULT_BOLD;
+    };
+    {
+      TextView;
+      id="字2";
+      layout_height="30dp";
+      layout_width="-1";
+      gravity="top";
+      singleLine="true";
+    };
+  };
+};
+--创建适配器
+adp=LuaAdapter(activity,item)
+--设置适配器
+lv.Adapter=adp
+--查询已安装的APP
+function 查找()
+  require "import"
+  import "android.content.Intent"
+  Thread.sleep(100)
+  pm = activity.getPackageManager()
+  intent = Intent(Intent.ACTION_MAIN, nil)
+  intent.addCategory(Intent.CATEGORY_LAUNCHER)
+  resolveInfos = pm.queryIntentActivities(intent, 0)
+  if resolveInfos ~= nil and resolveInfos.size() > 0 then
+    for i=0,resolveInfos.size()-1 do
+      call("刷新",resolveInfos[i].activityInfo.applicationInfo.loadIcon(pm),resolveInfos[i].activityInfo.applicationInfo.loadLabel(pm),resolveInfos[i].activityInfo.packageName)
+      Thread.sleep(100)
+    end
+  end
+end
+
+function 刷新(image,text1,text2)
+  adp.add{图=image,字1=text1,字2=text2}
+  adp.notifyDataSetChanged()
+end
+thread(查找)
+
+BACKUP_PATH="/sdcard/Download/"--备份路径
+APK = ".apk"--后缀
+if not File(BACKUP_PATH).exists() then
+  File(BACKUP_PATH).mkdirs()
+end
+
+function 复制(name,path)
+  dest = BACKUP_PATH..name..APK
+  --path:app程序源文件路径 dest:新的存储路径 name:app名称
+  thread(CopyRunnable,path,dest)
+end
+
+function getApk(packageName)
+  --通过包名获取程序源文件路径
+  appDir = activity.getPackageManager().getApplicationInfo(packageName, 0).sourceDir
+  return appDir
+end
+
+--将程序源文件Copy到指定目录
+function CopyRunnable(path,dest)
+  require "import"
+  import "java.io.*"
+  fDest = File(dest)
+  if fDest.exists() then
+    fDest.delete()
+  end
+  fDest.createNewFile()
+  input = FileInputStream(File(path))
+  output = FileOutputStream(fDest)
+  inC = input.getChannel()
+  outC = output.getChannel()
+  inC.transferTo(0, inC.size(), outC)
+  inC.close()
+  outC.close()
+  call("提示框","提取apk成功，保存在"..dest)
+end
+
+import "android.text.SpannableString"
+import "android.text.style.ForegroundColorSpan"
+import "android.text.Spannable"
+function 颜色字体(t,c)
+  local sp = SpannableString(t)
+  sp.setSpan(ForegroundColorSpan(c),0,#sp,Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
+  return sp
+end
+
+function 确认框()
+  AlertDialog.Builder(this)
+  .setTitle(颜色字体("Apk提取",0xFFFF0000))
+  .setMessage(颜色字体("您确认要提取"..应用名.."的apk吗？",0xFF30A9DE))
+  .setPositiveButton("确认",{onClick=function(v) 复制(应用名,getApk(包名)) end})
+  .setNegativeButton("取消",nil)
+  .show()
+end
+
+function 提示框(文字)
+  AlertDialog.Builder(this)
+  .setMessage(颜色字体(文字,0xFF30A9DE))
+  .setPositiveButton("确认",{onClick=function(v) end})
+  .show()
+end
+
+lv.onItemClick=function(l,v,p,i)
+  应用名=v.Tag.字1.text
+  包名=v.Tag.字2.text
+  确认框()
+  return true
+end》》
+
+
+
+
+
+《《文字渐变色》》
+《《
+--文字渐变
+import "com.nirenr.Color"
+import "android.graphics.Color"
+import "android.graphics.Shader"
+import "android.graphics.LinearGradient"
+shader = LinearGradient(
+0, 0, 0, a.getTextSize(),
+0xffff0000, 0xff00ff00,
+Shader.TileMode.CLAMP);
+a.getPaint().setShader(shader);
+》》
+
+
+《《加密字符串》》
+《《require "import"
+local tab = {}
+local text = "AlertDialog.Builder(this)\n.setTitle(\"标题\")\n.setMessage(\"消息\")\n.setPositiveButton(\"积极\",{onClick=function(v) print(\"点击了积极按钮\")end})\n.setNeutralButton(\"中立\",nil)\n.setNegativeButton(\"否认\",nil)\n.show()\n\n\n"
+local lexer = LuaLexer(text)
+while true do
+  local up = lexer.advance()
+  if not up then
+    break
+  end
+  local up = tostring(up)
+  if up == "STRING" then
+    table.insert(tab, "(loadstring(\"" .. string.dump(load("return " .. lexer.yytext())) .. "\")())")
+   elseif up == "LONG_STRING" then
+    table.insert(tab, "(loadstring(\"" .. string.dump(load("return " .. lexer.yytext())) .. "\")())")
+   else
+    table.insert(tab, lexer.yytext())
+  end
+end
+
+_ENV["AlertDialog"] = luajava.bindClass("android.app.AlertDialog")
+load(table.concat(tab),nil,nil,_ENV)()
+
+》》
+
+
+
+《《布局表直接嵌入XML布局》》
+《《{
+  LinearLayout,
+  orientation="vertical",
+  layout_width="fill",
+  layout_height="fill",
+  {
+    R.layout.welcome,
+    layout_width="fill",
+    layout_height="fill",
+  },
+}
+》》
+
+
+
+
+
+《《下拉刷新控件用法》》
+《《require "import"
+import "android.app.*"
+import "android.os.*"
+import "android.widget.*"
+import "android.view.*"
+import "android.content.Intent"
+import "android.net.Uri"
+
+activity.setTitle('下拉刷新')
+activity.setTheme(android.R.style.Theme_Holo_Light)
+layout={
+  LinearLayout;
+  orientation="vertical";
+  {
+    PullingLayout;
+    id="Pulling";
+    PullDownEnabled=true;
+    PullUpEnabled=true;
+    layout_width="fill";
+    {
+      ListView;
+      layout_height="fill";
+      items={
+        "下拉刷新测试";
+        "下拉刷新测试";
+        "下拉刷新测试";
+      };
+      id="list";
+      layout_width="fill";
+      background="#FFFFFF";
+    };
+  };
+};
+
+activity.setContentView(loadlayout(layout))
+item={
+  TextView,
+  textSize="15dp",
+  gravity="center";
+  layout_width="fill";
+  layout_height="45dp";
+}
+--下拉刷新
+local adp=LuaArrayAdapter(this,item)
+list.Adapter=adp
+Pulling.onRefresh=function(v)
+  task(3000,function()--设置三秒后执行
+    adp.clear()
+    if m==0 then --如果m=0为真时
+      m=10--创建一个全局变量
+    end
+    for n=1,m do--因为m变量存贮的值是10循所以环十次
+      adp.add("下拉刷新测试"..n)--添加一项
+    end  
+    v.refreshFinish(0)
+    --[[括号里面的数字0为刷新成功！
+    1为刷新失败
+    2为没有更新的容的提示
+    2以后都为加载失败
+    上拉加载与下拉刷新使用方法相同！]]
+  end )
+end
+m=10--全局变量
+
+--上拉加载
+Pulling.onLoadMore=function(v)
+  task(3000,function()--设置三秒后执行
+    for n=0,10 do   --循环10次即为添加10项内容
+      adp.add("下拉刷新测试"..n)--添加一项
+    end
+    v.loadmoreFinish(0)--刷新成功
+  end )
+end
+
+
+》》
+
+
+
+
+
+《《SQL数据库常用api》》
+《《
+--[[
+
+【常用SQL语句】
+
+1.数据类型：
+整型：int
+     字符：char(6)
+  varchar(24)
+文本：text
+   布尔：bit
+   
+日期：smalldatetime
+
+2.删除表：
+drop table 表名
+
+3.修改表：
+alter table 表名 add 字段 类型
+//加约束
+alter table 表名 add constraint 约束
+
+4.创建表：
+create table 表名(
+字段 类型 primary key,
+字段 类型 default'值1' check(字段 in('值1','值2'))
+)
+//多个主键在最后面：
+primary key(字段1,字段2)
+//参照：
+后面加：references 表名(字段)
+//条件：
+不为空：not null
+唯一性：unique
+//约束：
+check(字段>=值 and 字段<=值)
+check(字段 in('值1','值2'))
+
+5.查询语句：
+select * from 表名 where 条件语句
+
+6.插入数据：
+insert into 表名(字段列表) values(值列表)
+
+7.更新语句：
+update 表名 set 字段名 = 值 where 条件
+
+8.删除语句：
+delete from 表名 where 条件
+
+9.分页查询：
+select * from Account limit 3,5
+(获取5条记录，跳过前面3条)
+
+--一一一一一一一一一一一一一一一一一一一一
+
+【常用SQL语句2】
+
+1.子查询：
+例：
+select 学号,成绩 from xs_kc 
+where 课程号=(select 课程号 from kc where 课程名='计算机基础')
+
+2.连接查询：
+例：
+select 学号,成绩 from xs_kc，kc
+where xs_kc.课程号=kc.课程号
+add 课程名='计算机基础'
+
+3.创建存储过程：
+//根据名字查询平均成绩，输入参数，输出参数
+create proc pxs_avgByName(
+	@name char(8) ,@avg float output
+)
+as
+	set @avg=(select avg(成绩) 
+	from xs,xs_kc 
+	where xs.学号=xs_kc.学号 
+	and xs.姓名=@name)
+go
+//执行存储过程
+declare @ag float
+exec pxs_avgByName '李林',@avg output
+select '平均分' =@ag
+
+4.创建触发器：
+//如果在XS表中添加或修改的学生学号不是以“08”开头，
+//则使用RAISERROR语句向客户端显示一条信息“学号必修以08开头”。
+create trigger tri_n
+on xs
+for insert,update
+as 
+	declare @i char(6)
+	select @i=学号 from inserted
+	if @i not like '08%'
+	begin
+		ROLLBACK  TRANSACTION 
+		RAISERROR ('学号必修以08开头，操作已经撤消！', 16, 10)
+	end
+go
+
+--一一一一一一一一一一一一一一一一一一一一一
+
+//插入数据
+public void insertData(SQLiteDatabase db,String table,Article article){
+	ContentValues values = new ContentValues();
+	values.put("title",article.getTitle());
+	values.put("author", article.getAuthor());
+
+	db.insert(table, null, values);
+}
+
+//删除数据
+public void deletData(SQLiteDatabase db,String table,Integer id){
+	db.delete(table, "_id=?", new String[]{id.toString()});
+}
+
+//根据id修改数据
+public void updataData(SQLiteDatabase db,String table,Integer id,Article article){
+	ContentValues values = new ContentValues();
+	values.put("title",article.getTitle());
+	values.put("author", article.getAuthor());
+	db.update(table, values, "_id=?", new String[]{id.toString()});
+}
+
+//根据id查询数据库
+public Article selectData(SQLiteDatabase db,String table,Integer id){
+	Cursor cursor = db.query(table,null, "_id=?", new String[]{id.toString()}, null, null, null);
+	if(cursor.moveToFirst()){
+		String title = cursor.getString(cursor.getColumnIndex("title"));
+		String author = cursor.getString(cursor.getColumnIndex("author"));
+		return new Article(title,author);
+	}
+	return null;
+}
+
+//查询数据库所有数据
+public List<Article> selectDatas(SQLiteDatabase db,String table){
+	List<Article> articles = new ArrayList<Article>();
+	Cursor cursor = db.query(table,null, null, null, null, null, null);
+	while(cursor.moveToNext()){
+		int id = cursor.getInt(cursor.getColumnIndex("_id"));
+		String title = cursor.getString(cursor.getColumnIndex("title"));
+
+		articles.add(new Article(id,title));
+	}
+	return articles;
+}
+
+]]
+
+
+
+--导入包
+import "android.database.sqlite.*"
+
+--打开数据库(没有自动创建)
+db = SQLiteDatabase.openOrCreateDatabase(this.getFilesDir().toString() .. "/test.db",MODE_PRIVATE, nil);
+
+
+
+--execSQL()方法可以执行insert、delete、update和CREATE TABLE之类有更改行为的SQL语句
+function exec(sql)
+  db.execSQL(sql);
+end
+
+--rawQuery()方法用于执行select语句。
+function raw(sql,text)
+  cursor=db.rawQuery(sql,text)
+end
+
+
+btn1.onClick=function()
+if pcall(exec,CreatrTableSql) then
+  --创建user表，integer类型为自动增长
+  CreatrTableSql="create table user(id integer primary key,name varchar(20),age int)"
+  print("创建成功")
+ else
+  print("创建失败")
+end
+end
+
+btn2.onClick=function()
+if pcall(exec,"insert into user(name,age) values('泥人',60)") then
+  print("添加列成功")
+else
+  print("添加列失败")
+end
+end
+
+btn3.onClick=function()
+  sql="select * from user"
+  if pcall(raw,sql,nil) then
+    print("查询成功")
+    while (cursor.moveToNext()) do
+      userid = cursor.getInt(0); --获取第一列的值,第一列的索引从0开始  
+      name = cursor.getString(1);--获取第二列的值
+      age = cursor.getInt(2);--获取第三列的值
+      print("Id:"..userid.."，Name:"..name.."，Age"..age)
+    end
+    cursor.close()
+  else
+    print("查询失败")
+  end
+end
+
+》》
+
+
+
+《《json互转table》》
+《《import "json"
+a = {1,2,3,"a","b",["索引"]="c"}
+b = json.encode(a)
+c = json.decode(b)
+
+print(b)
+for m,y in pairs(c) do
+  print(m,y)
+end》》
+
+
+
+
+
+
+《《java数组》》
+《《
+--申明java数组
+a = ArrayList()
+--各种添加
+a.add(0,"a")
+a.add("b")
+a.add(25)
+
+--转成table
+b = luajava.astable(a)
+
+--历遍打印
+for m,y in pairs(b) do
+  print(m,y)
+end》》
+
+
+
+《《图片免溢》》
+《《import "android.graphics.Bitmap"
+--activity.setTitle('AndroLua+')
+--activity.setTheme(android.R.style.Theme_Holo_Light)
+activity.setContentView(loadlayout(layout))
+function smallBitmap(bitmap,w,h) 
+    import "android.graphics.Matrix"
+    matrix = Matrix();
+    matrix.postScale(w,h); --长和宽放大缩小的比例
+    import "android.graphics.Bitmap"
+    resizeBmp = Bitmap.createBitmap(bitmap,0,0,bitmap.getWidth(),bitmap.getHeight(),matrix,true);
+    return resizeBmp;
+  end
+
+bitmap=Bitmap.createBitmap(loadbitmap(activity.getLuaPath("cs.jpg")))
+
+mInBitmap = bitmap
+mOutBitmap = Bitmap.createBitmap(mInBitmap.getWidth(),mInBitmap.getHeight(), mInBitmap.getConfig());
+
+import "android.renderscript.RenderScript"
+rs = RenderScript.create(this);
+import "android.renderscript.Allocation"
+aIn = Allocation.createFromBitmap(rs, mInBitmap);
+aOut = Allocation.createFromBitmap(rs, mInBitmap);
+aOut.copyTo(mOutBitmap);
+--尽可能的用勾践之类软件去削弱图片大小
+--尽可能的少用图片
+--尽可能的缩小bitmap
+--by.小萌新\(//∇//)\ 有更好的方法欢迎告诉我
+
+tptp.setImageBitmap(smallBitmap(mOutBitmap,0.5,0.5))
+rs.destroy();
+
+》》
+
+
+
+
+《《线程Demo》》
+《《require "import"
+import "android.app.*"
+import "android.os.*"
+import "android.widget.*"
+import "android.view.*"
+
+activity.setTitle('AndroLua+')
+activity.setTheme(android.R.style.Theme_Holo_Light)
+
+layout=
+{
+  LinearLayout,
+  orientation="vertical",
+  {
+    TextView,
+    text="hello AndroLua+",
+    layout_width="fill",
+    layout_height="100dp",
+    onClick="dianji",
+    id="aa"
+  },
+
+}
+
+
+activity.setContentView(loadlayout(layout))
+--@星辰
+--写一个方法,用于更新UI
+function aaa(str)
+  aa.Text=tostring(str)
+end
+
+--写一个方法,用于在线程执行
+function 线程函数(str)
+  --线程内使用的是独立环境,需导入要使用的包
+  --线程内不能获取外部变量的值
+  require "import"
+  for i=str,15 do
+
+    Thread.sleep(1000)--延迟1000毫秒
+    --线程内不能更新UI
+    call("aaa",i)--调用主线程的"aaa"方法来更新UI
+  end
+
+end
+
+
+thread(线程函数,2)--在线程中执行"线程函数"方法,并传入一个参数
+
+
+
+》》
+
+
+
+
+
+《《手机发短信》》
+《《uri = Uri.parse("smsto:填写手机号"); 
+intent = Intent(Intent.ACTION_SENDTO, uri); 
+intent.putExtra("sms_body","") 
+intent.setAction("android.intent.action.VIEW"); 
+activity.startActivity(intent); 》》
+
+
+
+《《table数组/字典排序》》
+《《
+
+--荼山
+--主要用于排序table
+
+
+local tab = {["荼山"]={name="荼山",ak=158}, ["小白"]={name="小白",ak=128}, ["二狗"]={name="二狗",ak=658}}
+
+  function sort(a,b)
+    return a.ak < b.ak
+  end
+
+  local tab2 = {}
+  for k,y in pairs(tab)
+    table.insert(tab2,{name=y.name, ak=y.ak})
+  end
+
+  table.sort(tab2,sort)
+  for k,y in pairs(tab2) do
+  print(k,y)
+  end》》
+
+
+《《数组维数自动排序》》
+《《local a = {"a","b","c",[4]="d"}
+table.remove(a,2)
+table.sort(a)
+
+for m,y in pairs(a) do
+  print(m,y)
+end
+
+--我来解释一下
+--这个排列只能排序整数类索性，而且必须是连着的
+--通俗来说第四个维数改5就不会被排序
+--我推荐你们自己尝试修改运行就能更好理解
+--林宅》》
+
+
+
+
+《《查询是否有该Intent的Activity》》
+《《function openIntent(intent)
+  --查询是否有该Intent的Activity
+  packageManager =this. getPackageManager();
+  activities = packageManager.queryIntentActivities(intent, 0);
+  --activities里面不为空就有，否则就没有
+  if activities.size() ==1 then
+    this.startActivity(intent)
+   elseif activities.size()>0 then
+    import "android.content.ComponentName"
+    import "com.androlua.LuaAdapter"
+    dialog=AlertDialog.Builder(this)
+    .setView(loadlayout{
+      LinearLayout;
+      Orientation='vertical';
+      layout_width='fill';
+      layout_height='fill';
+      background='#ffffff';
+      {
+        GridView;
+        numColumns=3;
+        layout_width='fill';
+        layout_height='fill';
+        id="list";
+      };
+    })
+    .setTitle("选择应用")
+    .show()
+    item={
+      LinearLayout;
+      Orientation='vertical';
+      layout_width='fill';
+      layout_height='wrap';
+      gravity='center';
+      {
+        ImageView;
+        layout_width='8%w';
+        layout_height='8%w';
+        layout_margin="10dp";
+        id="icon";
+      };
+      {
+        TextView;
+        layout_width='fill';
+        layout_height='wrap';
+        gravity="center";
+        id="name";
+        layout_marginBottom="10dp";
+      };
+      {
+        TextView;
+        layout_width='0';
+        layout_height='0';
+        gravity="center";
+        id="pkgname";
+      };
+      {
+        TextView;
+        layout_width='0';
+        layout_height='0';
+        gravity="center";
+        id="actname";
+      };
+    };
+    data={}
+    adp=LuaAdapter(this,data,item)
+    list.setAdapter(adp)
+    list.onItemClick=function(l,v,o,n)
+      intent.setComponent(ComponentName(v.Tag.pkgname.text,v.Tag.actname.text));
+      this.startActivity(intent)
+      dialog.dismiss()
+    end
+    for i=0,activities.size()-1 do
+      info=activities.get(i)
+      adp.add({pkgname=info.activityInfo.packageName,
+        actname=info.activityInfo.name,
+        name=info.loadLabel(packageManager),
+        icon=info.loadIcon(packageManager)})
+    end
+
+   else
+    print("没有合适的应用打开该内容")
+  end
+
+end
+》》
+
+
+
+《《调用其他软件打开文件》》
+《《  --意图2（打开文件）
+  import "android.webkit.MimeTypeMap"
+  import "android.content.Intent"
+  import "android.net.Uri"
+  import "java.io.File"
+  import "android.content.FileProvider"
+  path="/storage/emulated/0/AndLua/project/用其他应用打开（自建对话框布局）/text.txt"
+  FileName=tostring(File(path).Name)
+  ExtensionName=FileName:match("%.(.+)")
+  Mime=MimeTypeMap.getSingleton().getMimeTypeFromExtension(ExtensionName)
+  if Mime then
+    intent2 = Intent()
+    intent2.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    intent2.setAction(Intent.ACTION_VIEW);
+    --  intent2.setDataAndType(Uri.fromFile(File(path)), Mime);
+    intent2.setDataAndType(FileProvider.getUriForFile(this,this.getPackageName(),File(path)),Mime)
+    intent2.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);--允许临时的读
+    intent2.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION|Intent.FLAG_GRANT_WRITE_URI_PERMISSION);--允许临时的读和写
+   else
+    print("没有合适的应用打开该文件")
+    return false
+  end
+
+  openIntent(intent2)》》
+
+
+《《分享文本》》
+《《  --意图1（分享文本）
+  import "android.content.Intent"
+  intent1= Intent(Intent.ACTION_SEND)
+  intent1.setType("text/plain")
+  intent1.putExtra(Intent.EXTRA_SUBJECT,"测试")
+  intent1.putExtra(Intent.EXTRA_TEXT, "你好 ")
+  openIntent(intent1)》》
+
+
+
+
+《《控件变色》》
+《《--安卓提供了7种控件的状态
+states_res={
+  android.R.attr.state_window_focused,--焦点在窗口,只有悬浮窗程序会发生窗口焦点变化
+  android.R.attr.state_enabled,--控件处于可用状态
+  android.R.attr.state_focused,--焦点在控件
+  android.R.attr.state_pressed,--控件被按下
+  android.R.attr.state_checked,--控件被check
+  android.R.attr.state_checkable,--控件可选
+  android.R.attr.state_selected,--控件被select
+}
+--前面加-表示非，例如-android.R.attr.state_enabled表示控件不可用状态
+--不是所有控件都有7种状态的
+--Button没有fucused状态
+--而checked状态是CheckBox独有的
+--这和控件实现的接口有关
+
+--Clickable必须为true才能响应state_pressed
+
+import "android.content.res.ColorStateList"
+--如果控件同时存在多种状态，例如state_enabled和state_checked
+--那么优先显示states中前面的状态对应的颜色
+--为什么states必须是二维数组呢？因为安卓提供多个状态的组合判断
+
+--ColorStateList方法第一个参数为包含状态资源的二维数组，第二个参数为对应的agrb代码
+--下面是一些示例
+
+tvBgStates={{android.R.attr.state_pressed}}
+tvBgColor={0xFF2196F3}
+tvTextStates={
+  {android.R.attr.state_pressed},
+  {-android.R.attr.state_pressed},
+}
+tvTextColor={0xffffffff,0xff000000}
+tv.setTextColor(ColorStateList(tvTextStates,tvTextColor))
+--setBackgroundTintList方法
+--控件背景不能为空或者完全透明，否则无效果
+tv.setBackgroundTintList(ColorStateList(tvBgStates,tvBgColor))
+
+
+btnBgStates={
+  {android.R.attr.state_pressed},
+  {android.R.attr.state_enabled},
+}
+btnBgColor={0xFFF44336,0xFFCDDC39,}
+btn.setBackgroundTintList(ColorStateList(btnBgStates,btnBgColor))
+
+
+cbBgStates={
+  {android.R.attr.state_checked},
+  {-android.R.attr.state_checked},
+}
+cbBgColor={0xFFFF5722,0xFFFFFFFF}
+cb.setBackgroundTintList(ColorStateList(cbBgStates,cbBgColor))
+
+
+etBgStates={
+  {android.R.attr.state_focused},
+  {android.R.attr.state_enabled},
+}
+etBgColor={0xFFFF5722,0xFF00FFFF}
+et.setBackgroundTintList(ColorStateList(etBgStates,etBgColor))
+
+
+--RadioButton也用state_checked而不是state_selected
+rbTextStates={
+  {android.R.attr.state_checked},
+  {-android.R.attr.state_checked},
+}
+rbTextColor={0xFF03A9F4,0xFF888888}
+--如果是一样的显示效果，那么ColorStateList可以复用
+rbTextColorList=ColorStateList(rbTextStates,rbTextColor)
+rb1.setTextColor(rbTextColorList)
+rb2.setTextColor(rbTextColorList)
+rb3.setTextColor(rbTextColorList)
+》》
+
+
+
+
+
+《《获取手机壁纸》》
+《《activity.setContentView(luajava.bindClass("android.widget.ImageView")(activity).setBackgroundDrawable(activity.getWallpaper()).setOnClickListener({onClick=function(v)luajava.bindClass("android.widget.Toast").makeText(activity,"已保存",luajava.bindClass("android.widget.Toast").LENGTH_SHORT).show()end}))》》
+
+
+《《取argb颜色亮度》》
+《《color='FF000000'--//去除0x或#后的颜色值
+
+--取r,g,b
+local r=utf8.sub(color,3,4)
+local g=utf8.sub(color,5,6)
+local b=utf8.sub(color,7,8)
+function toint(e)--封装函数
+  import 'java.lang.Long'
+return Long.parseLong(e, 16)
+end
+grayLevel = toint(r) * 0.299 + toint(g) * 0.587 + toint(b) * 0.114;--RGB 模式转换成 YUV 模式，而 Y 是明亮度（灰阶），因此只需要获得 Y 的值而判断他是否足够亮就可以了
+if (grayLevel <= 192) then
+  print("暗色") --黑
+  else
+  print("亮色")--白
+end》》
+
+
+
+
+《《检查是否给应用授权/权限检查》》
+《《import "android.content.pm.PackageManager"
+pm = activity.getPackageManager();
+permissions = (PackageManager.PERMISSION_GRANTED == pm.checkPermission("android.permission.RECORD_AUDIO", "packageName"));
+if (permissions) then
+print("有这个权限");
+else 
+print("木有这个权限");
+end》》
+
+
+
+
+《《Bitmap常用Api》》
+《《
+--整理:林宅
+--数据来源网络
+
+import "android.graphics.BitmapFactory"
+import "android.graphics.drawable.BitmapDrawable"
+--载入图片
+bit = BitmapFactory.decodeFile(activity.getLuaDir().."/YB.png")
+--设置到控件
+图片控件.background=BitmapDrawable(bit)
+
+
+  --释放图片
+  bit.recycle()
+  --判断位图内存是否已释放
+  print(bit.isRecycled())
+
+
+  --获取宽高
+  print("宽:"..bit.getWidth().."\n高:"..bit.getHeight())
+
+  --保存图片
+  import "android.graphics.Bitmap"
+  import "java.io.FileOutputStream"
+  a=tointeger(100)  --画质
+  bit.compress(Bitmap.CompressFormat.PNG,a,FileOutputStream("/sdcard/a.png"))
+    
+
+function 图片旋转(角度)
+  import "android.graphics.Matrix"
+  import "android.graphics.Bitmap"
+  a = Matrix()
+  a.postRotate(角度)
+  return Bitmap.createBitmap(bit,0,0,bit.getWidth(),bit.getHeight(),a,true)
+end
+
+
+  图片控件.background=BitmapDrawable(图片旋转(180))
+  图片控件.background=BitmapDrawable(图片旋转(90))
+  图片控件.background=BitmapDrawable(图片旋转(270))
+  图片控件.background=BitmapDrawable(图片旋转(0))
+
+
+
+function 图片缩放(大小)
+  import "android.graphics.Matrix"
+  import "android.graphics.Bitmap"
+  a = Matrix()
+  a.postScale(大小,大小)
+  return Bitmap.createBitmap(bit,0,0,bit.getWidth(),bit.getHeight(),a,true)
+end
+
+
+  图片控件.background=BitmapDrawable(图片缩放(2.0))
+  图片控件.background=BitmapDrawable(图片缩放(0.5))
+
+--图片是否可修改
+--bit.isMutable()
+》》
+
+
+
+《《data权限授权》》
+《《require "import"
+import "android.app.*"
+import "android.os.*"
+import "android.widget.*"
+import "android.view.*"
+import "layout"
+activity.setTheme(R.Theme_Blue)
+activity.setTitle("data权限授权")
+activity.setContentView(loadlayout(layout))
+
+
+
+import "android.content.*"
+import "android.net.*"
+import "android.provider.*"
+import "java.io.File"
+import "andlua"
+import "android.support.v4.provider.*"
+import "android.net.Uri"
+import "android.provider.DocumentsContract"
+import "android.provider.*"
+local data={}
+data.requestPermission=function()
+  local parse = Uri.parse("content://com.android.externalstorage.documents/tree/primary%3AAndroid%2Fdata");
+  local intent = Intent("android.intent.action.OPEN_DOCUMENT_TREE");
+  intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
+  | Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+  | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
+  | Intent.FLAG_GRANT_PREFIX_URI_PERMISSION);
+  intent.putExtra("android.provider.extra.INITIAL_URI",DocumentsContract.buildDocumentUriUsingTree(parse, DocumentsContract.getTreeDocumentId(parse)));
+  activity.startActivityForResult(intent, 11);
+end
+data.savePermission=function(requestCode, resultCode, data)
+  if (data == nil) then
+    return;
+  end
+  local uri = data.getData()
+  local uri1 = "^content://com.android.externalstorage.documents/tree/.+%%3AAndroid%%2Fdata%%?2?F?$"
+  if (tostring(uri):find(uri1) && requestCode == 11 && uri ~= nil) then
+    activity.getContentResolver().takePersistableUriPermission(uri, data.getFlags() & (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION));--关键是这里，这个就是保存这个目录的访问权限
+    return true
+   else
+    return false
+  end
+end
+data.getSingleDoucmentFile=function(path)
+  local path=String(path)
+  if path.endsWith("/") then
+    path = path.substring(0, path.length() - 1);
+  end
+  local path2 = path.replace("/storage/emulated/0/", ""):gsub("/sdcard/",""):gsub("/", "%%2F");
+  return DocumentFile.fromSingleUri(activity, Uri.parse("content://com.android.externalstorage.documents/tree/primary%3AAndroid%2Fdata/document/primary%3A" .. path2));
+end
+data.getDoucmentFile=function(path)
+  local path=path:gsub("/sdcard/Android/data",""):gsub("/storage/emulated/0/Android/data", "")
+  if path:sub(1,1)=="/" then
+    path=utf8.sub(path,2,utf8.len(path))
+  end
+  local pathTab=luajava.astable(String(path).split("/"))
+  local doucmentfile=DocumentFile.fromTreeUri(activity, Uri.parse("content://com.android.externalstorage.documents/tree/primary%3AAndroid%2Fdata"));
+  if utf8.len(path)==0 then
+    return doucmentfile
+  end
+  for i=1,#pathTab do
+    local doucmentfile2=doucmentfile.findFile(pathTab[i])
+    if doucmentfile2==nil then
+      if pathTab[i]:find("%.(.+)") then
+       else
+      end
+    end
+    doucmentfile=doucmentfile2
+  end
+  return doucmentfile
+end
+data.getFileLastModified=function(path)
+  local file=File(path)
+  local parentPath=file.parentFile.path
+  local name=file.name
+  return data.getDoucmentFile(parentPath).findFile(name).lastModified()
+end
+data.getFileLastModified=function(path)
+  local file=File(path)
+  local parentPath=file.parentFile.path
+  local name=file.name
+  return data.getDoucmentFile(parentPath).findFile(name).lastModified()
+end
+data.getFileList=function(path)
+  local list=luajava.astable(data.getDoucmentFile(path).listFiles())
+  local s=utf8.sub(path,-1)
+  table.foreach(list,function(k,v)
+    list[k]=path..(s=="/" and "" or "/")..v.name
+  end)
+  return list
+end
+data.exists=function(path)
+  local file=File(path)
+  local parentPath=file.parentFile.path
+  local name=file.name
+  return data.getDoucmentFile(parentPath).findFile(name).exists()
+end
+data.isDirectory=function(path)
+  local file=File(path)
+  local parentPath=file.parentFile.path
+  local name=file.name
+  return data.getDoucmentFile(parentPath).findFile(name).isDirectory()
+end
+data.isFile=function(path)
+  local file=File(path)
+  local parentPath=file.parentFile.path
+  local name=file.name
+  return data.getDoucmentFile(parentPath).findFile(name).isFile()
+end
+data.createFile=function(path)
+  local file=File(path)
+  local parentPath=file.parentFile.path
+  local name=file.name
+  return data.getDoucmentFile(parentPath).createFile("*/*",name)
+end
+data.isGrant=function()
+  for k,uriPermission in pairs(luajava.astable(activity.getContentResolver().getPersistedUriPermissions())) do
+    if (uriPermission.isReadPermission() && uriPermission.getUri().toString():find("content://com.android.externalstorage.documents/tree/primary%%3AAndroid%%2Fdata")) then
+      return true;
+    end
+  end
+  return false;
+end
+data.createDirectory=function(path)
+  local file=File(path)
+  local parentPath=file.parentFile.path
+  local name=file.name
+  return data.getDoucmentFile(parentPath).createDirectory(name)
+end
+data.renameTo=function(path,nameTo)
+  local file=File(path)
+  local parentPath=file.parentFile.path
+  local name=file.name
+  return data.getDoucmentFile(parentPath).findFile(name).renameTo(File(nameTo).name)
+end
+data.getFileLength=function(path)
+  local singleDoucmentFile=data.getSingleDoucmentFile(path)
+  return singleDoucmentFile.length()
+end
+data.deleteFile=function(path)
+  local singleDoucmentFile=data.getSingleDoucmentFile(path)
+  return singleDoucmentFile.delete()
+end
+data.getFileOutputStream=function(path)
+  local singleDoucmentFile=data.getSingleDoucmentFile(path)
+  return activity.getContentResolver().openOutputStream(singleDoucmentFile.uri)
+end
+data.getFileInputStream=function(path)
+  local singleDoucmentFile=data.getSingleDoucmentFile(path)
+  return activity.getContentResolver().openInputStream(singleDoucmentFile.uri)
+end
+
+File("/sdcard/安卓版本").mkdirs()
+io.open("/sdcard/安卓版本/"..Build.VERSION.RELEASE, 'w')
+file,bbpd=io.open("/sdcard/安卓版本/10")
+if bbpd==nil then
+  if not data.isGrant() then
+    AlertDialog.Builder()
+    .setTitle("没有data访问权限")
+    .setMessage("检测到此设备为安卓11设备，需授予软件访问data权限，请点击授权")
+    .setPositiveButton("授权",{onClick=function(v)
+        data.requestPermission()
+      end})
+    .show()
+   else
+    MD提示("已成功授权",0xFF2196F3,0xFFFFFFFF,4,10)
+  end
+ else
+  MD提示("欢迎使用",0xFF2196F3,0xFFFFFFFF,4,10)
+end
+
+
+
+
+function 授权.onClick()
+  data.requestPermission()
+end》》
+
+
+
+
+
+
+
+
+《《ZipFile读取Zip》》
+《《import "java.io.InputStreamReader"
+import "java.io.File"
+import "java.util.zip.ZipFile"
+import "java.io.BufferedReader"
+
+--获取文件内容
+function getZipfiletext(zipfile,file,code)
+  local zipfile,file = ZipFile(File(tostring(zipfile))),tostring(file)
+  local entries = zipfile.entries()
+  local str = {}
+  while entries.hasMoreElements() do
+    entry = entries.nextElement();
+    if tostring(entry) == file then
+      local br = BufferedReader(InputStreamReader(zipfile.getInputStream(entry),code or "utf-8"));
+      local line = br.readLine()
+      while line ~= nil do
+        str[#str+1] = line
+        line = br.readLine();
+      end
+      break
+    end
+  end
+  zipfile.close()
+  return table.concat(str,"\n")
+end
+
+--获取zip文件列表
+function getZipfilelist(zipfile)
+  local zipfile = ZipFile(File(tostring(zipfile)))
+  local entries = zipfile.entries()
+  local files ={}
+  while entries.hasMoreElements() do
+    entry=entries.nextElement();
+    --合约0.1资源
+    files[#files+1] = entry--通过getName()可以得到文件名称
+    --a=("文件大小:"..entry.getSize())--得到文件大小
+  end
+  zipfile.close()
+  return files
+end
+
+--获取zip文件大小
+function getZipfilesize(zipfile,file)
+  local zipfile = ZipFile(File(tostring(zipfile)))
+  local entries = zipfile.entries()
+  while entries.hasMoreElements() do
+    entry = entries.nextElement();
+    if tostring(entry) == file then
+      return entry.getSize()
+    end
+  end
+  zipfile.close()
+  return entry.getSize()
+end
+
+
+
+list= dump(getZipfilelist(luajava.luadir.."/hi.zip"))
+print("该压缩包里有"..list)
+
+text = getZipfiletext(luajava.luadir.."/hi.zip","文件1")
+print("文件1的内容是"..text)
+
+size = getZipfilesize(luajava.luadir.."/hi.zip","文件1")
+print("文件1的大小是"..size)
+
+》》
+
+
+《《PageView动画教程》》
+《《
+--为了方便学习理解，我会用中文变量进行命名，但真正的项目中不推荐用中文哦
+--首先创建一个布局进行动画测试
+shamrock=
+--布局请写在这里
+{
+  LinearLayout;--线性布局
+  Orientation='vertical';--布局方向
+  layout_width='fill';--布局宽度
+  layout_height='fill';--布局高度
+  background='';--布局背景颜色(或者图片路径)
+  {
+    PageView;--滑动窗体
+    layout_weight='1';--剩余属性
+    id='滑动窗体';--绑定ID
+  };
+};
+
+activity.setContentView(loadlayout(shamrock))--将布局添加至窗口
+
+--这里将用适配器为Pageview添加布局
+adp = ArrayPageAdapter()--设置适配器
+滑动窗体.setAdapter(adp)--绑定适配器
+--新建一个布局，将其添加至Pageview
+卡片 = {
+  LinearLayout;--线性布局
+  Orientation='vertical';--布局方向
+  layout_width='fill';--布局宽度
+  layout_height='fill';--布局高度
+  background='#ffffff';--布局背景颜色(或者图片路径)
+  Gravity='center';
+  {
+    CardView;--卡片控件
+    layout_margin='0';--卡片边距
+    layout_gravity='center';--重力属性
+    Elevation='0';--阴影属性
+    layout_width='200';--卡片宽度
+    layout_height='200';--卡片高度
+    radius='20';--卡片圆角
+    CardBackgroundColor='0xff7e5cf8';--卡片背景颜色
+  };
+};
+adp.add(loadlayout(卡片))--利用适配器将布局添加至Pageview
+adp.add(loadlayout(卡片))
+--Pageview动画需要导入此包
+import'android.widget.PageView$PageTransformer'
+
+默认参数 = 0.75--设置默认参数，后面计算动画参数
+--Pageview官方动画函数
+滑动窗体.setPageTransformer(true,PageTransformer{--获取到Pageview的位置
+  transformPage = function(view,position)
+    pageWidth = view.getWidth()
+    if position<-1 then
+      view.setAlpha(0)--设置透明度
+    elseif position<=0 then
+      view.setAlpha(1)
+      view.setTranslationX(0)--设置偏移量(X轴平移)
+      view.setScaleX(1)--设置X轴缩放
+      view.setScaleY(1)--设置Y轴缩放
+
+    elseif position<=1 then
+      view.setAlpha(1-position)
+      view.setTranslationX(pageWidth*-position)
+      动画参数 = 默认参数+(1-默认参数)*(1-Math.abs(position))--动态计算动画参数
+      view.setScaleX(动画参数)
+      view.setScaleY(动画参数)
+
+    else
+      view.setAlpha(0)
+    end
+  end
+})
+--这个为谷歌官方开源的动画函数，类似的还有很多很多
+--开源链接：https://github.com/ToxicBakery/ViewPagerTransforms》》
+
+
+《《布局动画控制器》》
+《《
+--为了方便学习理解，我会用中文变量进行命名，但真正的项目中不推荐用中文哦
+--首先创建一个布局进行动画测试
+shamrock=--创建一个布局表并将其赋给变量shamrock
+{
+  LinearLayout;--线性布局
+  Orientation='vertical';--布局方向
+  layout_width='fill';--布局宽度
+  layout_height='fill';--布局高度
+  background='';--布局背景颜色(或者图片路径)
+  {
+    ListView;--列表视图
+    id='list';--绑定id
+    layout_width='fill';--布局宽度
+    layout_height='fill';--布局高度
+    --dividerHeight='';--设置分隔线宽度,0表示无分隔线
+    background='';--布局背景颜色(或者图片路径)
+  };
+};
+activity.setContentView(loadlayout(shamrock))--将布局表添加至窗口
+
+--使用适配器为list添加列表
+数据={}
+--添加项目数组
+for i=1,10 do
+  table.insert(数据,tostring(i))
+end
+--创建适配器
+array_adp=ArrayAdapter(activity,android.R.layout.simple_list_item_1,String(数据))
+--设置适配器
+list.setAdapter(array_adp)
+
+--LayoutAnimationController可以控制一组控件按照规定显示 
+
+--导入类
+import "android.view.animation.AnimationUtils"
+import "android.view.animation.LayoutAnimationController"
+
+
+--创建一个Animation对象
+animation = AnimationUtils.loadAnimation(activity,android.R.anim.slide_in_left)
+
+--得到对象
+lac = LayoutAnimationController(animation)
+
+--设置控件显示的顺序
+lac.setOrder(LayoutAnimationController.ORDER_NORMAL)
+--LayoutAnimationController.ORDER_NORMAL 顺序显示
+--LayoutAnimationController.ORDER_REVERSE 反显示
+--LayoutAnimationController.ORDER_RANDOM 随机显示
+
+--设置控件显示间隔时间
+lac.setDelay(1)--这里单位是秒
+
+--设置组件应用
+list.setLayoutAnimation(lac)》》
+
+
+《《揭露动画教程》》
+《《
+--为了方便学习理解，我会用中文变量进行命名，但真正的项目中不推荐用中文哦
+--首先创建一个布局进行动画测试
+shamrock=--创建一个布局表并将其赋给变量shamrock
+{
+  LinearLayout;--线性布局
+  Orientation='vertical';--布局方向
+  layout_width='fill';--布局宽度
+  layout_height='fill';--布局高度
+  background='';--布局背景颜色(或者图片路径)
+  Gravity='center';--设置居中
+  {
+    CardView;--卡片控件
+    id='卡片';--绑定ID
+    layout_margin='0';--卡片边距
+    layout_gravity='center';--重力属性
+    Elevation='0';--阴影属性
+    layout_width='200';--卡片宽度
+    layout_height='200';--卡片高度
+    radius='20';--卡片圆角
+    CardBackgroundColor='#ff7e5cf8';--卡片背景颜色
+  };
+};
+activity.setContentView(loadlayout(shamrock))--将布局表添加至窗口
+
+--揭露动画一定要设置延时，并在延时事件里启动
+task(100,function()
+  --设置揭露动画，对于参数为(ID,动画圆心X轴，动画圆心Y轴,动画开始时半径,动画结束时半径)
+  揭露动画 = ViewAnimationUtils.createCircularReveal(卡片,0,0,300,0)
+  揭露动画.setDuration(5000)--设置动画时间
+  揭露动画.start()--开始动画
+end)》》
+
+
+《《窗口动画》》
+《《
+--为了方便学习理解，我会用中文变量进行命名，但真正的项目中不推荐用中文哦
+--首先创建一个布局进行动画测试
+shamrock=--创建一个布局表并将其赋给变量shamrock
+{
+  LinearLayout;--线性布局
+  Orientation='vertical';--布局方向
+  layout_width='fill';--布局宽度
+  layout_height='fill';--布局高度
+  background='';--布局背景颜色(或者图片路径)
+  Gravity='center';--设置居中
+  {
+    CardView;--卡片控件
+    id='卡片';--设置ID
+    layout_margin='0';--卡片边距
+    layout_gravity='center';--重力属性
+    Elevation='1';--阴影属性
+    layout_width='200';--卡片宽度
+    layout_height='200';--卡片高度
+    radius='10';--卡片圆角
+    CardBackgroundColor='#ff7e5cf8';--卡片背景颜色
+  };
+};
+activity.setContentView(loadlayout(shamrock))--将布局表添加至窗口
+
+--设置窗口动画
+--对应参数为（进入时动画，离开时动画）
+activity.overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out)--淡入淡出
+
+--[[
+！！部分窗口动画无法正常使用
+android.R.anim.accelerate_decelerate_interpolator
+android.R.anim.accelerate_interpolator
+android.R.anim.anticipate_interpolator
+android.R.anim.anticipate_overshoot_interpolator
+android.R.anim.bounce_interpolator
+android.R.anim.cycle_interpolator
+android.R.anim.decelerate_interpolatoandroid.R.anim.r
+android.R.anim.fade_in
+android.R.anim.fade_out
+android.R.anim.linear_interpolator
+android.R.anim.overshoot_interpolator
+android.R.anim.slide_in_left
+android.R.anim.slide_out_right
+]]》》
+
+
+《《仿盒子背景水波纹动画》》
+《《
+
+import "android.view.animation.Animation"
+import 'android.animation.AnimatorSet'
+import 'android.graphics.Paint'
+import 'android.animation.ObjectAnimator'
+import 'android.view.animation.AccelerateInterpolator'
+import 'android.graphics.Color'
+bd = LuaDrawable(function(canvas,paint,draw)
+  paint.setColor(Color.WHITE)
+  paint.setStyle(Paint.Style.STROKE)
+  paint.setStrokeWidth(5)
+  canvas.drawCircle(draw.getBounds().centerX(),draw.getBounds().centerY(),draw.getBounds().height()/2-50,paint)
+end)
+
+SorrowClover=
+{
+  FrameLayout;--帧布局
+  layout_width='fill';--布局宽度
+  layout_height='fill';--布局高度
+  background='#F17F42';--布局背景颜色(或图片路径)
+  {
+    LinearLayout;--线性布局
+    id='anime1';
+    layout_width='400';--布局宽度
+    layout_height='400';--布局高度
+    BackgroundDrawable=bd;--布局背景颜色(或图片路径)
+  };
+  {
+    LinearLayout;--线性布局
+    id='anime2';
+    layout_width='400';--布局宽度
+    layout_height='400';--布局高度
+    BackgroundDrawable=bd;--布局背景颜色(或图片路径)
+    layout_gravity='center';
+  };
+  {
+    LinearLayout;--线性布局
+    id='anime3';
+    layout_width='400';--布局宽度
+    layout_height='400';--布局高度
+    BackgroundDrawable=bd;--布局背景颜色(或图片路径)
+    layout_gravity='bottom|right';
+  };
+};
+activity.setContentView(loadlayout(SorrowClover))
+
+animatorSet = AnimatorSet()--设置组合动画
+--对应参数分别是（id，需要改变的属性，{动画开始时需要改变的属性的值，动画结束时需要改变的属性的值}）
+scaleX1 = ObjectAnimator.ofFloat(anime1, "scaleX", {0, 1})
+scaleY1 = ObjectAnimator.ofFloat(anime1, "scaleY", {0, 1})
+scaleX1.setRepeatCount(-1)--设置动画重复次数，这里-1代表无限
+scaleX1.setRepeatMode(Animation.RESTART)--设置动画循环模式
+scaleX1.setDuration(2000)--动画时间
+scaleY1.setRepeatCount(-1)--设置动画重复次数，这里-1代表无限
+scaleY1.setRepeatMode(Animation.RESTART)--设置动画循环模式
+scaleY1.setDuration(2000)--动画时间
+scaleX2 = ObjectAnimator.ofFloat(anime2, "scaleX", {0, 1})
+scaleY2 = ObjectAnimator.ofFloat(anime2, "scaleY", {0, 1})
+scaleX2.setRepeatCount(-1)--设置动画重复次数，这里-1代表无限
+scaleX2.setRepeatMode(Animation.RESTART)--设置动画循环模式
+scaleX2.setDuration(3000)--动画时间
+scaleY2.setRepeatCount(-1)--设置动画重复次数，这里-1代表无限
+scaleY2.setRepeatMode(Animation.RESTART)--设置动画循环模式
+scaleY2.setDuration(3000)--动画时间
+scaleX3 = ObjectAnimator.ofFloat(anime3, "scaleX", {0, 1})
+scaleY3 = ObjectAnimator.ofFloat(anime3, "scaleY", {0, 1})
+scaleX3.setRepeatCount(-1)--设置动画重复次数，这里-1代表无限
+scaleX3.setRepeatMode(Animation.RESTART)--设置动画循环模式
+scaleX3.setDuration(2500)--动画时间
+scaleY3.setRepeatCount(-1)--设置动画重复次数，这里-1代表无限
+scaleY3.setRepeatMode(Animation.RESTART)--设置动画循环模式
+scaleY3.setDuration(2500)--动画时间
+animatorSet.setInterpolator(AccelerateInterpolator());--动画插值器
+animatorSet.playTogether({scaleX1,scaleY1,scaleX2,scaleY2,scaleX3,scaleY3})--动画同时开始
+animatorSet.start();--动画开始》》
+
+
+《《动画圆形进度条实战》》
+《《
+import 'android.view.animation.RotateAnimation'
+import 'android.view.animation.Animation'
+import 'android.view.animation.AccelerateDecelerateInterpolator'
+SorrowClover=
+{
+  LinearLayout;--线性布局
+  Orientation='vertical';--布局方向
+  layout_width='fill';--布局宽度
+  layout_height='fill';--布局高度
+  background='#ffffff';--布局背景颜色(或图片路径)
+  gravity="center";
+  {
+    FrameLayout;--帧布局
+    layout_width='100dp';--布局宽度
+    layout_height='100dp';--布局高度
+    {
+      CardView;--卡片控件
+      id="cd1";
+      layout_width='fill';--卡片宽度
+      layout_height='fill';--卡片高度
+      Elevation='0';--阴影属性
+      radius='50dp';--卡片圆角
+      CardBackgroundColor='#00ffffff';--卡片背景颜色
+      {
+        CardView;--卡片控件
+        layout_gravity='top|center';--子控件在父布局中的对齐方式
+        CardElevation='0';--卡片阴影
+        layout_width='10dp';--卡片宽度
+        layout_height='10dp';--卡片高度
+        radius='5dp';--卡片圆角
+        CardBackgroundColor='#FF7268E9';--卡片背景颜色
+      };
+    };
+    {
+      CardView;--卡片控件
+      id="cd2";
+      layout_width='fill';--卡片宽度
+      layout_height='fill';--卡片高度
+      Elevation='0';--阴影属性
+      radius='50dp';--卡片圆角
+      CardBackgroundColor='#00ffffff';--卡片背景颜色
+      {
+        CardView;--卡片控件
+        layout_gravity='top|center';--子控件在父布局中的对齐方式
+        CardElevation='0';--卡片阴影
+        layout_width='10dp';--卡片宽度
+        layout_height='10dp';--卡片高度
+        radius='5dp';--卡片圆角
+        CardBackgroundColor='#FF7268E9';--卡片背景颜色
+      };
+    };
+    {
+      CardView;--卡片控件
+      id="cd3";
+      layout_width='fill';--卡片宽度
+      layout_height='fill';--卡片高度
+      Elevation='0';--阴影属性
+      radius='50dp';--卡片圆角
+      CardBackgroundColor='#00ffffff';--卡片背景颜色
+      {
+        CardView;--卡片控件
+        layout_gravity='top|center';--子控件在父布局中的对齐方式
+        CardElevation='0';--卡片阴影
+        layout_width='10dp';--卡片宽度
+        layout_height='10dp';--卡片高度
+        radius='5dp';--卡片圆角
+        CardBackgroundColor='#FF7268E9';--卡片背景颜色
+      };
+    };
+    {
+      CardView;--卡片控件
+      id="cd4";
+      layout_width='fill';--卡片宽度
+      layout_height='fill';--卡片高度
+      Elevation='0';--阴影属性
+      radius='50dp';--卡片圆角
+      CardBackgroundColor='#00ffffff';--卡片背景颜色
+      {
+        CardView;--卡片控件
+        layout_gravity='top|center';--子控件在父布局中的对齐方式
+        CardElevation='0';--卡片阴影
+        layout_width='10dp';--卡片宽度
+        layout_height='10dp';--卡片高度
+        radius='5dp';--卡片圆角
+        CardBackgroundColor='#FF7268E9';--卡片背景颜色
+      };
+    };
+    {
+      CardView;--卡片控件
+      id="cd5";
+      layout_width='fill';--卡片宽度
+      layout_height='fill';--卡片高度
+      Elevation='0';--阴影属性
+      radius='50dp';--卡片圆角
+      CardBackgroundColor='#00ffffff';--卡片背景颜色
+      {
+        CardView;--卡片控件
+        layout_gravity='top|center';--子控件在父布局中的对齐方式
+        CardElevation='0';--卡片阴影
+        layout_width='10dp';--卡片宽度
+        layout_height='10dp';--卡片高度
+        radius='5dp';--卡片圆角
+        CardBackgroundColor='#FF7268E9';--卡片背景颜色
+      };
+    };
+    {
+      CardView;--卡片控件
+      id="cd6";
+      layout_width='fill';--卡片宽度
+      layout_height='fill';--卡片高度
+      Elevation='0';--阴影属性
+      radius='50dp';--卡片圆角
+      CardBackgroundColor='#00ffffff';--卡片背景颜色
+      {
+        CardView;--卡片控件
+        layout_gravity='top|center';--子控件在父布局中的对齐方式
+        CardElevation='0';--卡片阴影
+        layout_width='10dp';--卡片宽度
+        layout_height='10dp';--卡片高度
+        radius='5dp';--卡片圆角
+        CardBackgroundColor='#FF7268E9';--卡片背景颜色
+      };
+    };
+  };
+};
+activity.setContentView(loadlayout(SorrowClover))
+
+function 动画(控件,时间)
+  旋转动画=RotateAnimation(0, 360,
+  Animation.RELATIVE_TO_SELF, 0.5,
+  Animation.RELATIVE_TO_SELF, 0.5)
+  旋转动画.setDuration(时间)--设置动画时间
+  旋转动画.setInterpolator(AccelerateDecelerateInterpolator())
+  旋转动画.setFillAfter(true)--设置动画结束后停留位置
+  旋转动画.setRepeatCount(-1)--设置无限循环
+  --绑定动画
+  控件.startAnimation(旋转动画)
+end
+task(15,function()
+  动画(cd1,1500)
+  task(15,function()
+    动画(cd2,1500)
+    task(15,function()
+      动画(cd3,1500)
+      task(15,function()
+        动画(cd4,1500)
+        task(15,function()
+          动画(cd5,1500)
+          task(15,function()
+            动画(cd6,1500)
+            return true
+          end)
+          return true
+        end)
+        return true
+      end)
+      return true
+    end)
+    return true
+  end)
+  return true
+end)》》
+
+
+《《卡片跟随重影动画实战》》
+《《
+--创建布局，为教程提供良好的可视化
+import "android.view.animation.DecelerateInterpolator"
+import "android.animation.AnimatorSet"
+import "android.animation.ObjectAnimator"
+shamrock=
+{
+  --关于帧布局，也就是后创建的布局会直接堆叠在前面创建的布局之上
+  FrameLayout;--帧布局
+  layout_width='fill';--布局宽度
+  layout_height='fill';--布局高度
+  background='#ffffff';--布局背景颜色(或者图片路径)
+  {
+    LinearLayout;--线性布局
+    Orientation='vertical';--布局方向
+    layout_width='fill';--布局宽度
+    layout_height='fill';--布局高度
+    background='';--布局背景颜色(或者图片路径)
+    gravity='center';--设置居中
+    {
+      CardView;--卡片控件
+      id='背景卡片';--绑定ID
+      layout_margin='0';--卡片边距
+      layout_gravity='center';--重力属性
+      Elevation='0';--阴影属性
+      layout_width='100';--卡片宽度
+      layout_height='100';--卡片高度
+      radius='20';--卡片圆角
+      CardBackgroundColor='#8c7e5cf8';--卡片背景颜色
+    };
+  };
+  {
+    LinearLayout;--线性布局
+    Orientation='vertical';--布局方向
+    layout_width='fill';--布局宽度
+    layout_height='fill';--布局高度
+    background='';--布局背景颜色(或者图片路径)
+    gravity='center';
+    {
+      CardView;--卡片控件
+      id='卡片';--绑定ID
+      layout_margin='0';--卡片边距
+      layout_gravity='center';--重力属性
+      Elevation='0';--阴影属性
+      layout_width='100';--卡片宽度
+      layout_height='100';--卡片高度
+      radius='20';--卡片圆角
+      CardBackgroundColor='#ff7e5cf8';--卡片背景颜色
+    };
+  };
+};
+activity.setContentView(loadlayout(shamrock))--将布局添加至窗口
+--封装动画函数，避免后面重复的动画代码
+function 动画(view,x,y)
+  --导入组合动画包
+  import "android.animation.AnimatorSet"
+  --设置属性动画
+  animatorSet = AnimatorSet()--设置组合动画
+  --对应参数分别是（id，需要改变的属性，{动画开始时需要改变的属性的值，动画结束时需要改变的属性的值}）
+  scaleX = ObjectAnimator.ofFloat(view, "X", {view.getX(), x})
+  scaleY = ObjectAnimator.ofFloat(view, "Y", {view.getY(), y})
+  animatorSet.setDuration(1000)--动画时间
+  animatorSet.setInterpolator(DecelerateInterpolator());--动画插值器
+  animatorSet.play(scaleX).with(scaleY)--两个动画同时开始
+  animatorSet.start();--动画开始
+end
+--监听屏幕触摸事件
+function onTouchEvent(e)
+  --获取到触摸的坐标
+  X轴 = e.X
+  Y轴 = e.Y
+  --执行动画函数
+  动画(卡片,X轴,Y轴)
+  --延迟执行动画函数，实现重影效果
+  task(20,function()
+    动画(背景卡片,X轴,Y轴)
+  end)
+end
+print("随意触摸屏幕查看效果")》》
+
+
+《《等待窗口动画实战》》
+《《
+--创建一个布局，教程提供良好的可视化
+import "android.view.animation.AlphaAnimation"
+import "android.view.animation.Animation"
+import "android.view.animation.RotateAnimation"
+import "android.widget.PopupWindow"
+dingyi=
+{
+  LinearLayout;--线性布局
+  Orientation='vertical';--布局方向
+  layout_width='fill';--布局宽度
+  layout_height='fill';--布局高度
+  background='#ffffff';--布局背景颜色(或者图片路径)
+  gravity='center';--设置居中
+  {
+    CardView;--卡片控件
+    layout_margin='0';--卡片边距
+    layout_gravity='center';--重力属性
+    Elevation='0';--阴影属性
+    layout_width='150';--卡片宽度
+    layout_height='150';--卡片高度
+    radius='75';--卡片圆角
+    CardBackgroundColor='#ff1e8ae8';--卡片背景颜色
+    {
+      RippleLayout,--水波纹布局
+      layout_width='fill';--布局宽度
+      layout_height='fill';--布局高度
+      RippleColor='#ffffff';--水波纹颜色
+      RippleLineColor='#ffffff';--水波纹线条颜色
+      circle=true;--长按圆圈
+      {
+        TextView;--文本控件
+        id='按钮';--绑定ID
+        layout_width='fill';--文本宽度
+        layout_height='fill';--文本高度
+        Gravity='center';--重力属性
+        textColor='#ffffff';--文本颜色
+        text='点击弹窗';--显示的文本
+        textSize='12sp';--文本大小
+      };
+    };
+  };
+};
+activity.setContentView(loadlayout(dingyi))--将布局添加至窗口
+--设置按钮点击弹出弹窗
+按钮.onClick=function()
+  --设置弹出式窗口布局
+  popbj={
+    LinearLayout;--线性布局
+    Orientation='vertical';--布局方向
+    layout_width='80%w';--布局宽度
+    layout_height='30%h';--布局高度
+    background='#00ffffff';--布局背景颜色(或者图片路径)
+    gravity='center';--设置居中
+    {
+      CardView;--卡片控件
+      layout_margin='10';--卡片边距
+      layout_gravity='center';--重力属性
+      Elevation='10';--阴影属性
+      layout_width='fill';--卡片宽度
+      layout_height='fill';--卡片高度
+      radius='20';--卡片圆角
+      CardBackgroundColor='#ffffff';--卡片背景颜色
+      {
+        LinearLayout;--线性布局
+        Orientation='vertical';--布局方向
+        layout_width='fill';--布局宽度
+        layout_height='fill';--布局高度
+        background='';--布局背景颜色(或者图片路径)
+        gravity='center';--设置居中
+        {
+          LinearLayout;--线性布局
+          Orientation='vertical';--布局方向
+          layout_width='55';--布局宽度
+          layout_height='55';--布局高度
+          background='';--布局背景颜色(或者图片路径)
+          gravity='center';--设置居中
+          {
+            CardView;--卡片控件
+            layout_margin='0';--卡片边距
+            layout_gravity='center';--重力属性
+            Elevation='0';--阴影属性
+            layout_width='50';--卡片宽度
+            layout_height='17.5';--卡片高度
+            radius='0';--卡片圆角
+            CardBackgroundColor='#ff1e8ae8';--卡片背景颜色
+          };
+          {
+            CardView;--卡片控件
+            layout_margin='0';--卡片边距
+            layout_gravity='center';--重力属性
+            Elevation='0';--阴影属性
+            layout_width='25';--卡片宽度
+            layout_height='8.25';--卡片高度
+            radius='0';--卡片圆角
+            CardBackgroundColor='#ff1e8ae8';--卡片背景颜色
+          };
+        };
+        {
+          LinearLayout;--线性布局
+          Orientation='vertical';--布局方向
+          layout_width='105';--布局宽度
+          layout_height='105';--布局高度
+          background='';--布局背景颜色(或者图片路径)
+          gravity='center';--设置居中
+          {
+            CardView;--卡片控件
+            layout_margin='0';--卡片边距
+            layout_gravity='center';--重力属性
+            Elevation='0';--阴影属性
+            layout_width='100';--卡片宽度
+            layout_height='100';--卡片高度
+            radius='50';--卡片圆角
+            CardBackgroundColor='#ff1e8ae8';--卡片背景颜色
+            {
+              CardView;--卡片控件
+              layout_margin='0';--卡片边距
+              layout_gravity='center';--重力属性
+              Elevation='0';--阴影属性
+              layout_width='90';--卡片宽度
+              layout_height='90';--卡片高度
+              radius='45';--卡片圆角
+              CardBackgroundColor='#ffffff';--卡片背景颜色
+              {
+                CardView;--卡片控件
+                layout_margin='0';--卡片边距
+                layout_gravity='center';--重力属性
+                Elevation='0';--阴影属性
+                layout_width='70';--卡片宽度
+                layout_height='70';--卡片高度
+                radius='35';--卡片圆角
+                CardBackgroundColor='#ffffff';--卡片背景颜色
+                {
+                  CardView;--卡片控件
+                  id='指针';--绑定ID
+                  layout_margin='0';--卡片边距
+                  layout_gravity='top|center';--重力属性
+                  Elevation='0';--阴影属性
+                  layout_width='5';--卡片宽度
+                  layout_height='35';--卡片高度
+                  radius='1';--卡片圆角
+                  CardBackgroundColor='#ff1e8ae8';--卡片背景颜色
+                };
+              };
+            };
+          };
+        };
+        {
+          LinearLayout;--线性布局
+          Orientation='vertical';--布局方向
+          layout_width='fill';--布局宽度
+          layout_height='100';--布局高度
+          background='';--布局背景颜色(或者图片路径)
+          gravity='center';--设置居中
+          {
+            TextView;--文本控件
+            id='等待文字';--绑定ID
+            layout_width='wrap';--文本宽度
+            layout_height='wrap';--文本高度
+            Gravity='center';--重力属性
+            textColor='#ff1e8ae8';--文本颜色
+            text='loading';--显示的文本
+            textSize='28sp';--文本大小
+          };
+        };
+      };
+    };
+  };
+
+
+  pop=PopupWindow(activity)--创建PopupWindow弹出式窗口
+  pop.setContentView(loadlayout(popbj))--设置布局
+  pop.setWidth(activity.Width*0.8)--设置宽度
+  pop.getBackground().setAlpha(0)--将pop自带的背景透明
+  pop.setHeight(activity.Height*0.3)--设置高度
+  pop.setFocusable(true)--设置可获得焦点
+  pop.setTouchable(true)--设置可触摸
+  --设置点击外部区域是否可以消失
+  pop.setOutsideTouchable(false)
+  --居中显示
+  pop.showAtLocation(view,Gravity.CENTER,0,0)
+
+  --设置动画的属性
+  旋转动画=RotateAnimation(0,360 ,Animation.RELATIVE_TO_SELF, 1,Animation.RELATIVE_TO_SELF, 1)
+  旋转动画.setDuration(800)--设置动画时间
+  旋转动画.setFillAfter(true)--设置动画结束后停留位置
+  旋转动画.setRepeatCount(-1)--设置无限循环
+  旋转动画.setRepeatMode(Animation.RESTART)--设置循环模式
+  --绑定动画
+  指针.startAnimation(旋转动画)
+
+  --设置动画属性
+  透明动画=AlphaAnimation(1,0)
+  透明动画.setDuration(800)--设置动画时间
+  透明动画.setFillAfter(true)--设置动画后停留位置
+  透明动画.setRepeatCount(-1)--设置无限循环
+  透明动画.setRepeatMode(Animation.REVERSE)--设置循环模式
+  --绑定动画
+  等待文字.startAnimation(透明动画)
+
+end》》
+
+
+《《简单启动动画实战》》
+《《
+--创建布局，提供良好的示例
+import "android.animation.AnimatorSet"
+import "android.view.animation.DecelerateInterpolator"
+import "android.animation.ObjectAnimator"
+import "android.view.animation.OvershootInterpolator"
+import "android.view.animation.Animation"
+shamrock=
+{
+  LinearLayout;--线性布局
+  Orientation='vertical';--布局方向
+  layout_width='fill';--布局宽度
+  layout_height='fill';--布局高度
+  background='#ffffff';--布局背景颜色(或者图片路径)
+  Gravity="center";--设置居中
+  {
+    LinearLayout;--线性布局
+    id="卡片1";--绑定id
+    Orientation='vertical';--布局方向
+    layout_width='200';--布局宽度
+    layout_height='200';--布局高度
+    background='';--布局背景颜色(或者图片路径)
+    Gravity="center";--设置居中
+    {
+      CardView;--卡片控件
+      layout_margin='0';--卡片边距
+      layout_gravity='center';--重力属性
+      Elevation='10';--阴影属性
+      layout_width='100';--卡片宽度
+      layout_height='100';--卡片高度
+      radius='50';--卡片圆角
+      CardBackgroundColor='#ff7e5cf8';--卡片背景颜色
+    };
+  };
+  {
+    LinearLayout;--线性布局
+    id="卡片2";--绑定id
+    Orientation='vertical';--布局方向
+    layout_width='200';--布局宽度
+    layout_height='500';--布局高度
+    background='';--布局背景颜色(或者图片路径)
+    Gravity="center";--设置居中
+    {
+      CardView;--卡片控件
+      layout_margin='0';--卡片边距
+      layout_gravity='center';--重力属性
+      Elevation='10';--阴影属性
+      layout_width='100';--卡片宽度
+      layout_height='400';--卡片高度
+      radius='20';--卡片圆角
+      CardBackgroundColor='#ff7e5cf8';--卡片背景颜色
+    };
+  };
+};
+activity.setContentView(loadlayout(shamrock))--将布局添加至窗口
+
+平移动画1 = ObjectAnimator.ofFloat(卡片1, "X",{-200, activity.Width/2-100})--设置属性动画
+平移动画1.setInterpolator(OvershootInterpolator())--设置插值器
+平移动画1.setDuration(1300)--设置动画时间
+平移动画1.start()--开始动画
+
+--设置属性动画
+animatorSet = AnimatorSet()--设置组合动画
+平移动画2 = ObjectAnimator.ofFloat(卡片2, "X", {-200, activity.Width/2-100})
+旋转动画 = ObjectAnimator.ofFloat(卡片2, "rotation", {0, 15})
+animatorSet.setDuration(400)--动画时间
+animatorSet.setInterpolator(DecelerateInterpolator());--动画插值器
+旋转动画.setRepeatCount(1)--设置动画重复次数
+旋转动画.setRepeatMode(Animation.REVERSE)--设置动画循环模式
+animatorSet.play(平移动画2).before(旋转动画)--先执行平移动画2，再执行旋转动画
+animatorSet.start();--动画开始》》
+
+
+《《简单躲避球动画实战》》
+《《
+--导入组合动画类
+import "android.view.animation.DecelerateInterpolator"
+import "android.view.animation.Animation"
+import "android.animation.ObjectAnimator"
+import "android.animation.AnimatorSet"
+--创建布局
+shamrock=
+{
+  LinearLayout;--线性布局
+  Orientation='vertical';--布局方向
+  layout_width='fill';--布局宽度
+  layout_height='fill';--布局高度
+  background='#ffffff';--布局背景颜色(或者图片路径)
+  Gravity="center";--设置居中
+  {
+    LinearLayout;--线性布局
+    id="按钮布局";--绑定id
+    Orientation='vertical';--布局方向
+    layout_width='400';--布局宽度
+    layout_height='200';--布局高度
+    background='';--布局背景颜色(或者图片路径)
+    Gravity="center";--设置居中
+    {
+      CardView;--卡片控件
+      id="按钮";--绑定id
+      layout_margin='0';--卡片边距
+      layout_gravity='center';--重力属性
+      Elevation='0';--阴影属性
+      layout_width='100';--卡片宽度
+      layout_height='100';--卡片高度
+      radius='50';--卡片圆角
+      CardBackgroundColor='#ff7e5cf8';--卡片背景颜色
+    };
+    {
+      TextView;--文本控件
+      id="显示文字";--绑定id
+      layout_width='wrap';--文本宽度
+      layout_height='wrap';--文本高度
+      Gravity='center';--重力属性
+      textColor='#000000';--文本颜色
+      text='来点我呀';--显示的文本
+      textSize='16sp';--文本大小
+    };
+  };
+};
+activity.setContentView(loadlayout(shamrock))--将布局添加至窗口
+显示文字列表={"点不到我吧~","来抓我呀~","略略略~","你好笨哦~","来呀来呀~"}--创建一个显示文字的表
+
+按钮.onClick=function()--按钮点击事件
+
+  x轴=math.random(0,activity.Width-400)--获取x轴随机数
+  y轴=math.random(0,tointeger(activity.Height*0.8))--获取y轴随机数
+  显示文字键=math.random(1,4)--获取显示文字随机数
+
+  --设置属性动画
+  animatorSet = AnimatorSet()--设置组合动画
+  --对应参数分别是（id，需要改变的属性，{动画开始时需要改变的属性的值，动画结束时需要改变的属性的值}）
+  scaleX = ObjectAnimator.ofFloat(按钮布局, "X", {按钮布局.getX(), x轴})
+  scaleY = ObjectAnimator.ofFloat(按钮布局, "Y", {按钮布局.getY(), y轴})
+  animatorSet.setDuration(1000)--动画时间
+  animatorSet.setInterpolator(DecelerateInterpolator());--动画插值器
+  animatorSet.play(scaleX).with(scaleY)--两个动画同时开始
+  --animatorSet.play(scaleX).before(scaleY)--先执行scaleX，再执行scaleY
+  animatorSet.start();--动画开始
+  显示文字.Text=显示文字列表[显示文字键]--随机显示文字
+
+end》》
+
+
+《《细胞球动画实战》》
+《《
+--创建布局
+shamrock=
+{
+  LinearLayout;--线性布局
+  Orientation='vertical';--布局方向
+  layout_width='fill';--布局宽度
+  layout_height='fill';--布局高度
+  background='#ffffff';--布局背景颜色(或者图片路径)
+  Gravity="center";--设置居中
+  {
+    LinearLayout;--线性布局
+    Orientation='vertical';--布局方向
+    layout_width='80%w';--布局宽度
+    layout_height='80%h';--布局高度
+    background='#ff7e5cf8';--布局背景颜色(或者图片路径)
+    Gravity="center";--设置居中
+    {
+      LinearLayout;--线性布局
+      id="框";--绑定id
+      layout_margin="3";--设置边距
+      Orientation='vertical';--布局方向
+      layout_width='fill';--布局宽度
+      layout_height='fill';--布局高度
+      background='#ffffff';--布局背景颜色(或者图片路径)
+      gravity="center";--设置居中
+    };
+  };
+};
+activity.setContentView(loadlayout(shamrock))--将布局添加至窗口
+
+function 添加圆(cardid)--封装添加函数
+  大小=math.random(50,150)--随机大小
+  圆={--定义布局表
+    CardView;--卡片控件
+    id=cardid;--绑定id
+    Elevation='0';--阴影属性
+    layout_width=大小;--卡片宽度
+    layout_height=大小;--卡片高度
+    radius=大小/2;--卡片圆角
+    CardBackgroundColor='#ff7e5cf8';--卡片背景颜色
+  };
+  框.addView(loadlayout(圆))--添加布局至主布局
+end
+
+function 动画(view,x,y)--封装动画函数
+  --导入组合动画包
+  import "android.view.animation.DecelerateInterpolator"
+  import "android.view.animation.Animation"
+  import "android.animation.ObjectAnimator"
+  import "android.animation.AnimatorSet"
+  --设置属性动画
+  animatorSet = AnimatorSet()--设置组合动画
+  --对应参数分别是（id，需要改变的属性，{动画开始时需要改变的属性的值，动画结束时需要改变的属性的值}）
+  scaleX = ObjectAnimator.ofFloat(view, "X", {view.getX(), x})
+  scaleY = ObjectAnimator.ofFloat(view, "Y", {view.getY(), y})
+  animatorSet.setDuration(1000)--动画时间
+  animatorSet.setInterpolator(DecelerateInterpolator());--动画插值器
+  animatorSet.play(scaleX).with(scaleY)--两个动画同时开始
+  animatorSet.start();--动画开始
+end
+
+function 随意坐标(cardid)--封装随意坐标函数
+  x轴=math.random(tointeger(activity.Width*0.1+1.5),tointeger(activity.Width*0.9-1.5-200))--随机x轴
+  y轴=math.random(tointeger(activity.Height*0.1+1.5),tointeger(activity.Height*0.9-1.5-200))--随机y轴
+  动画(cardid,x轴,y轴)--调用动画函数
+end
+
+for i=1,20 do--循环添加圆
+  添加圆("圆"..i)
+end
+
+--Ticker定时器
+ti=Ticker()
+ti.Period=500--间隔
+ti.onTick=function()--定时器函数
+  随意坐标(圆1)
+  task(100,function()
+    随意坐标(圆2)
+    随意坐标(圆3)
+    随意坐标(圆4)
+  end)
+  随意坐标(圆5)
+  随意坐标(圆6)
+  随意坐标(圆7)
+  task(100,function()
+    随意坐标(圆8)
+    随意坐标(圆9)
+    随意坐标(圆10)
+  end)
+  随意坐标(圆11)
+  task(100,function()
+    随意坐标(圆12)
+    随意坐标(圆13)
+    随意坐标(圆14)
+  end)
+  随意坐标(圆15)
+  随意坐标(圆16)
+  随意坐标(圆17)
+  task(100,function()
+    随意坐标(圆18)
+    随意坐标(圆19)
+    随意坐标(圆20)
+  end)
+end
+--启动Ticker定时器
+ti.start()
+
+function onStop()--活动停止监听
+  ti.stop()--停止定时器
+end》》
+
+
+《《动画插值器》》
+《《
+--为了方便学习理解，我会用中文变量进行命名，但真正的项目中不推荐用中文哦
+--首先创建一个布局进行动画测试
+shamrock=--创建一个布局表并将其赋给变量shamrock
+{
+  LinearLayout;--线性布局
+  Orientation='vertical';--布局方向
+  layout_width='fill';--布局宽度
+  layout_height='fill';--布局高度
+  background='';--布局背景颜色(或者图片路径)
+  Gravity='center';--设置居中
+  {
+    CardView;--卡片控件
+    id='卡片';--设置ID
+    layout_margin='0';--卡片边距
+    layout_gravity='center';--重力属性
+    Elevation='1';--阴影属性
+    layout_width='200';--卡片宽度
+    layout_height='200';--卡片高度
+    radius='10';--卡片圆角
+    CardBackgroundColor='#ff7e5cf8';--卡片背景颜色
+  };
+};
+activity.setContentView(loadlayout(shamrock))--将布局表添加至窗口
+
+--设置属性动画
+--对应参数分别是（id，需要改变的属性，{动画开始时需要改变的属性的值，动画结束时需要改变的属性的值}）
+
+import "android.view.animation.DecelerateInterpolator"
+import "android.view.animation.Animation"
+import "android.animation.ObjectAnimator"
+
+平移动画 = ObjectAnimator.ofFloat(卡片, "X",{0, activity.Width})
+平移动画.setInterpolator(DecelerateInterpolator())--动画插值器,具体取值看下方
+平移动画.setRepeatCount(-1)--设置动画重复次数，这里-1代表无限
+平移动画.setRepeatMode(Animation.REVERSE)--设置动画循环模式
+平移动画.setDuration(1500)--动画时间
+平移动画.start()--动画开始
+
+--[[
+Interpolatort通常在动画中使用，主要来改变动画变化率。
+
+AccelerateDecelerateInterpolator()开始与结束的地方速率改变比较慢，在中间的时候加速
+
+AccelerateInterpolator()开始的地方速率改变比较慢，然后开始加速
+
+AnticipateInterpolator（）开始的时候向后然后向前甩
+
+AnticipateOvershootInterpolator（）开始的时候向后然后向前甩一定值后返回最后的值
+
+BounceInterpolator（）动画结束的时候弹起
+
+CycleInterpolator（）循环播放特定的次数，速率改变沿着正弦曲线
+
+DecelerateInterpolator（）在开始的地方快然后慢，实例经常使用它
+
+LinearInterpolator（）以常量速率改变
+
+OvershootInterpolator（）向前甩一定值后再回到原来位置
+]]》》
+
+
+《《属性动画概述》》
+《《
+一，背景：
+为了解决补间动画的缺陷，在 Android 3.0（API 11）开始，系统提供了一种全新的动画模式：属性动画（Property Animation）
+
+二，简介：
+作用对象：任意 Java 对象
+不再局限于 视图View对象
+实现的动画效果：可自定义各种动画效果
+不再局限于4种基本变换：平移、旋转、缩放 & 透明度
+
+三，特点：
+作用对象进行了扩展：不只是View对象，甚至没对象也可以
+动画效果：不只是4种基本变换，还有其他动画效果
+
+四，工作原理：
+在一定时间间隔内，通过不断对值进行改变，并不断将该值赋给对象的属性，从而实现该对象在该属性上的动画效果
+可以是任意对象的任意属性
+
+五，共有属性：
+Duration --属性为动画持续时间 时间以毫秒为单位
+repeatCount--动画的重复次数 
+repeatMode --定义重复的行为 可取值:(Animation.RESTART从头开始)(Animation.REVERSE从结束开始)》》
+
+
+《《平移动画》》
+《《
+--为了方便学习理解，我会用中文变量进行命名，但真正的项目中不推荐用中文哦
+--首先创建一个布局进行动画测试
+
+
+shamrock=--创建一个布局表并将其赋给变量shamrock
+{
+  LinearLayout;--线性布局
+  Orientation='vertical';--布局方向
+  layout_width='fill';--布局宽度
+  layout_height='fill';--布局高度
+  background='';--布局背景颜色(或者图片路径)
+  Gravity='center';--设置居中
+  {
+    CardView;--卡片控件
+    id='卡片';--设置ID
+    layout_margin='0';--卡片边距
+    layout_gravity='center';--重力属性
+    Elevation='1';--阴影属性
+    layout_width='200';--卡片宽度
+    layout_height='200';--卡片高度
+    radius='10';--卡片圆角
+    CardBackgroundColor='#ff7e5cf8';--卡片背景颜色
+  };
+};
+activity.setContentView(loadlayout(shamrock))--将布局表添加至窗口
+
+--设置属性动画
+--对应参数分别是（id，需要改变的属性，{动画开始时需要改变的属性的值，动画结束时需要改变的属性的值}）
+
+import "android.view.animation.DecelerateInterpolator"
+import "android.view.animation.Animation"
+import "android.animation.ObjectAnimator"
+平移动画 = ObjectAnimator.ofFloat(卡片, "Y",{卡片.getY(), activity.Height})
+平移动画.setRepeatCount(-1)--设置动画重复次数，这里-1代表无限
+平移动画.setRepeatMode(Animation.REVERSE)--循环模式
+平移动画.setInterpolator(DecelerateInterpolator())--设置插值器
+平移动画.setDuration(1500)--设置动画时间
+平移动画.start()--开始动画》》
+
+
+《《旋转动画》》
+《《
+import "android.view.animation.Animation"
+import "android.animation.ObjectAnimator"
+import "android.view.animation.RotateAnimation"
+--为了方便学习理解，我会用中文变量进行命名，但真正的项目中不推荐用中文哦
+--首先创建一个布局进行动画测试
+shamrock=--创建一个布局表并将其赋给变量shamrock
+{
+  LinearLayout;--线性布局
+  Orientation='vertical';--布局方向
+  layout_width='fill';--布局宽度
+  layout_height='fill';--布局高度
+  background='';--布局背景颜色(或者图片路径)
+  Gravity='center';--设置居中
+  {
+    CardView;--卡片控件
+    id='卡片';--设置ID
+    layout_margin='0';--卡片边距
+    layout_gravity='center';--重力属性
+    Elevation='1';--阴影属性
+    layout_width='200';--卡片宽度
+    layout_height='200';--卡片高度
+    radius='10';--卡片圆角
+    CardBackgroundColor='#ff7e5cf8';--卡片背景颜色
+  };
+};
+activity.setContentView(loadlayout(shamrock))--将布局表添加至窗口
+
+--设置属性动画
+--对应参数分别是（id，需要改变的属性，{动画开始时需要改变的属性的值，动画结束时需要改变的属性的值}）
+旋转动画 = ObjectAnimator .ofFloat(卡片, "rotationX", {0, 180})
+旋转动画.setRepeatCount(-1)--设置动画重复次数，这里-1代表无限
+旋转动画.setRepeatMode(Animation.REVERSE)--循环模式
+旋转动画.setDuration(2000)--动画时间
+旋转动画.start()--动画开始》》
+
+
+
+《《组合动画》》
+《《
+--为了方便学习理解，我会用中文变量进行命名，但真正的项目中不推荐用中文哦
+--首先创建一个布局进行动画测试
+--组合动画需要导入此包
+
+import "android.animation.ObjectAnimator"
+import "android.animation.AnimatorSet"
+import "android.view.animation.Animation"
+import "android.view.animation.DecelerateInterpolator"
+shamrock=--创建一个布局表并将其赋给变量shamrock
+{
+  LinearLayout;--线性布局
+  Orientation='vertical';--布局方向
+  layout_width='fill';--布局宽度
+  layout_height='fill';--布局高度
+  background='';--布局背景颜色(或者图片路径)
+  Gravity='center';--设置居中
+  {
+    CardView;--卡片控件
+    id='卡片';--设置ID
+    layout_margin='0';--卡片边距
+    layout_gravity='center';--重力属性
+    Elevation='1';--阴影属性
+    layout_width='200';--卡片宽度
+    layout_height='200';--卡片高度
+    radius='10';--卡片圆角
+    CardBackgroundColor='#ff7e5cf8';--卡片背景颜色
+  };
+};
+activity.setContentView(loadlayout(shamrock))--将布局表添加至窗口
+
+--设置属性动画
+animatorSet = AnimatorSet()--设置组合动画
+--对应参数分别是（id，需要改变的属性，{动画开始时需要改变的属性的值，动画结束时需要改变的属性的值}）
+scaleX = ObjectAnimator.ofFloat(卡片, "scaleX", {1, 0})
+scaleY = ObjectAnimator.ofFloat(卡片, "scaleY", {1, 0})
+--组合动画的循环需要挨个设置
+scaleX.setRepeatCount(-1)--设置动画重复次数，这里-1代表无限
+scaleX.setRepeatMode(Animation.REVERSE)--设置动画循环模式
+scaleY.setRepeatCount(-1)--设置动画重复次数，这里-1代表无限
+scaleY.setRepeatMode(Animation.REVERSE)--设置动画循环模式
+animatorSet.setDuration(2000)--动画时间
+animatorSet.setInterpolator(DecelerateInterpolator());--动画插值器
+animatorSet.playTogether({scaleX,scaleY})--两个动画同时开始
+--animatorSet.playSequentially({scaleX,scaleY})--先执行scaleX，再执行scaleY
+animatorSet.start();--动画开始》》
+
+
+《《缩放动画》》
+《《
+--为了方便学习理解，我会用中文变量进行命名，但真正的项目中不推荐用中文哦
+--首先创建一个布局进行动画测试
+import "android.view.animation.DecelerateInterpolator"
+import "android.animation.ObjectAnimator"
+import "android.view.animation.Animation"
+shamrock=--创建一个布局表并将其赋给变量shamrock
+{
+  LinearLayout;--线性布局
+  Orientation='vertical';--布局方向
+  layout_width='fill';--布局宽度
+  layout_height='fill';--布局高度
+  background='';--布局背景颜色(或者图片路径)
+  Gravity='center';--设置居中
+  {
+    CardView;--卡片控件
+    id='卡片';--设置ID
+    layout_margin='0';--卡片边距
+    layout_gravity='center';--重力属性
+    Elevation='1';--阴影属性
+    layout_width='200';--卡片宽度
+    layout_height='200';--卡片高度
+    radius='10';--卡片圆角
+    CardBackgroundColor='#ff7e5cf8';--卡片背景颜色
+  };
+};
+activity.setContentView(loadlayout(shamrock))--将布局表添加至窗口
+
+--设置属性动画
+--对应参数分别是（id，需要改变的属性，{动画开始时需要改变的属性的值，动画结束时需要改变的属性的值}）
+缩放动画 = ObjectAnimator.ofFloat(卡片, "scaleX", {1, 0})
+缩放动画.setRepeatCount(-1)--设置动画重复次数，这里-1代表无
+缩放动画.setRepeatMode(Animation.REVERSE)--设置循环模式
+缩放动画.setDuration(2000)--设置动画时间
+缩放动画.setInterpolator(DecelerateInterpolator());--设置动画插值器
+缩放动画.start();--开始动画》》
+
+
+《《背景颜色动画》》
+《《
+--为了方便学习理解，我会用中文变量进行命名，但真正的项目中不推荐用中文哦
+--首先创建一个布局进行动画测试
+--背景颜色动画需要导入此包
+import "android.view.animation.DecelerateInterpolator"
+import "android.animation.ObjectAnimator"
+import "android.view.animation.Animation"
+import "android.animation.ArgbEvaluator"
+import "android.graphics.Color"
+shamrock=--创建一个布局表并将其赋给变量shamrock
+{
+  LinearLayout;--线性布局
+  Orientation='vertical';--布局方向
+  layout_width='fill';--布局宽度
+  layout_height='fill';--布局高度
+  background='';--布局背景颜色(或者图片路径)
+  Gravity='center';--设置居中
+  {
+    CardView;--卡片控件
+    id='卡片';--设置ID
+    layout_margin='0';--卡片边距
+    layout_gravity='center';--重力属性
+    Elevation='1';--阴影属性
+    layout_width='200';--卡片宽度
+    layout_height='200';--卡片高度
+    radius='10';--卡片圆角
+    CardBackgroundColor='#ff7e5cf8';--卡片背景颜色
+  };
+};
+activity.setContentView(loadlayout(shamrock))--将布局表添加至窗口
+
+--设置属性动画
+--对应参数分别是（id，需要改变的属性，{此处可以是多个值，分别表示每次的颜色}）
+背景动画 = ObjectAnimator.ofInt(卡片,"backgroundColor",{Color.RED, Color.BLUE, Color.GRAY})
+背景动画.setInterpolator(DecelerateInterpolator())--动画插值器
+背景动画.setDuration(1500)--动画时间
+背景动画.setRepeatCount(-1)--动画循环
+背景动画.setRepeatMode(Animation.REVERSE)--循环模式
+背景动画.setEvaluator(ArgbEvaluator())
+--[[
+ArgbEvaluator：这种评估者可以用来执行类型之间的插值整数值代表ARGB颜色。
+FloatEvaluator：这种评估者可以用来执行浮点值之间的插值。
+IntEvaluator：这种评估者可以用来执行类型int值之间的插值。
+RectEvaluator：这种评估者可以用来执行类型之间的插值矩形值。
+
+由于本例是改变View的backgroundColor属性的背景颜色所以此处使用ArgbEvaluator
+]]
+背景动画.start()--动画开始》》
+
+
+《《透明动画》》
+《《
+--为了方便学习理解，我会用中文变量进行命名，但真正的项目中不推荐用中文哦
+--首先创建一个布局进行动画测试
+
+
+shamrock=--创建一个布局表并将其赋给变量shamrock
+{
+  LinearLayout;--线性布局
+  Orientation='vertical';--布局方向
+  layout_width='fill';--布局宽度
+  layout_height='fill';--布局高度
+  background='';--布局背景颜色(或者图片路径)
+  Gravity='center';--设置居中
+  {
+    CardView;--卡片控件
+    id='卡片';--设置ID
+    layout_margin='0';--卡片边距
+    layout_gravity='center';--重力属性
+    Elevation='1';--阴影属性
+    layout_width='200';--卡片宽度
+    layout_height='200';--卡片高度
+    radius='10';--卡片圆角
+    CardBackgroundColor='#ff7e5cf8';--卡片背景颜色
+  };
+};
+activity.setContentView(loadlayout(shamrock))--将布局表添加至窗口
+
+--设置属性动画
+--第一个参数为id,第二个参数为 动画改变的类型,第三,第四个参数依次是开始透明度和结束透明度,注意用table表的形式（大括号括起来）。
+import "android.view.animation.DecelerateInterpolator"
+import "android.animation.ObjectAnimator"
+import "android.view.animation.Animation"
+透明动画 = ObjectAnimator.ofFloat(卡片, "alpha", {0, 1})
+透明动画.setDuration(2000)--设置动画时间
+透明动画.setInterpolator(DecelerateInterpolator())--设置动画插值器，减速
+透明动画.setRepeatCount(-1)--设置动画重复次数，这里-1代表无限
+透明动画.setRepeatMode(Animation.REVERSE)--设置动画循环模式。
+透明动画.start()--启动动画。》》
+
+
+《《平移动画教程》》
+《《
+--为了方便学习理解，我会用中文变量进行命名，但真正的项目中不推荐用中文哦
+--首先创建一个布局进行动画测试
+shamrock=--创建一个布局表并将其赋给变量shamrock
+{
+  LinearLayout;--线性布局
+  Orientation='vertical';--布局方向
+  layout_width='fill';--布局宽度
+  layout_height='fill';--布局高度
+  background='';--布局背景颜色(或者图片路径)
+  Gravity='center';--设置居中
+  {
+    CardView;--卡片控件
+    id='卡片';--设置ID
+    layout_margin='0';--卡片边距
+    layout_gravity='center';--重力属性
+    Elevation='1';--阴影属性
+    layout_width='200';--卡片宽度
+    layout_height='200';--卡片高度
+    radius='10';--卡片圆角
+    CardBackgroundColor='#ff7e5cf8';--卡片背景颜色
+  };
+};
+activity.setContentView(loadlayout(shamrock))--将布局表添加至窗口
+
+--设置动画的属性
+import "android.view.animation.TranslateAnimation"
+平移动画=TranslateAnimation(0, 0, 55, 0)
+平移动画.setDuration(800)--设置动画时间
+平移动画.setFillAfter(true)--设置动画后停留位置
+平移动画.setRepeatCount(-1)--设置无限循环
+--绑定动画
+卡片.startAnimation(平移动画)
+
+--[[
+平移动画属性详解：
+TranslateAnimation(float fromXDelta, float toXDelta, float fromYDelta, float toYDelta)
+float fromXDelta 动画开始的点离当前View X坐标上的差值 
+float toXDelta 动画结束的点离当前View X坐标上的差值 
+float fromYDelta 动画开始的点离当前View Y坐标上的差值 
+float toYDelta 动画结束的点离当前View Y坐标上的差值 
+]]》》
+
+
+《《旋转动画教程》》
+《《
+--为了方便学习理解，我会用中文变量进行命名，但真正的项目中不推荐用中文哦
+--首先创建一个布局进行动画测试
+shamrock=--创建一个布局表并将其赋给变量shamrock
+{
+  LinearLayout;--线性布局
+  Orientation='vertical';--布局方向
+  layout_width='fill';--布局宽度
+  layout_height='fill';--布局高度
+  background='';--布局背景颜色(或者图片路径)
+  Gravity='center';--设置居中
+  {
+    CardView;--卡片控件
+    id='卡片';--设置ID
+    layout_margin='0';--卡片边距
+    layout_gravity='center';--重力属性
+    Elevation='1';--阴影属性
+    layout_width='200';--卡片宽度
+    layout_height='200';--卡片高度
+    radius='10';--卡片圆角
+    CardBackgroundColor='#ff7e5cf8';--卡片背景颜色
+  };
+};
+activity.setContentView(loadlayout(shamrock))--将布局表添加至窗口
+import "android.view.animation.Animation"
+import "android.view.animation.RotateAnimation"
+--设置动画的属性
+旋转动画=RotateAnimation(180, 0,
+Animation.RELATIVE_TO_SELF, 0.5,
+Animation.RELATIVE_TO_SELF, 0.5)
+旋转动画.setDuration(440)--设置动画时间
+旋转动画.setFillAfter(true)--设置动画结束后停留位置
+旋转动画.setRepeatCount(-1)--设置无限循环
+--绑定动画
+卡片.startAnimation(旋转动画)
+
+--[[
+旋转动画属性详解：
+RotateAnimation(float fromDegrees, float toDegrees, int pivotXType, float pivotXValue, int pivotYType, float pivotYValue) 
+float fromDegrees：旋转的开始角度.
+float toDegrees：旋转的结束角度.
+int pivotXType：X轴的伸缩模式，可以取值为ABSOLUTE、RELATIVE_TO_SELF、RELATIVE_TO_PARENT.
+float pivotXValue：X坐标的伸缩值
+int pivotYType：Y轴的伸缩模式，可以取值为ABSOLUTE、RELATIVE_TO_SELF、RELATIVE_TO_PARENT.
+float pivotYValue：Y坐标的伸缩值.
+]]》》
+
+
+《《缩放动画教程》》
+《《
+--为了方便学习理解，我会用中文变量进行命名，但真正的项目中不推荐用中文哦
+--首先创建一个布局进行动画测试
+shamrock=--创建一个布局表并将其赋给变量shamrock
+{
+  LinearLayout;--线性布局
+  Orientation='vertical';--布局方向
+  layout_width='fill';--布局宽度
+  layout_height='fill';--布局高度
+  background='';--布局背景颜色(或者图片路径)
+  Gravity='center';--设置居中
+  {
+    CardView;--卡片控件
+    id='卡片';--设置ID
+    layout_margin='0';--卡片边距
+    layout_gravity='center';--重力属性
+    Elevation='1';--阴影属性
+    layout_width='200';--卡片宽度
+    layout_height='200';--卡片高度
+    radius='10';--卡片圆角
+    CardBackgroundColor='#ff7e5cf8';--卡片背景颜色
+  };
+};
+activity.setContentView(loadlayout(shamrock))--将布局表添加至窗口
+
+import "android.view.animation.ScaleAnimation"
+import "android.view.animation.Animation"
+
+--设置动画的属性
+缩放动画=ScaleAnimation(0,1,0,1,Animation.RELATIVE_TO_SELF,0.5,Animation.RELATIVE_TO_SELF,0.5)
+缩放动画.setDuration(800)--设置动画时间
+缩放动画.setFillAfter(true)--设置动画后停留位置
+缩放动画.setRepeatCount(-1)--设置无限循环
+--绑定动画
+卡片.startAnimation(缩放动画)
+
+--[[
+缩放动画属性详解：
+ScaleAnimation(float fromX, float toX, float fromY, float toY,int pivotXType, float pivotXValue, int pivotYType, float pivotYValue) 
+float fromX 动画起始时 X坐标上的伸缩尺寸 
+float toX 动画结束时 X坐标上的伸缩尺寸 
+float fromY 动画起始时Y坐标上的伸缩尺寸 
+float toY 动画结束时Y坐标上的伸缩尺寸 
+int pivotXType 动画在X轴相对于物件位置类型 
+float pivotXValue 动画相对于物件的X坐标的开始位置 
+int pivotYType 动画在Y轴相对于物件位置类型 
+float pivotYValue 动画相对于物件的Y坐标的开始位置 
+pivotXType有三种默认值：
+
+AnimAtion.RELATIVE_TO_PARENT 相对于父控件
+
+AnimAtion.RELATIVE_TO_SELF 相对于符自己
+
+AnimAtion.RELATIVE_TO_ABSOLUTE 绝对坐标
+]]》》
+
+
+《《补间动画概述》》
+《《
+一，作用对象：
+视图控件（View）
+如TextView、Button等等
+不可作用于View组件的属性，如：颜色、背景、长度等等
+
+二，原理：
+通过确定开始的视图样式 & 结束的视图样式、中间动画变化过程由系统补全来确定一个动画
+结束的视图样式：平移、缩放、旋转 & 透明度样式
+即补间动画的动画效果就是：平移、缩放、旋转 & 透明度动画
+
+三，分类：
+根据不同的动画效果，补间动画分为4种动画：
+平移动画（Translate）
+缩放动画（scale）
+旋转动画（rotate）
+透明度动画（alpha）
+
+四，共有属性：
+Duration --属性为动画持续时间 时间以毫秒为单位
+fillAfter --当设置为true,该动画转化在动画结束后被应用
+fillBefore --当设置为true,该动画转化在动画开始前被应用
+repeatCount--动画的重复次数 
+repeatMode --定义重复的行为 可取值:(Animation.RESTART从头开始)(Animation.REVERSE从结束开始)
+startOffset --动画之间的时间间隔，从上次动画停多少时间开始执行下个动画
+id.startAnimation(Animation)--设置控件开始应用这个动画
+
+五，动画监听：
+import "android.view.animation.Animation$AnimationListener"
+动画.setAnimationListener(AnimationListener{
+  onAnimationStart=function()
+    print"动画开始"
+  end,
+  onAnimationEnd=function()
+    print"动画结束"
+  end,
+  onAnimationRepeat=function()
+    print"动画重复"
+  end})》》
+
+
+《《透明动画教程》》
+《《
+--为了方便学习理解，我会用中文变量进行命名，但真正的项目中不推荐用中文哦
+--首先创建一个布局进行动画测试
+shamrock=--创建一个布局表并将其赋给变量shamrock
+{
+  LinearLayout;--线性布局
+  Orientation='vertical';--布局方向
+  layout_width='fill';--布局宽度
+  layout_height='fill';--布局高度
+  background='';--布局背景颜色(或者图片路径)
+  Gravity='center';--设置居中
+  {
+    CardView;--卡片控件
+    id='卡片';--设置ID
+    layout_margin='0';--卡片边距
+    layout_gravity='center';--重力属性
+    Elevation='1';--阴影属性
+    layout_width='200';--卡片宽度
+    layout_height='200';--卡片高度
+    radius='10';--卡片圆角
+    CardBackgroundColor='#ff7e5cf8';--卡片背景颜色
+  };
+};
+activity.setContentView(loadlayout(shamrock))--将布局表添加至窗口
+import "android.view.animation.AlphaAnimation"
+--设置动画的属性
+透明动画=AlphaAnimation(0,1)
+透明动画.setDuration(800)--设置动画时间
+透明动画.setFillAfter(true)--设置动画后停留位置
+透明动画.setRepeatCount(-1)--设置无限循环
+--绑定动画
+卡片.startAnimation(透明动画)
+
+--[[
+透明动画属性详解：
+AlphaAnimation(float fromStart,float fromEnd)
+float fromStart 动画起始透明值
+float fromEnd 动画结束透明值 
+]]》》
+《《旧版b站播放动画》》
+《《require "import"
+import "android.app.*"
+import "android.os.*"
+import "android.widget.*"
+import "android.view.*"
+layout={
+  LinearLayout,
+  orientation="vertical",
+  layout_width="fill",
+  layout_height="fill",
+
+  {
+    FrameLayout,
+    id="playRoot",
+    layout_height="282dp",
+    layout_width="fill",
+     {
+      View,      
+      layout_gravity="top",
+      id="playAnim",
+      elevation="0.1dp",
+      visibility="8",
+      layout_width="fill",
+      layout_height="246dp",
+      backgroundColor=0xFFFA7298,
+    },
+    {
+      CardView,
+      radius="28dp",
+      layout_gravity="right|bottom",
+      id="playButton",
+      elevation="2dp",
+      layout_marginBottom="8dp",
+      layout_marginRight="16dp",
+      layout_width="56dp",
+      layout_height="56dp",
+      backgroundColor=0xFFFA7298,
+    },
+    {
+      LinearLayout,
+      id="playView",
+      layout_height="246dp",
+      layout_width="fill",
+      backgroundColor=0xff000000,
+    }
+
+  },
+}
+
+--dingyi
+
+if (Build.VERSION.SDK_INT >= 21) then
+  activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+end
+
+activity.setContentView(loadlayout(layout))
+
+
+function dp2px(dpValue)
+  local scale = activity.getResources().getDisplayMetrics().scaledDensity
+  return dpValue * scale + 0.5
+end
+
+
+
+import "android.animation.AnimatorSet"
+import "android.animation.ObjectAnimator"
+import "android.view.animation.DecelerateInterpolator"
+
+local animatorSet = AnimatorSet()
+local tscaleX = ObjectAnimator.ofFloat(playButton, "scaleX", {playButton.scaleX, 1.45})
+local tscaleY = ObjectAnimator.ofFloat(playButton, "scaleY", {playButton.scaleY, 1.45})
+local tscaleH = ObjectAnimator.ofFloat(playButton, "translationY", {playButton.y,playButton.y-dp2px(56)})
+
+animatorSet.setDuration(350)
+animatorSet.setInterpolator(DecelerateInterpolator());
+animatorSet.play(tscaleY)
+.with(tscaleX).after(tscaleH)
+
+animatorSet.addListener {
+  onAnimationEnd=function()
+
+    local anim1=ObjectAnimator.ofArgb(playAnim, "backgroundColor", {
+    0xFFFA7298,0xffffffff})
+    .setDuration(50)
+
+    local anim2=ObjectAnimator.ofFloat(playAnim, "alpha", {
+    playAnim.alpha,0})
+    .setDuration(50)
+
+
+
+    local anim0=ViewAnimationUtils.createCircularReveal(playAnim,
+    playButton.x+dp2px(56/2),
+    playButton.y+dp2px(56/2),
+    dp2px(56*1.45/2),activity.width*0.99)
+    .setInterpolator(DecelerateInterpolator())
+    .setDuration(500)
+    .addListener {
+      onAnimationStart=function()
+        playButton.visibility=8
+        playAnim.visibility=0
+      end,
+      onAnimationEnd=function()
+        local animatorSet = AnimatorSet()
+
+        animatorSet.setDuration(150)
+        animatorSet.setInterpolator(DecelerateInterpolator());
+        animatorSet.play(anim1).with(anim2)
+        
+        animatorSet.start()
+      end
+    }.start()
+
+  end
+}
+
+task(300,lambda _:animatorSet.start())》》
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+《《获取设备标识码》》
+《《import "android.provider.Settings$Secure"
+android_id = Secure.getString(activity.getContentResolver(), Secure.ANDROID_ID)》》
+
+《《获取IMEI》》
+《《import "android.content.Context" 
+imei=activity.getSystemService(Context.TELEPHONY_SERVICE).getDeviceId()》》
+
+《《控件背景渐变动画》》
+《《view=控件id
+color1 = 0xffFF8080;
+color2 = 0xff8080FF;
+color3 = 0xff80ffff;
+color4 = 0xff80ff80;
+import "android.animation.ObjectAnimator"
+import "android.animation.ArgbEvaluator"
+import "android.animation.ValueAnimator"
+import "android.graphics.Color"
+colorAnim = ObjectAnimator.ofInt(view,"backgroundColor",{color1, color2, color3,color4})
+colorAnim.setDuration(3000)
+colorAnim.setEvaluator(ArgbEvaluator())
+colorAnim.setRepeatCount(ValueAnimator.INFINITE)
+colorAnim.setRepeatMode(ValueAnimator.REVERSE)
+colorAnim.start()》》
+
+
+《《精准获取屏幕尺寸》》
+《《function getScreenPhysicalSize(ctx) 
+  import "android.util.DisplayMetrics"
+  dm = DisplayMetrics();
+  ctx.getWindowManager().getDefaultDisplay().getMetrics(dm);
+  diagonalPixels = Math.sqrt(Math.pow(dm.widthPixels, 2) + Math.pow(dm.heightPixels, 2));
+  return diagonalPixels / (160 * dm.density);
+end
+print(getScreenPhysicalSize(activity))》》
+
+
+
+《《发送邮件》》
+《《import "android.content.Intent"
+i = Intent(Intent.ACTION_SEND)
+i.setType("message/rfc822") 
+i.putExtra(Intent.EXTRA_EMAIL, {"2113075983@.com"})
+i.putExtra(Intent.EXTRA_SUBJECT,"Feedback")
+i.putExtra(Intent.EXTRA_TEXT,"Content")
+activity.startActivity(Intent.createChooser(i, "Choice"))》》
+
+《《自定义默认弹窗标题,消息,按钮的颜色》》
+《《dialog=AlertDialog.Builder(this)
+.setTitle("标题")
+.setMessage("消息")
+.setPositiveButton("积极",{onClick=function(v) print"点击了积极按钮"end})
+.setNeutralButton("中立",nil)
+.setNegativeButton("否认",nil)
+.show()
+dialog.create()
+
+
+--更改消息颜色
+message=dialog.findViewById(android.R.id.message)
+message.setTextColor(0xff1DA6DD)
+
+--更改Button颜色
+import "android.graphics.Color"
+dialog.getButton(dialog.BUTTON_POSITIVE).setTextColor(0xff1DA6DD)
+dialog.getButton(dialog.BUTTON_NEGATIVE).setTextColor(0xff1DA6DD)
+dialog.getButton(dialog.BUTTON_NEUTRAL).setTextColor(0xff1DA6DD)
+
+--更改Title颜色
+import "android.text.SpannableString"
+import "android.text.style.ForegroundColorSpan"
+import "android.text.Spannable"
+sp = SpannableString("标题")
+sp.setSpan(ForegroundColorSpan(0xff1DA6DD),0,#sp,Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
+dialog.setTitle(sp)》》
+
+
+《《获取手机存储空间》》
+《《--获取手机内置剩余存储空间
+ function GetSurplusSpace()
+ fs =  StatFs(Environment.getDataDirectory().getPath())
+ return Formatter.formatFileSize(activity, (fs.getAvailableBytes()))
+ end
+
+ --获取手机内置存储总空间
+ function GetTotalSpace()
+ path = Environment.getExternalStorageDirectory()
+ stat = StatFs(path.getPath())
+ blockSize = stat.getBlockSize()
+ totalBlocks = stat.getBlockCount()
+ return Formatter.formatFileSize(activity, blockSize * totalBlocks)
+ end》》
+
+
+《《获取视频第一帧》》
+《《function GetVideoFrame(path)
+  import "android.media.MediaMetadataRetriever"
+  media = MediaMetadataRetriever()
+  media.setDataSource(tostring(path))
+  return media.getFrameAtTime()
+end》》
+
+《《选择文件模块》》
+《《import "android.widget.ArrayAdapter"
+import "android.widget.LinearLayout"
+import "android.widget.TextView"
+import "java.io.File"
+import "android.widget.ListView"
+import "android.app.AlertDialog"
+function ChoiceFile(StartPath,callback)
+  --创建ListView作为文件列表
+  lv=ListView(activity).setFastScrollEnabled(true)
+  --创建路径标签
+  cp=TextView(activity)
+  lay=LinearLayout(activity).setOrientation(1).addView(cp).addView(lv)
+  ChoiceFile_dialog=AlertDialog.Builder(activity)--创建对话框
+  .setTitle("选择文件")
+  .setView(lay)
+  .show()
+  adp=ArrayAdapter(activity,android.R.layout.simple_list_item_1)
+  lv.setAdapter(adp)
+  function SetItem(path)
+    path=tostring(path)
+    adp.clear()--清空适配器
+    cp.Text=tostring(path)--设置当前路径
+    if path~="/" then--不是根目录则加上../
+      adp.add("../")
+    end
+    ls=File(path).listFiles()
+    if ls~=nil then
+      ls=luajava.astable(File(path).listFiles()) --全局文件列表变量
+      table.sort(ls,function(a,b)
+        return (a.isDirectory()~=b.isDirectory() and a.isDirectory()) or ((a.isDirectory()==b.isDirectory()) and a.Name<b.Name)
+      end)
+    else
+      ls={}
+    end
+    for index,c in ipairs(ls) do
+      if c.isDirectory() then--如果是文件夹则
+        adp.add(c.Name.."/")
+      else--如果是文件则
+        adp.add(c.Name)
+      end
+    end
+  end
+  lv.onItemClick=function(l,v,p,s)--列表点击事件
+    项目=tostring(v.Text)
+    if tostring(cp.Text)=="/" then
+      路径=ls[p+1]
+    else
+      路径=ls[p]
+    end
+
+    if 项目=="../" then
+      SetItem(File(cp.Text).getParentFile())
+    elseif 路径.isDirectory() then
+      SetItem(路径)
+    elseif 路径.isFile() then
+      callback(tostring(路径))
+      ChoiceFile_dialog.hide()
+    end
+
+  end
+
+  SetItem(StartPath)
+end
+
+--ChoiceFile(StartPath,callback)
+--第一个参数为初始化路径,第二个为回调函数
+--原创》》
+
+《《选择路径模块》》
+《《require "import"
+import "android.widget.ArrayAdapter"
+import "android.widget.LinearLayout"
+import "android.widget.TextView"
+import "java.io.File"
+import "android.widget.ListView"
+import "android.app.AlertDialog"
+function ChoicePath(StartPath,callback)
+  --创建ListView作为文件列表
+  lv=ListView(activity).setFastScrollEnabled(true)
+  --创建路径标签
+  cp=TextView(activity)
+  lay=LinearLayout(activity).setOrientation(1).addView(cp).addView(lv)
+  ChoiceFile_dialog=AlertDialog.Builder(activity)--创建对话框
+  .setTitle("选择路径")
+  .setPositiveButton("OK",{
+  onClick=function()
+  callback(tostring(cp.Text))
+  end})
+.setNegativeButton("Canel",nil)
+  .setView(lay)
+  .show()
+  adp=ArrayAdapter(activity,android.R.layout.simple_list_item_1)
+  lv.setAdapter(adp)
+  function SetItem(path)
+    path=tostring(path)
+    adp.clear()--清空适配器
+    cp.Text=tostring(path)--设置当前路径
+    if path~="/" then--不是根目录则加上../
+      adp.add("../")
+    end
+    ls=File(path).listFiles()
+    if ls~=nil then
+      ls=luajava.astable(File(path).listFiles()) --全局文件列表变量
+      table.sort(ls,function(a,b)
+        return (a.isDirectory()~=b.isDirectory() and a.isDirectory()) or ((a.isDirectory()==b.isDirectory()) and a.Name<b.Name)
+      end)
+    else
+      ls={}
+    end
+    for index,c in ipairs(ls) do
+      if c.isDirectory() then--如果是文件夹则
+        adp.add(c.Name.."/")
+      end
+    end
+  end
+  lv.onItemClick=function(l,v,p,s)--列表点击事件
+    项目=tostring(v.Text)
+    if tostring(cp.Text)=="/" then
+      路径=ls[p+1]
+    else
+      路径=ls[p]
+    end
+
+    if 项目=="../" then
+      SetItem(File(cp.Text).getParentFile())
+    elseif 路径.isDirectory() then
+      SetItem(路径)
+    elseif 路径.isFile() then
+      callback(tostring(路径))
+      ChoiceFile_dialog.hide()
+    end
+
+  end
+
+  SetItem(StartPath)
+end
+
+
+import "android.os.*"
+ChoicePath(Environment.getExternalStorageDirectory().toString(),
+function(path)
+print(path)
+end)
+
+--第一个参数为初始化路径,第二个为回调函数
+--原创》》
+
+
+
+《《获取视图中的所有文本》》
+《《function GetAllText(view)
+textTable={}
+function GetText(Parent)
+local number=Parent.getChildCount()
+for i=0,number do
+local view=Parent.getChildAt(i)
+if pcall(function()view.addView(TextView(activity))end) then
+GetText(view)
+elseif pcall(function()view.getText()end) then
+table.insert(textTable,tostring(view.Text))
+end
+end
+end
+GetText(view)
+return textTable
+end
+
+print(table.unpack(GetAllText(Parent)))》》
+
+
+
+
+
+
+
+
+《《控件圆角》》
+《《function CircleButton(view,InsideColor,radiu)
+  import "android.graphics.drawable.GradientDrawable"
+  drawable = GradientDrawable() 
+  drawable.setShape(GradientDrawable.RECTANGLE) 
+  drawable.setColor(InsideColor)
+  drawable.setCornerRadii({radiu,radiu,radiu,radiu,radiu,radiu,radiu,radiu});
+  view.setBackgroundDrawable(drawable)
+end
+角度=50
+控件id=ed
+控件颜色=0xFF09639C
+CircleButton(控件id,控件颜色,角度)》》
+
+《《匹配汉字》》
+《《function filter_spec_chars(s)
+	local ss = {}
+	for k = 1, #s do
+		local c = string.byte(s,k)
+		if not c then break end
+		if (c>=48 and c<=57) or (c>= 65 and c<=90) or (c>=97 and c<=122) then
+			if not string.char(c):find("%w") then
+   table.insert(ss, string.char(c))
+	end
+ 	elseif c>=228 and c<=233 then
+			local c1 = string.byte(s,k+1)
+			local c2 = string.byte(s,k+2)
+			if c1 and c2 then
+				local a1,a2,a3,a4 = 128,191,128,191
+				if c == 228 then a1 = 184
+				elseif c == 233 then a2,a4 = 190,c1 ~= 190 and 191 or 165
+				end
+				if c1>=a1 and c1<=a2 and c2>=a3 and c2<=a4 then
+					k = k + 2
+					table.insert(ss, string.char(c,c1,c2))
+				end
+			end
+		end
+	end
+	return table.concat(ss)
+end
+print(filter_spec_chars("A1B2汉C3D4字E5F6,,,"))
+--来源网络,加了个if过滤掉英文与数字,使其只捕获中文》》
+
+
+
+《《播放音乐与视频》》
+《《import "android.media.MediaPlayer"
+mediaPlayer =  MediaPlayer()
+
+--初始化参数
+mediaPlayer.reset()
+
+--设置播放资源
+mediaPlayer.setDataSource("storage/sdcard0/a.mp3")
+
+--开始缓冲资源
+mediaPlayer.prepare()
+
+--是否循环播放该资源
+mediaPlayer.setLooping(true)
+
+--缓冲完成的监听
+mediaPlayer.setOnPreparedListener(MediaPlayer.OnPreparedListener() {
+    onPrepared=function(mediaPlayer
+        mediaPlayer.start()
+   end});
+
+--是否在播放
+mediaPlayer.isPlaying()
+
+--暂停播放
+mediaPlayer.pause()
+
+--从30位置开始播放
+mediaPlayer.seekTo(30)
+
+--停止播放
+mediaPlayer.stop()
+
+
+
+
+
+
+--播放视频
+--视频的播放与音乐播放过程一样：
+
+--先创建一个媒体对象
+import "android.media.MediaPlayer"
+mediaPlayer =  MediaPlayer()
+--初始化参数
+mediaPlayer.reset()
+
+--设置播放资源
+mediaPlayer.setDataSource("storage/sdcard0/a.mp4")
+
+--拿到显示的SurfaceView
+sh = surfaceView.getHolder()
+sh.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS)
+
+--设置显示SurfaceView
+mediaPlayer.setDisplay(sh)
+
+--设置音频流格式
+mediaPlayer.setAudioStreamType(AudioManager.Stream_Music)
+
+--开始缓冲资源
+mediaPlayer.prepare()
+
+--缓冲完成的监听
+mediaPlayer.setOnPreparedListener(MediaPlayer.OnPreparedListener{
+   onPrepared=function(mediaPlayer)
+		--开始播放
+        mediaPlayer.start()
+   end
+});
+
+--释放播放器
+mediaPlayer.release()
+
+
+--非原创》》
+
+
+
+《《获取系统SDK，Android版本及设备型号》》
+《《device_model = Build.MODEL --设备型号 
+
+version_sdk = Build.VERSION.SDK --设备SDK版本 
+
+version_release = Build.VERSION.RELEASE --设备的系统版本》》
+
+
+
+《《控件颜色修改》》
+《《import "android.graphics.PorterDuffColorFilter"
+import "android.graphics.PorterDuff"
+
+--修改按钮颜色
+button.getBackground().setColorFilter(PorterDuffColorFilter(0xFFFB7299,PorterDuff.Mode.SRC_ATOP))
+
+--修改编辑框颜色
+edittext.getBackground().setColorFilter(PorterDuffColorFilter(0xFFFB7299,PorterDuff.Mode.SRC_ATOP));
+
+--修改Switch颜色
+switch.ThumbDrawable.setColorFilter(PorterDuffColorFilter(0xFFFB7299,PorterDuff.Mode.SRC_ATOP));
+switch.TrackDrawable.setColorFilter(PorterDuffColorFilter(0xFFFB7299,PorterDuff.Mode.SRC_ATOP))
+
+--修改ProgressBar颜色
+progressbar.IndeterminateDrawable.setColorFilter(PorterDuffColorFilter(0xFFFB7299,PorterDuff.Mode.SRC_ATOP))
+
+--修改SeekBar滑条颜色
+seekbar.ProgressDrawable.setColorFilter(PorterDuffColorFilter(0xFFFB7299,PorterDuff.Mode.SRC_ATOP))
+--修改SeekBar滑块颜色
+seekbar.Thumb.setColorFilter(PorterDuffColorFilter(0xFFFB7299,PorterDuff.Mode.SRC_ATOP))》》
+
+
+
+
+
+《《修改对话框按钮颜色》》
+《《function DialogButtonFilter(dialog,button,WidgetColor)
+if Build.VERSION.SDK_INT >= 21 then
+import "android.graphics.PorterDuffColorFilter"
+import "android.graphics.PorterDuff"
+if button==1 then
+dialog.getButton(dialog.BUTTON_POSITIVE).setTextColor(WidgetColor)
+elseif button==2 then
+dialog.getButton(dialog.BUTTON_NEGATIVE).setTextColor(WidgetColor)
+elseif button==3 then
+dialog.getButton(dialog.BUTTON_NEUTRAL).setTextColor(WidgetColor)
+end
+end
+end
+--第一个参数为对话框的变量
+--第二个参数为1时，则修改POSITIVE按钮颜色,为二则修改NEGATIVE按钮颜色,为三则修改NEUTRAL按钮颜色
+--第三个参数为要修改成的颜色》》
+
+
+
+
+
+
+
+《《查询本地所有视频》》
+《《function QueryAllVideo()
+import "android.provider.MediaStore"
+cursor = activity.ContentResolver
+mImageUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+mCursor = cursor.query(mImageUri,nil,nil,nil,MediaStore.Video.Media.DATE_TAKEN)
+mCursor.moveToLast()
+VideoTable={}
+while mCursor.moveToPrevious() do
+   path = mCursor.getString(mCursor.getColumnIndex(MediaStore.Video.Media.DATA))
+   table.insert(VideoTable,tostring(path))
+end
+mCursor.close()
+return VideoTable
+end
+--返回一个表》》
+
+
+
+
+《《查询本地所有图片》》
+《《function QueryAllImage()
+import "android.provider.MediaStore"
+cursor = activity.ContentResolver
+mImageUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+mCursor = cursor.query(mImageUri,nil,nil,nil,MediaStore.Images.Media.DATE_TAKEN)
+mCursor.moveToLast()
+imageTable={}
+while mCursor.moveToPrevious() do
+   path = mCursor.getString(mCursor.getColumnIndex(MediaStore.Images.Media.DATA))
+   table.insert(imageTable,tostring(path))
+end
+mCursor.close()
+return imageTable
+end
+--返回一个表》》
+
+
+
+
+《《递归查找文件》》
+《《function outPath(ret) 
+for i,p in pairs(luajava.astable(ret)) do
+print(p)
+end
+end
+function find(catalog,name)
+ local n=0
+ local t=os.clock()
+ local ret={}
+ require "import"
+ import "java.io.File" 
+ import "java.lang.String"
+ function FindFile(catalog,name)
+   local name=tostring(name)
+   local ls=catalog.listFiles() or File{}
+   for 次数=0,#ls-1 do
+     --local 目录=tostring(ls[次数])
+     local f=ls[次数]
+     if f.isDirectory() then--如果是文件夹则继续匹配
+       FindFile(f,name)
+     else--如果是文件则
+       n=n+1
+       if n%1000==0 then
+         print(n,os.clock()-t)
+       end
+      local nm=f.Name
+       if string.find(nm,name) then
+         --thread(insert,目录)
+         table.insert(ret,tostring(f))
+       end
+     end
+   luajava.clear(f)
+   end
+ end
+ FindFile(catalog,name)
+ call("outPath",ret)
+end
+
+import "java.io.File"
+
+catalog=File("/sdcard/AndroLua")
+name=".j?pn?g"
+thread(find,catalog,name)》》
+
+《《获取手机内置存储路径》》
+《《Environment.getExternalStorageDirectory().toString()》》
+
+
+
+
+《《获取已安装程序的包名、版本号、最后更新时间、图标、应用名称》》
+《《function GetAppInfo(包名)
+  import "android.content.pm.PackageManager"
+  local pm = activity.getPackageManager();
+  local 图标 = pm.getApplicationInfo(tostring(包名),0)
+  local 图标 = 图标.loadIcon(pm);
+  local pkg = activity.getPackageManager().getPackageInfo(包名, 0); 
+  local 应用名称 = pkg.applicationInfo.loadLabel(activity.getPackageManager())
+  local 版本号 = activity.getPackageManager().getPackageInfo(包名, 0).versionName
+  local 最后更新时间 = activity.getPackageManager().getPackageInfo(包名, 0).lastUpdateTime
+  local cal = Calendar.getInstance();
+  cal.setTimeInMillis(最后更新时间); 
+  local 最后更新时间 = cal.getTime().toLocaleString()
+  return 包名,版本号,最后更新时间,图标,应用名称
+end》》
+
+《《获取指定安装包的包名,图标,应用名》》
+《《import "android.content.pm.PackageManager"
+import "android.content.pm.ApplicationInfo"
+function GetApkInfo(archiveFilePath)
+pm = activity.getPackageManager()
+info = pm.getPackageArchiveInfo(archiveFilePath, PackageManager.GET_ACTIVITIES); 
+if info ~= nil then
+  appInfo = info.applicationInfo;
+ appName = tostring(pm.getApplicationLabel(appInfo))
+  packageName = appInfo.packageName; --安装包名称 
+  version=info.versionName; --版本信息 
+   icon = pm.getApplicationIcon(appInfo);--图标
+end
+return packageName,version,icon
+end》》
+
+《《获取某程序是否安装》》
+《《if pcall(function() activity.getPackageManager().getPackageInfo("包名",0) end) then
+  print("安装了")
+else
+  print("没安装")
+end》》
+
+《《设置TextView字体风格》》
+《《import "android.graphics.Paint"
+--设置中划线
+id.getPaint().setFlags(Paint. STRIKE_THRU_TEXT_FLAG)
+--设置下划线
+id.getPaint().setFlags(Paint. UNDERLINE_TEXT_FLAG )
+--设置加粗
+id.getPaint().setFakeBoldText(true)
+--设置斜体
+id.getPaint().setTextSkewX(0.2)
+
+--设置TypeFace
+import "android.graphics.Typeface"
+id.getPaint().setTypeface()
+--参数列表
+Typeface.DEFAULT 默认字体
+Typeface.DEFAULT_BOLD 加粗字体
+Typeface.MONOSPACE monospace字体
+Typeface.SANS_SERIF sans字体
+Typeface.SERIF serif字体》》
+
+
+
+《《缩放图片》》
+《《function rotateToFit(bm,degrees)
+    import "android.graphics.Matrix"
+    import "android.graphics.Bitmap"
+    width = bm.getWidth()
+    height = bm.getHeight()
+    matrix =  Matrix()
+    matrix.postRotate(degrees)
+    bmResult = Bitmap.createBitmap(bm, 0, 0, width, height, matrix, true)
+    return bmResult
+  end
+bm=loadbitmap(图片路径)
+缩放级别=2
+rotateToFit(bm,degrees)
+--非原创》》
+
+《《获取运营商名称》》
+《《import "android.content.Context" 
+运营商名称 = this.getSystemService(Context.TELEPHONY_SERVICE).getNetworkOperatorName()
+print(运营商名称)
+--添加权限   READ_PHONE_STATE》》
+
+
+《《Drawable着色》》
+《《function ToColor(path,color)
+ local  aa=BitmapDrawable(loadbitmap(tostring(path)))
+   aa.setColorFilter(PorterDuffColorFilter(color,PorterDuff.Mode.SRC_ATOP))
+return aa
+end》》
+
+
+
+
+《《保存图片到本地》》
+《《function SavePicture(name,bm)
+if  bm then
+import "java.io.FileOutputStream"
+import "java.io.File"
+import "android.graphics.Bitmap"
+name=tostring(name)
+f = File(name)
+out = FileOutputStream(f)
+bm.compress(Bitmap.CompressFormat.PNG,90, out)
+out.flush()
+out.close()
+return true
+else
+return false
+end
+end》》
+
+
+
+
+《《调用应用商店搜索应用》》
+《《import "android.content.Intent"
+import "android.net.Uri"
+intent = Intent("android.intent.action.VIEW")
+intent .setData(Uri.parse( "market://details?id="..activity.getPackageName()))
+this.startActivity(intent)》》
+
+
+
+《《分享》》
+《《--分享文件
+function Sharing(path)
+  import "android.webkit.MimeTypeMap"
+  import "android.content.Intent"
+  import "android.net.Uri"
+  import "java.io.File"
+  FileName=tostring(File(path).Name)
+  ExtensionName=FileName:match("%.(.+)")
+  Mime=MimeTypeMap.getSingleton().getMimeTypeFromExtension(ExtensionName)
+  intent = Intent();
+  intent.setAction(Intent.ACTION_SEND);
+  intent.setType(Mime);
+  file = File(path);
+  uri = Uri.fromFile(file);
+  intent.putExtra(Intent.EXTRA_STREAM,uri);
+  intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+  activity.startActivity(Intent.createChooser(intent, "分享到:"));
+  end
+
+--分享文字
+text="分享的内容" 
+intent=Intent(Intent.ACTION_SEND); 
+intent.setType("text/plain"); 
+intent.putExtra(Intent.EXTRA_SUBJECT, "分享"); 
+intent.putExtra(Intent.EXTRA_TEXT, text); 
+intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); 
+activity.startActivity(Intent.createChooser(intent,"分享到:")); 》》
+
+
+《《调用其它程序打开文件》》
+《《function OpenFile(path)
+  import "android.webkit.MimeTypeMap"
+  import "android.content.Intent"
+  import "android.net.Uri"
+  import "java.io.File"
+  FileName=tostring(File(path).Name)
+  ExtensionName=FileName:match("%.(.+)")
+  Mime=MimeTypeMap.getSingleton().getMimeTypeFromExtension(ExtensionName)
+  if Mime then 
+    intent = Intent(); 
+    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); 
+    intent.setAction(Intent.ACTION_VIEW); 
+    intent.setDataAndType(Uri.fromFile(File(path)), Mime); 
+    activity.startActivity(intent);
+  else
+    Toastc("找不到可以用来打开此文件的程序")
+  end
+end》》
+
+
+《《图片圆角》》
+《《function GetRoundedCornerBitmap(bitmap,roundPx) 
+  import "android.graphics.PorterDuffXfermode"
+  import "android.graphics.Paint"
+  import "android.graphics.RectF"
+  import "android.graphics.Bitmap"
+  import "android.graphics.PorterDuff$Mode"
+  import "android.graphics.Rect"
+  import "android.graphics.Canvas"
+  import "android.util.Config"
+  width = bitmap.getWidth()
+  output = Bitmap.createBitmap(width, width,Bitmap.Config.ARGB_8888)
+  canvas = Canvas(output); 
+  color = 0xff424242; 
+  paint = Paint()
+  rect = Rect(0, 0, bitmap.getWidth(), bitmap.getHeight()); 
+  rectF = RectF(rect); 
+  paint.setAntiAlias(true);
+  canvas.drawARGB(0, 0, 0, 0); 
+  paint.setColor(color); 
+  canvas.drawRoundRect(rectF, roundPx, roundPx, paint); 
+  paint.setXfermode(PorterDuffXfermode(Mode.SRC_IN)); 
+  canvas.drawBitmap(bitmap, rect, rect, paint); 
+  return output; 
+end
+import "android.graphics.drawable.BitmapDrawable"
+圆角弧度=50
+bitmap=loadbitmap(picturePath)
+RoundPic=GetRoundedCornerBitmap(bitmap)》》
+
+
+
+《《一键加群与QQ聊天》》
+《《import "android.net.Uri"
+import "android.content.Intent"
+--加群
+url="mqqapi://card/show_pslcard?src_type=internal&version=1&uin=383792635&card_type=group&source=qrcode"
+activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+
+--QQ聊天
+url="mqqwpa://im/chat?chat_type=wpa&uin=2113075983"
+activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+
+
+--跳转酷安个人主页
+url="coolmarket://www.coolapk.com/u/10086"
+activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+》》
+
+
+
+
+
+
+《《发送短信》》
+《《--后台发送短信
+ require "import"
+ import "android.telephony.*"
+ SmsManager.getDefault().sendTextMessage(tostring(号码), nil, tostring(内容), nil, nil)
+
+--调用系统发送短信
+import "android.content.Intent"
+import "android.net.Uri"
+uri = Uri.parse("smsto:"..号码)
+intent = Intent(Intent.ACTION_SENDTO, uri)
+intent.putExtra("sms_body",内容)
+intent.setAction("android.intent.action.VIEW")
+activity.startActivity(intent)》》
+
+
+《《判断数组中是否存在某个值》》
+《《function Table_exists(tables,value)
+for index,content in pairs(tables) do
+if content:find(value) then
+return true
+end
+end
+end》》
+
+
+《《字符串操作》》
+《《strings="左中右"
+
+--取字符串左边
+左=strings:match("(.+)中")
+
+
+--取字符串中间
+中=strings:match("左(.-)右")
+
+
+--取字符串右边
+右=strings:match("(.+)右")
+
+--替换
+string.gsub(原字符串,替换的字符串,替换成的字符串)
+
+--匹配子串位置
+起始位置,结束位置=string.find(字符串,子串)
+
+
+--按位置捕获字符串
+string.sub(字符串,子串起始位置,子串结束位置)》》
+
+
+《《剪切板操作》》
+《《import "android.content.Context" 
+--导入类
+
+a=activity.getSystemService(Context.CLIPBOARD_SERVICE).getText() 
+--获取剪贴板 
+
+activity.getSystemService(Context.CLIPBOARD_SERVICE).setText(edit.Text) 
+--写入剪贴板》》
+
+《《各种事件》》
+《《function main(...)
+  --...是newActivity传递过来的参数。
+  print("入口函数",...)
+end
+
+function onCreate()
+  print("窗口创建")
+end
+
+function onStart()
+  print("活动开始")
+end
+
+function onResume()
+  print("返回程序")
+end
+
+function onPause()
+  print("活动暂停")
+end
+
+function onStop()
+  print("活动停止")
+end
+
+function onDestroy()
+  print("程序已退出")
+end
+
+function onResult(name,...)
+  --name：返回的活动名称
+  --...：返回的参数
+  print("返回活动",name,...)
+end
+
+function onCreateOptionsMenu(menu)
+  --menu：选项菜单。
+  menu.add("菜单")
+end
+
+function onOptionsItemSelected(item)
+  --item：选中的菜单项
+  print(item.Title)
+end
+
+function onConfigurationChanged(config)
+  --config：配置信息
+  print("屏幕方向关闭")
+end
+
+function onKeyDown(keycode,event)
+  --keycode：键值
+  --event：事件
+  print("按键按下",keycode)
+end
+
+function onKeyUp(keycode,event)
+  --keycode：键值
+  --event：事件
+  print("按键抬起",keycode)
+end
+
+function onKeyLongPress(keycode,event)
+  --keycode：键值
+  --event：事件
+  print("按键长按",keycode)
+end
+
+function onTouchEvent(event)
+  --event：事件
+  print("触摸事件",event)
+end
+
+function onKeyDown(c,e)
+  if c==4 then
+--返回键事件
+end
+end
+
+
+id.onClick=function()
+--控件被单击
+end
+
+id.onLongClick=function()
+--控件被长按
+end
+
+
+id.onItemClick=function(p,v,i,s)
+--列表项目被单击
+项目=v.Text
+return true
+end
+
+id.onItemLongClick=function(p,v,i,s)
+--列表项目被长按
+项目=v.Text
+return true
+end
+
+
+id.onItemLongClick=function(p,v,i,s)
+--列表项目被长按
+项目=v.Text
+return true
+end
+
+--Spinner的项目单击事件
+id.onItemSelected=function(l,v,p,i) 
+项目=v.Text
+end
+
+--ExpandableListView的父项目与子项目单击事件
+id.onGroupClick=function(l,v,p,s)
+  print(v.Text..":GroupClick")
+end
+
+id.onChildClick=function(l,v,g,c)
+  print(v.Text..":ChildClick")
+end》》
+
+
+《《Shell执行》》
+《《function exec(cmd)
+local p=io.popen(string.format('%s',cmd))
+local s=p:read("*a")
+p:close()
+return s
+end
+
+print(exec("echo  ...."))
+
+部分常用命令:
+--删除文件或文件夹
+rm -r /路径
+
+--复制文件或文件夹
+cp -r inpath outpath
+
+--移动文件或文件夹
+mv -r inpath outpath
+
+--挂载系统目录
+mount -o remount,rw path
+
+--修改系统文件权限
+chmod 755 /system/build.prop
+
+--重启
+reboot  
+
+--关机
+reboot -p
+
+--重启至recovery
+reboot recovery》》
+
+
+
+《《3，导入包或类》》
+《《在使用Java类之前需要导入相应的包或者类，
+可以用包名.*的形式导入导入包
+import "android.widget.*"
+或者用完整的类名导入类
+import "android.widget.Button"
+导入内部类
+import "android.view.View_OnClickListener"
+或者在导入类后直接使用内部类
+View.OnClickListene
+包名和类名必须用引号包围。
+导入的类为全局变量，你可以使用
+local Burton=import "android.widget.Button"
+的形式保存为局部变量，以解决类名冲突问题。》》
+
+
+
+
+《《4，创建布局与组件》》
+《《安卓使用布局与视图管理和显示用户界面。
+布局负责管理视图如何显示，如LinearLayout以线性排列视图，FrameLayout则要求自行指定停靠与位置。
+视图则显示具体内容，如TextView可以向用户展示文字内容，Button可以响应用户点击事件。
+
+创建一个线性布局
+layout=LinearLayout(activity)
+创建一个按钮视图
+button=Button(activity)
+将按钮添加到布局
+layout.addView(button)
+将刚才的内容设置为活动内容视图
+activity.setContentView(layout)
+
+注.activity是当前窗口的Context对象，如果你习惯也可以使用this
+button=Button(this)》》
+
+
+《《5，使用方法》》
+《《使用java方法和java中大体相同，更多细节可以网络搜索安卓api。
+比如
+设置按钮文字
+button.setText("按钮")
+获取按钮文字
+text=button.getText()
+
+getter/setter
+Java的getxxx/isxxx方法没有参数与setxxx方法只有一个参数时可以简写，
+button.text="按钮"
+x=button.text》》
+
+
+《《6，使用事件》》
+《《创建事件处理函数
+function click(s)
+  print("点击")
+end
+把函数添加到事件接口
+listener=View.OnClickListener{onClick = click}
+把接口注册到组件
+button.setOnClickListener(listener)
+
+也可以使用匿名函数
+button.setOnClickListener{onClick = function(s)
+    print("点击")
+  end
+}
+
+onxxx事件可以简写
+button.onClick=function(v)
+  print(v)
+end》》
+
+
+《《7，回调方法》》
+《《在活动文件添加以下函数，这些函数可以在活动的特定状态执行。
+function main(...)
+  --...：newActivity传递过来的参数。
+  print("入口函数",...)
+end
+
+function onCreate()
+  print("窗口创建")
+end
+
+function onStart()
+  print("活动开始")
+end
+
+function onResume()
+  print("返回程序")
+end
+
+function onPause()
+  print("活动暂停")
+end
+
+function onStop()
+  print("活动停止")
+end
+
+function onDestroy()
+  print("程序已退出")
+end
+
+function onResult(name,...)
+  --name：返回的活动名称
+  --...：返回的参数
+  print("返回活动",name,...)
+end
+
+function onCreateOptionsMenu(menu)
+  --menu：选项菜单。
+  menu.add("菜单")
+end
+
+function onOptionsItemSelected(item)
+  --item：选中的菜单项
+  print(item.Title)
+end
+
+function onConfigurationChanged(config)
+  --config：配置信息
+  print("屏幕方向关闭")
+end
+
+function onAccessibilityEvent(event)
+  --event：辅助功能事件
+  print(event)
+end
+
+function onKeyDown(keycode,event)
+  --keycode：键值
+  --event：事件
+  print("按键按下",keycode)
+end
+
+function onKeyUp(keycode,event)
+  --keycode：键值
+  --event：事件
+  print("按键抬起",keycode)
+end
+
+function onKeyLongPress(keycode,event)
+  --keycode：键值
+  --event：事件
+  print("按键长按",keycode)
+end
+
+function onTouchEvent(event)
+  --event：事件
+  print("触摸事件",event)
+end》》
+
+
+《《8，按键与触控》》
+《《function onKeyDown(code,event)
+  print(code event)
+end
+function onTouchEvent(event)
+  print(event)
+end
+支持onKeyDown,onKeyUp,onKeyLongPress,onTouchEvent
+函数必须返布尔值
+》》
+《《9，使用数组与map》》
+《《数组
+使用 类型{初始内容} 或 类型[大小] 形式创建，使用 数组[数字索引] 形式取值和赋值
+array=float{1,2,3}
+或者
+array=int[10]
+a=array[0]
+array[0]=4
+注意：数组以0为第一个索引
+
+map
+使用 类型{初始内容} 或 类型() 形式创建，使用 map[索引] 形式取值和赋值
+map=HashMap()
+map.a=1
+map[0]=4
+》》
+《《10，使用线程》》
+《《需导入import模块，参看thread,timer与task函数说明。
+线程中使用独立环境运行，不能使用外部变量与函数，需要使用参数和回调与外部交互。
+
+异步任务
+task(func,args,callback)
+func 为任务执行代码或函数，args 为参数，callback 为回调函数，任务返回值将传递到回调函数
+task只能同时运行cpu核心x2个线程，更多任务按照顺序等待执行
+有一个特殊形式，第一个参数为数值时，将延时该数值毫秒后执行回调函数
+
+线程
+t=thread(f,args)
+f 为线程中执行的代码或函数或文件路径，args 为初始传入参数
+调用线程中方法
+call(t,fn,args)
+t 为线程，fn 为函数名称，args 为参数
+设置线程变量
+set(t,fn,arg)
+t 为线程，fn 为变量名称，arg 为变量值
+线程调用主线程中方法
+call(fn,args)
+fn 为函数名称，args 为参数
+线程设置主线程变量
+set(fn,arg)
+fn 为变量名称，arg 为变量值
+
+注意：参数类型为 字符串，数值，Java对象，布尔值与nil
+线程要使用quit结束线程。
+
+
+定时器
+
+t=timer(func,delay,period,args)
+
+func 为定时器执行的函数，delay 为定时器延时，period 为定时器间隔，args 为初始化参数
+t.enabled=false 暂停定时器
+t.enabled=true 启动定时器
+t.stop() 停止定时器
+
+注意：定时器函数定义run函数时定时器重复执行run函数，否则重复执行构建时的func函数
+》》
+《《11，使用布局表》》
+《《使用布局表须导入android.view与android.widget包。
+require "import"
+import "android.widget.*"
+import "android.view.*"
+布局表格式
+layout={
+  控件类名称,
+  id=控件名称,
+  属性=值,
+  {
+    子控件类名称,
+    id=控件名称,
+    属性=值,
+  }
+}
+
+例如：
+layout={
+  LinearLayout,--视图类名称
+  id="linear",--视图ID，可以在loadlayout后直接使用
+  orientation="vertical",--属性与值
+  {
+    TextView,--子视图类名称
+    text="hello AndroLua+",--属性与值
+    layout_width="fill"--布局属性
+  },
+}
+使用loadlayout函数解析布局表生成布局。
+activity.setContentView(loadlayout(layout))
+也可以简化为：
+activity.setContentView(layout)
+如果使用单独文件布局(比如有个layout.aly布局文件)也可以简写为：
+activity.setContentView("layout")
+此时不用导入布局文件。
+
+布局表支持大全部安卓控件属性，
+与安卓XML布局文件的不同点：
+id表示在Lua中变量的名称，而不是安卓的可以findbyid的数字id。
+ImageView的src属性是当前目录图片名称或绝对文件路径图片或网络上的图片，
+layout_width与layout_height的值支持fill与wrap简写，
+onClick值为lua函数或java onClick接口或他们的全局变量名称，
+背景background支持背景图片，背景色与LuaDrawable自绘制背景，背景图片参数为是当前目录图片名称或绝对文件路径图片或网络上的图片，颜色同backgroundColor，自绘制背景参数为绘制函数或绘制函数的全局变量名称，
+控件背景色使用backgroundColor设置，值为"十六进制颜色值"。
+尺寸单位支持 px，dp，sp，in，mm，%w，%h。
+其他参考loadlayout与loadbitmap
+》》
+《《12，2D绘图》》
+《《require "import"
+import "android.app.*"
+import "android.os.*"
+import "android.widget.*"
+import "android.view.*"
+import "android.graphics.*"
+activity.setTitle('AndroLua')
+
+paint=Paint()
+paint.setARGB(100,0,250,0)
+paint.setStrokeWidth(20)
+paint.setTextSize(28)
+
+sureface = SurfaceView(activity);
+callback=SurfaceHolder_Callback{
+  surfaceChanged=function(holder,format,width,height)
+  end,
+  surfaceCreated=function(holder)
+    ca=holder.lockCanvas()
+    if (ca~=nil) then
+      ca.drawRGB(0,79,90);
+      ca.drawRect(0,0,200,300,paint)
+    end
+    holder.unlockCanvasAndPost(ca)
+  end,
+  surfaceDestroyed=function(holder)
+  end
+}
+holder=sureface.getHolder()
+holder.addCallback(callback)
+activity.setContentView(sureface)
+》》
+《《13，Lua类型与Java类型》》
+《《在大多数情况下androlua可以很好的处理Lua与Java类型之间的自动转换，但是Java的数值类型有多种(double,float,long,int,short,byte)，而Lua只有number，在必要的情况下可以使用类型的强制转换。
+i=int(10)
+i就是一个Java的int类型数据
+d=double(10)
+d是一个Java的double类型
+在调用Java方法时androlua可以自动将Lua的table转换成Java的array，Map或interface
+Map类型可以像使用Lua表一样简便。
+map=HashMap{a=1,b=2}
+print(map.a)
+map.a=3
+取长度运算符#可以获取Java中array，List,Map,Set，String的长度。
+
+》》
+《《14.1 canvas 模块》》
+《《require "import"
+import "canvas"
+import "android.app.*"
+import "android.os.*"
+import "android.widget.*"
+import "android.view.*"
+import "android.graphics.*"
+activity.setTitle('AndroLua')
+
+paint=Paint()
+paint.setARGB(100,0,250,0)
+paint.setStrokeWidth(20)
+paint.setTextSize(28)
+
+sureface = SurfaceView(activity);
+callback=SurfaceHolder_Callback{
+  surfaceChanged=function(holder,format,width,height)
+  end,
+  surfaceCreated=function(holder)
+    ca=canvas.lockCanvas(holder)
+    if (ca~=nil) then
+      ca:drawRGB(0,79,90)
+      ca:drawRect(0,0,200,300,paint)
+    end
+    canvas.unlockCanvasAndPost(holder,ca)
+  end,
+  surfaceDestroyed=function(holder)
+  end
+}
+holder=sureface.getHolder()
+holder.addCallback(callback)
+activity.setContentView(sureface)
+》》
+《《14.2 OpenGL 模块》》
+《《require "import"
+import "gl"
+import "android.app.*"
+import "android.os.*"
+import "android.widget.*"
+import "android.view.*"
+import "android.opengl.*"
+activity.setTitle('AndroLua')
+--activity.setTheme( android.R.style.Theme_Holo_Light_NoActionBar_Fullscreen)
+
+mTriangleData ={
+  0.0, 0.6, 0.0,
+  -0.6, 0.0, 0.0,
+  0.6, 0.0, 0.0,
+};
+mTriangleColor = {
+  1, 0, 0, 0,
+  0, 1, 0, 0,
+  0, 0, 1, 0,
+};
+
+sr=GLSurfaceView.Renderer{
+  onSurfaceCreated=function(gl2, config)
+    gl.glDisable(gl.GL_DITHER);
+    gl.glHint(gl.GL_PERSPECTIVE_CORRECTION_HINT, gl.GL_FASTEST);
+    gl.glClearColor(0, 0, 0, 0);
+    gl.glShadeModel(gl.GL_SMOOTH);
+    gl.glClearDepth(1.0)
+    gl.glEnable(gl.GL_DEPTH_TEST);
+    gl.glDepthFunc(gl.GL_LEQUAL);
+  end,
+  onDrawFrame=function(gl2, config)
+    gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT);
+    gl.glMatrixMode(gl.GL_MODELVIEW);
+    gl.glLoadIdentity();
+    gl.glRotate(0,1,1,1)
+    gl.glTranslate(0, 0,0);
+    gl.glEnableClientState(gl.GL_VERTEX_ARRAY);
+    gl.glEnableClientState(gl.GL_COLOR_ARRAY);
+    gl.glVertexPointer( mTriangleData,3);
+    gl.glColorPointer(mTriangleColor,4);
+    gl.glDrawArrays( gl.GL_TRIANGLE_STRIP , 0, 3);
+    gl.glFinish();
+    gl.glDisableClientState(gl.GL_VERTEX_ARRAY);
+    gl.glDisableClientState(gl.GL_COLOR_ARRAY);
+  end,
+  onSurfaceChanged= function (gl2, w, h)
+    gl.glViewport(0, 0, w, h);
+    gl.glLoadIdentity();
+    ratio = w / h;
+    gl.glFrustum(-rautio, ratio, -1, 1, 1, 10);
+  end
+}
+
+glSurefaceView = GLSurfaceView(activity);
+glSurefaceView.setRenderer(sr);
+activity.setContentView(glSurefaceView);
+
+》》
+《《14.3 http 同步网络模块》》
+《《body,cookie,code,headers=http.get(url [,cookie,ua,header])
+body,cookie,code,headers=http.post(url ,postdata [,cookie,ua,header])
+code,headers=http.download(url [,cookie,ua,ref,header])
+body,cookie,code,headers=http.upload(url ,datas ,files [,cookie,ua,header])
+参数说明
+url 网址
+postdata post的字符串或字符串数据组表
+datas upload的字符串数据组表
+files upload的文件名数据表
+cookie 网页要求的cookie
+ua 浏览器识别
+ref 来源页网址
+header http请求头
+
+require "import"
+import "http"
+
+--get函数以get请求获取网页，参数为请求的网址与cookie
+body,cookie,code,headers=http.get("http://www.androlua.com")
+
+--post函数以post请求获取网页，通常用于提交表单，参数为请求的网址，要发送的内容与cookie
+body,cookie,code,headers=http.post("http://androlua.com/Login.Asp?Login=Login&Url=http://androlua.com/bbs/index.asp","name=用户名&pass=密码&ki=1")
+
+--download函数和get函数类似，用于下载文件，参数为请求的网址，保存文件的路径与cookie
+http.download("http://androlua.com","/sdcard/a.txt")
+
+--upload用于上传文件，参数是请求的网址，请求内容字符串部分，格式为以key=value形式的表，请求文件部分，格式为key=文件路径的表，最后一个参数为cookie
+http.upload("http://androlua.com",{title="标题",msg="内容"},{file1="/sdcard/1.txt",file2="/sdcard/2.txt"})
+》》
+《《14.4 import 模块》》
+《《require "import"
+import "android.widget.*"
+import "android.view.*"
+layout={
+  LinearLayout,
+  orientation="vertical",
+  {
+    EditText,
+    id="edit",
+    layout_width="fill"
+  },
+  {
+    Button,
+    text="按钮",
+    layout_width="fill",
+    onClick="click"
+  }
+}
+
+function click()
+  Toast.makeText(activity, edit.getText().toString(), Toast.LENGTH_SHORT ).show()
+end
+activity.setContentView(loadlayout(layout))
+》》
+《《14.5 Http 异步网络模块》》
+《《获取内容 get函数
+Http.get(url,cookie,charset,header,callback)
+url 网络请求的链接网址
+cookie 使用的cookie，也就是服务器的身份识别信息
+charset 内容编码
+header 请求头
+callback 请求完成后执行的函数
+
+除了url和callback其他参数都不是必须的
+
+回调函数接受四个参数值分别是
+code 响应代码，2xx表示成功，4xx表示请求错误，5xx表示服务器错误，-1表示出错
+content 内容，如果code是-1，则为出错信息
+cookie 服务器返回的用户身份识别信息
+header 服务器返回的头信息
+
+向服务器发送数据 post函数
+Http.post(url,data,cookie,charset,header,callback)
+除了增加了一个data外，其他参数和get完全相同
+data 向服务器发送的数据
+
+下载文件 download函数
+Http.download(url,path,cookie,header,callback)
+参数中没有编码参数，其他同get，
+path 文件保存路径
+
+需要特别注意一点，只支持同时有127个网络请求，否则会出错
+
+
+Http其实是对Http.HttpTask的封装，Http.HttpTask使用的更加通用和灵活的形式
+参数格式如下
+Http.HttpTask( url, String method, cookie, charset, header, callback)
+所有参数都是必选，没有则传入nil
+
+url 请求的网址
+method 请求方法可以是get，post，put，delete等
+cookie 身份验证信息
+charset 内容编码
+header 请求头
+callback 回调函数
+
+该函数返回的是一个HttpTask对象，
+需要调用execute方法才可以执行，
+t=Http.HttpTask(xxx)
+t.execute{data}
+
+注意调用的括号是花括号，内容可以是字符串或者byte数组，
+使用这个形式可以自己封装异步上传函数
+
+》》
+《《14.6 bmob 网络数据库》》
+《《b=bmob(id,key,token)
+id 用户id，key 应用key，token 用户身份识别码(可选)。
+
+b:insert(key,data,callback)
+新建数据表，key 表名称，data 数据，callback 回调函数。
+
+b:update(key,id,data,callback)
+更新数据表，key 表名称id 数据id，data 数据，callback 回调函数。
+
+b:query(key,data,callback)
+查询数据表，key 表名称，data 查询规则，callback 回调函数。
+
+b:increment(key,id,k,v,c)
+原子计数，key 表名称，id 数据id，k 数据key，v 计数增加量。
+
+b:delete(key,id,callback)
+删除数据，key 表名称,id 数据id，callback 回调函数。
+
+b:sign(user,pass,mail,callback)
+注册用户，user 用户名，pass 密码，mail 电子邮箱，callback 回调函数。
+
+b:login(user or mail,pass,callback)
+登录用户，user 用户名，pass 密码，mail 电子邮箱，callback 回调函数。
+
+b:upload(path,callback)
+上传文件，path 文件路径，callback 回调函数。
+
+b:remove(url,callback)
+删除文件，url 文件路径，callback 回调函数。
+
+
+注：
+1，查询规则支持表或者json格式，具体用法参考官方api
+2，回调函数的第一个参数为状态码，-1 出错，其他状态码参考http状态码，第二个参数为返回内容。
+》》
+《《15.1 LuaUtil 辅助库》》
+《《copyDir(from,to)
+复制文件或文件夹，from 源路径，to 目标路径。
+
+zip(from,dir,name)
+压缩文件或文件夹，from 源路径，dir 目标文件夹，name zip文件名称。
+
+unZip(from,to)
+解压文件，from zip文件路径，to 目标路径。
+
+getFileMD5(path)
+获取文件MD5值， path 文件路径。
+
+getFileSha1(path)
+获取文件Sha1值， path 文件路径。
+
+》》
+《《15.2 LuaAdapter 适配器》》
+《《列表适配器就是沟通数据与视图的桥梁，在AndroLua+内置了两个适配器LuaArrayAdapter和LuaAdapter
+
+LuaArrayAdapter相对比较简单，仅可以简单展示图片或文字列表
+adp=LuaArrayAdapter(activity,layout)
+
+参数中avtivity为当前活动，layout为项目布局，布局仅支持基本视图如TextView ImageView等，不支持布局嵌套
+
+使用adp.add(数据)添加数据，
+视图为TextView时，数据就是要显示的文字，
+视图为ImageView时，数据为要显示的图片的相对或绝对路径
+
+LuaAdapter可以实现复杂列表的展示，
+adp=LuaAdapter(activity,data,layout)
+
+参数中activity为当前活动，data为要显示的数据表，layout为列表布局，支持任意嵌套
+
+这里需要注意列表项目布局的id对外不可见，可以在列表点击回调函数onItemClick(l,v,p,i)的第二个参数中获得
+
+使用v.Tag.id可以获取列表项目中的具体视图对象
+
+但是不可以直接通过这个对象改变它的属性，因为在视图回收过程中你改变的属性会被覆盖或者污染，只能使用改变数据的方式改变视图属性
+
+data数据表可以是简单模式，或者完整模式，也可以使用混合模式
+
+简单模式使用id=value的形式，value使用自动判断的方式对id对应的视图设置文字或者图片
+
+完整模式使用id={field=value}的形式，可以方便设置一个视图的多个值，需要注意的是，必须的列表数据的每一项使用相同的属性，不可以在某一个项目中缺少否则视图显示将会混乱
+
+混合模式是有的视图使用简单模式，有的视图使用完整模式，但是同一id的视图必须使用相同的模式
+
+数据的添加，你可以在构建前或构建后对data进行添加，删除或修改，如果列表已经显示，需要调用adp.notifyDataSetChanged()更新显示
+
+数据添加
+table.insert(data,{id1=value1,id2=value2})具体说明参考上边关于三种模式的说明
+
+删除数据
+table.remove(data,idx)
+idx为列表项目的序号，从1开始计数
+
+插入数据
+table.insert(data,idx,{id1=value})
+数据的格式同上
+idx为列表项目序号，从1开始计数
+
+修改数据
+data[idx].id.field=value
+idx为项目序号
+id为视图id
+field为要改变的属性
+value为属性的值
+如果该项目为简单模式
+data[idx].id=value
+
+列表回调函数的参数说明
+onItemClick=function(l,v,p,i)
+end
+l 当前列表
+v 当前项目视图
+p 从0开始计数的项目序号
+i 从1开始计数的项目序号
+
+该说明仅针对使用LuaAdapter的列表
+
+LuaMultiAdapter多布局适配器
+和LuaAdapter用法基本一致，仅说明不同部分
+构建时传入布局数组
+添加数据时有__type属性，值为该项目使用布局在构建时的索引
+设置动画时传入动画函数数组，顺序与布局数组相同
+》》
+《《15.3 LuaDialog 对话框》》
+《《构建方法
+dlg=LuaDialog(activity,theme)
+activity 当前活动
+theme 主题(可选)
+
+公有方法
+setTitle(title)
+设置标题
+getTitle()
+获取标题
+
+setMessage(message)
+设置提示信息
+getMessage()
+获取提示信息
+
+setView(view)
+设置视图
+getView()
+获取视图
+getListView()
+获取列表
+
+setIcon(icon)
+设置图标
+setCancelable(cancelable)
+设置是否可取消
+
+setButton(text, listener)
+setPositiveButton(text, listener)
+setNegativeButton(text, listener)
+setNeutralButton(text, listener)
+setPositiveButton(text, listener)
+设置按钮
+
+setItems(items)
+设置列表数据
+setSingleChoiceItems(items, checkedItem)
+设置单选列表数据
+setMultiChoiceItems(items, checkedItems)
+设置多选列表数据
+
+setAdapter(adp)
+设置列表适配器
+setOnItemClickListener(listener)
+设置列表点击事件
+》》
+《《15.4 LuaDrawable 绘制》》
+《《构建方法
+draw=LuaDrawable(func)
+func 绘制函数，在每次绘制时调用，传入3个参数，canvas 画布，paint 画笔，drawable 当前实例。
+》》
+《《关于打包》》
+《《新建工程或在脚本目录新建init.lua文件。
+写入以下内容，即可将文件夹下所有lua文件打包，main.lua为程序人口。
+appname="demo"
+appver="1.0"
+packagename="com.androlua.demo"
+path_pattern=".*alp"--设置关联文件
+--调试模式
+debugmode=false--控制print的开关。报错时会print出来否则不会
+
+activity.setDebug(false)
+
+目录下icon.png替换图标，welcome.png替换启动图。
+打包使用debug签名。
+》》
+《《部分函数参考》》
+《《
+[a]表示参数a可选，(...)表示不定参数。函数调用在只有一个参数且参数为字符串或表时可以省略括号。
+AndroLua库函数在import模块，为便于使用都是全局变量。
+s 表示string类型，i 表示整数类型，n 表示浮点数或整数类型，t 表示表类型，b 表示布尔类型，o 表示Java对象类型，f为Lua函数。
+--表示注释。
+
+each(o)
+参数：o 实现Iterable接口的Java对象
+返回：用于Lua迭代的闭包
+作用：Java集合迭代器
+
+
+enum(o)
+参数：o 实现Enumeration接口的Java对象
+返回：用于Lua迭代的闭包
+作用：Java集合迭代器
+
+import(s)
+参数：s 要载入的包或类的名称
+返回：载入的类或模块
+作用：载入包或类或Lua模块
+import "http" --载入http模块
+import "android.widget.*" --载入android.widget包
+import "android.widget.Button" --载入android.widget.Button类
+import "android.view.View$OnClickListener" --载入android.view.View.OnClickListener内部类
+
+loadlayout(t [,t2])
+参数：t 要载入的布局表，t2 保存view的表
+返回：布局最外层view
+作用：载入布局表，生成view
+layout={
+  LinearLayout,
+  layout_width="fill",
+  {
+    TextView,
+    text="Androlua",
+    id="tv"
+  }
+}
+main={}
+activity.setContentView(loadlayout(layout,main))
+print(main.tv.getText())
+
+loadbitmap(s)
+参数：s 要载入图片的地址，支持相对地址，绝对地址与网址
+返回：bitmap对象
+作用：载入图片
+注意：载入网络图片需要在线程中进行
+
+task(s [,...], f)
+参数：s 任务中运行的代码或函数，... 任务传入参数，f 回调函数
+返回：无返回值
+作用：在异步线程运行Lua代码，执行完毕在主线程调用回调函数
+注意：参数类型包括 布尔，数值，字符串，Java对象，不允许Lua对象
+function func(a,b)
+  require "import"
+  print(a,b)
+  return a+b
+end
+task(func,1,2,print)
+
+thread(s[,...])
+参数：s 线程中运行的lua代码或脚本的相对路径(不加扩展名)或函数，... 线程初始化参数
+返回：返回线程对象
+作用：开启一个线程运行Lua代码
+注意：线程需要调用quit方法结束线程
+func=[[
+a,b=...
+function add()
+    call("print",a+b)
+    end
+]]
+t=thread(func,1,2)
+t.add()
+
+timer(s,i1,i2[,...])
+参数：s 定时器运行的代码或函数，i1 前延时，i2 定时器间隔，... 定时器初始化参数
+返回：定时器对象
+作用：创建定时器重复执行函数
+function f(a)
+  function run()
+    print(a)
+    a=a+1
+  end
+end
+
+t=timer(f,0,1000,1)
+t.enabled=false--暂停定时器
+t.enabled=true--重新定时器
+t.stop()--停止定时器
+
+luajava.bindClass(s)
+参数：s class的完整名称，支持基本类型
+返回：Java class对象
+作用：载入Java class
+Button=luajava.bindClass("android.widget.Button")
+int=luajava.bindClass("int")
+
+luajava.createProxy(s,t)
+参数：s 接口的完整名称，t 接口函数表
+返回：Java接口对象
+作用：创建Java接口
+onclick=luajava.createProxy("android.view.View$OnClickListener",{onClick=function(v)print(v)end})
+
+luajava.createArray(s,t)
+参数：s 类的完整名称，支持基本类型，t 要转化为Java数组的表
+返回：创建的Java数组对象
+作用：创建Java数组
+arr=luajava.createArray("int",{1,2,3,4})
+
+luajava.newInstance(s [,...])
+参数：s 类的完整名称，... 构建方法的参数
+作用：创建Java类的实例
+b=luajava.newInstance("android.widget.Button",activity)
+
+luajava.new(o[,...])
+参数：o Java类对象，... 参数
+返回：类的实例或数组对象或接口对象
+作用：创建一个类实例或数组对象或接口对象
+注意：当只有一个参数且为表类型时，如果类对象为interface创建接口，为class创建数组，参数为其他情况创建实例
+b=luajava.new(Button,activity)
+onclick=luajava.new(OnClickListener,{onClick=function(v)print(v)end})
+arr=luajava.new(int,{1,2,3})
+(示例中假设已载入相关类)
+
+luajava.coding(s [,s2 [, s3]])
+参数：s 要转换编码的Lua字符串，s2 字符串的原始编码，s3 字符串的目标编码
+返回：转码后的Lua字符串
+作用：转换字符串编码
+注意：默认进行GBK转UTF8
+
+luajava.clear(o)
+参数：o Java对象
+返回：无
+作用：销毁Java对象
+注意：仅用于销毁临时对象
+
+luajava.astable(o)
+参数：o Java对象
+返回：Lua表
+作用：转换Java的Array List或Map为Lua表
+
+luajava.tostring(o)
+参数：o Java对象
+返回：Lua字符串
+作用：相当于 o.toString()
+》》
+《《activity部分API参考》》
+《《setContentView(layout, env)
+设置布局表layout为当前activity的主视图，env是保存视图ID的表，默认是_G
+getGlobalData()
+获取全局数据
+setSharedData(key,value)
+设置共享数据
+getSharedData(key,def)
+获取共享数据
+getLuaPath()
+返回当前脚本路径
+getLuaPath(name)
+返回脚本当前目录的给定文件名路径
+getLuaPath(dir,name)
+返回脚本当前目录的子目录给定文件名路径
+getLuaExtPath(name)
+返回Androlua在SD的工作目录给定文件名路径
+getLuaExtPath(dir,name)
+返回Androlua在SD的工作目录的子目录给定文件名路径
+getLuaDir()
+返回脚本当前目录
+getLuaDir(name)
+返回脚本当前目录的子目录
+getLuaExtDir()
+返回Androlua在SD的工作目录
+getLuaExtDir(name)
+返回Androlua在SD的工作目录的子目录
+getWidth()
+返回屏幕宽度
+getHeight()
+返回屏幕高度，不包括状态栏与导航栏
+loadDex(path)
+加载当前目录dex或jar，返回DexClassLoader
+loadLib(path)
+加载当前目录c模块，返回载入后模块的返回值(通常是包含模块函数的包)
+registerReceiver(filter)
+注册一个广播接收者，当再次调用该方法时将移除上次注册的过滤器
+newActivity(req, path, enterAnim, exitAnim, arg)
+打开一个新activity，运行路径为path的Lua文件，其他参数为可选，arg为表，接受脚本为变长参数
+result{...}
+向来源activity返回数据，在源activity的onResult回调
+newTask(func[, update], callback)
+新建一个Task异步任务，在线程中执行func函数，其他两个参数可选，执行结束回调callback，在任务调用update函数时在UI线程回调该函数
+新建的Task在调用execute{}时通过表传入参数，在func以unpack形式接收，执行func可以返回多个值
+newThread(func, arg)
+新建一个线程，在线程中运行func函数，可以以表的形式传入arg，在func以unpack形式接收
+新建的线程调用start()方法运行，线程为含有loop线程，在当前activity结束后自动结束loop
+newTimer(func, arg)
+新建一个定时器，在线程中运行func函数，可以以表的形式传入arg，在func以unpack形式接收
+调用定时器的start(delay, period)开始定时器，stop()停止定时器，Enabled暂停恢复定时器，Period属性改变定时器间隔
+》》
+《《布局表字符串常量》》
+《《布局表支持属性字符串常量
+-- android:drawingCacheQuality
+auto=0,
+low=1,
+high=2,
+
+-- android:importantForAccessibility
+auto=0,
+yes=1,
+no=2,
+
+-- android:layerType
+none=0,
+software=1,
+hardware=2,
+
+-- android:layoutDirection
+ltr=0,
+rtl=1,
+inherit=2,
+locale=3,
+
+-- android:scrollbarStyle
+insideOverlay=0x0,
+insideInset=0x01000000,
+outsideOverlay=0x02000000,
+outsideInset=0x03000000,
+
+-- android:visibility
+visible=0,
+invisible=1,
+gone=2,
+
+wrap_content=-2,
+fill_parent=-1,
+match_parent=-1,
+wrap=-2,
+fill=-1,
+match=-1,
+
+-- android:orientation
+vertical=1,
+horizontal= 0,
+
+-- android:gravity
+axis_clip = 8,
+axis_pull_after = 4,
+axis_pull_before = 2,
+axis_specified = 1,
+axis_x_shift = 0,
+axis_y_shift = 4,
+bottom = 80,
+center = 17,
+center_horizontal = 1,
+center_vertical = 16,
+clip_horizontal = 8,
+clip_vertical = 128,
+display_clip_horizontal = 16777216,
+display_clip_vertical = 268435456,
+--fill = 119,
+fill_horizontal = 7,
+fill_vertical = 112,
+horizontal_gravity_mask = 7,
+left = 3,
+no_gravity = 0,
+relative_horizontal_gravity_mask = 8388615,
+relative_layout_direction = 8388608,
+right = 5,
+start = 8388611,
+top = 48,
+vertical_gravity_mask = 112,
+end = 8388613,
+
+-- android:textAlignment
+inherit=0,
+gravity=1,
+textStart=2,
+textEnd=3,
+textCenter=4,
+viewStart=5,
+viewEnd=6,
+
+-- android:inputType
+none=0x00000000,
+text=0x00000001,
+textCapCharacters=0x00001001,
+textCapWords=0x00002001,
+textCapSentences=0x00004001,
+textAutoCorrect=0x00008001,
+textAutoComplete=0x00010001,
+textMultiLine=0x00020001,
+textImeMultiLine=0x00040001,
+textNoSuggestions=0x00080001,
+textUri=0x00000011,
+textEmailAddress=0x00000021,
+textEmailSubject=0x00000031,
+textShortMessage=0x00000041,
+textLongMessage=0x00000051,
+textPersonName=0x00000061,
+textPostalAddress=0x00000071,
+textPassword=0x00000081,
+textVisiblePassword=0x00000091,
+textWebEditText=0x000000a1,
+textFilter=0x000000b1,
+textPhonetic=0x000000c1,
+textWebEmailAddress=0x000000d1,
+textWebPassword=0x000000e1,
+number=0x00000002,
+numberSigned=0x00001002,
+numberDecimal=0x00002002,
+numberPassword=0x00000012,
+phone=0x00000003,
+datetime=0x00000004,
+date=0x00000014,
+time=0x00000024,
+
+--android:imeOptions
+normal=0x00000000,
+actionUnspecified=0x00000000,
+actionNone=0x00000001,
+actionGo=0x00000002,
+actionSearch=0x00000003,
+actionSend=0x00000004,
+actionNext=0x00000005,
+actionDone=0x00000006,
+actionPrevious=0x00000007,
+flagNoFullscreen=0x2000000,
+flagNavigatePrevious=0x4000000,
+flagNavigateNext=0x8000000,
+flagNoExtractUi=0x10000000,
+flagNoAccessoryAction=0x20000000,
+flagNoEnterAction=0x40000000,
+flagForceAscii=0x80000000,
+
+--android:ellipsize
+end　　
+start 　　
+middle
+marquee
+
+相对布局rule
+layout_above=2,
+layout_alignBaseline=4,
+layout_alignBottom=8,
+layout_alignEnd=19,
+layout_alignLeft=5,
+layout_alignParentBottom=12,
+layout_alignParentEnd=21,
+layout_alignParentLeft=9,
+layout_alignParentRight=11,
+layout_alignParentStart=20,
+layout_alignParentTop=10,
+layout_alignRight=7,
+layout_alignStart=18,
+layout_alignTop=6,
+layout_alignWithParentIfMissing=0,
+layout_below=3,
+layout_centerHorizontal=14,
+layout_centerInParent=13,
+layout_centerVertical=15,
+layout_toEndOf=17,
+layout_toLeftOf=0,
+layout_toRightOf=1,
+layout_toStartOf=16
+
+
+
+尺寸单位
+px=0,
+dp=1,
+sp=2,
+pt=3,
+in=4,
+mm=5
+》》
+
+
+
+
+
+
+
+
+
+《《打印》》
+《《print"Hello World！"
+print("Hello World")》》
+
+
+
+
+《《注释》》
+《《单行注释 --
+多行注释 --[[]]》》
+
+
+
+《《字符串》》
+《《a="String"
+a=[[String]]
+a=[===[String]===]》》
+
+
+
+《《报错执行》》
+《《 --pcall以一种"保护模式"来调用第一个参数，因此pcall可以捕获函数执行中的任何错误。
+      pcall(function()
+
+
+      end)
+      --通常在错误发生时，希望落得更多的调试信息，而不只是发生错误的位置。但pcall返回时，它已经销毁了调用桟的部分内容。
+      --Lua提供了xpcall函数，xpcall接收第二个参数——一个错误处理函数，当错误发生时，Lua会在调用桟展看（unwind）前调用错误处理函数，于是就可以在这个函数中使用debug库来获取关于错误的额外信息了。
+      xpcall(function()
+
+
+
+        --print("正常")
+
+      end,
+      function(error)
+        --print("错误")
+
+        --普通对话框
+        AlertDialog.Builder(this)
+        .setTitle("代码执行错误Σ(๑º㉨º๑ )")
+        .setMessage("代码出错路径:"..error)
+        .setPositiveButton("截图发送bug",{onClick=function(v)
+
+
+
+          end})
+        .setNeutralButton("不管它",nil)
+        .setNegativeButton("取消",nil)
+        .show()
+
+
+      end)》》
+    
+
+《《基础代码》》
+《《activity.setTitle('Title')--设置窗口标题
+      activity.setContentView(loadlayout(layout))--设置窗口视图
+      activity.setTheme(android.R.style.Theme_DeviceDefault_Light)--设置主题
+      activity.getWidth()--获取屏幕宽
+      activity.getHeight()--获取屏幕高
+      activity.newActivity("main")--跳转页面
+      activity.finish()--关闭当前页面
+      activity.recreate()--重构activity
+      os.exit()--结束程序
+      tostring()--转换字符串
+      tonumber()--转换数字
+      tointeger()--转换整数
+      --线程
+      --thread
+      thread(function()print"线程"end)
+      --task
+      task(function()print"线程"end)》》
+
+
+
+
+
+《《赋值》》
+《《a="Hello World"
+
+--lua支持多重赋值
+a,b="String a","String b"
+
+--交换值
+a,b="String a","String b"
+a,b=b,a》》
+《《java转lua小技巧》》
+《《转lua前必须要知道的是Java和lua的区别在哪里
+区别如下：
+1、java中有很多java才有的关键和类型，lua则只有lua自己的关键字。不过lua和java也有共同的关键字
+2、java中声明数组和实例化对象需要new关键字进行，而lua没有new和不需要自己写类型
+3、java函数体采用的或括号包起来而lua则是用end结束函数并不用花括号
+
+Java和Lua中常用的关键字
+
+Java：public,private,protected,final,static,default,void,synchronized,abstract,interface
+Lua：local
+
+Java常用的类型
+
+int,float,double,long,short,char,boolean,byte,注意的是String实际上是一个对象并不是类型
+
+变量转换
+
+Java：public static int a = 0;
+Lua：local a = 0 或 a = 0
+
+Java：private static int a = 0;
+Lua：local a = 0 或 a = 0
+
+Java：protected final String a = 0;
+Lua：local a = 0 或 a = 0
+
+看起来很复杂这里有个记忆口诀
+如：protected final String a = 0;
+上面这个变量名为a
+可以直接把变量名左边的全部去除就行了，只保留右边
+a = 0
+
+Java：final String asd = 0;
+Lua：asd = 0
+
+函数转换
+
+Java中函数的声明结构是
+修饰符 返回类型 方法名(参数类型 a ，xxx){
+}
+
+转lua也是非常简单的
+比如下面这个
+public final void a(A a){
+}
+
+转lua
+function a()
+end
+
+再比如
+public staitc String a(A a){
+}
+
+转lua
+function a()
+end
+
+记忆口诀
+1、把函数名前面的所有删除加上function
+2、参数类型删除
+3、花括号删除加上end
+
+public staitc String a(A asd){
+}
+函数名是a删除前面的加上function就是
+function a
+括号中去除参数类型就是asd
+去除花括号加end就是end
+function a(a)
+end
+
+运算符的转换
+
+JavaLua算术运算符a = a+1a = a+1a = a-1a = a-1a = a*1a = a*1a = a/1a = a/1a = a%1a = a%1a++a = a+1a = a--a = a-1关系运算符====!=~=>><<>=>=<=<=位运算符&&||~~<<<<>>>>逻辑运算符&&and||or!这个比较特殊就是取反的意思，比如!a,Lua中a==false赋值运算符a=1a=1a+=2a = a + 2a-=2a = a - 2a*=2a = a * 2a/=2a = a / 2a%=2a = a % 2a<<=2a = a << 2a>>=2a = a >> 2a&=2a = a & 2a^=2a = a ^ 2a|=2a = a | 2a = b?1:2 if b then a = 1 else a = 2 end
+
+if的转换
+
+Java：
+if(a==b || a==c){
+
+}eles if(a != c && c == 3 ){
+
+}else{
+
+}
+
+Lua：
+if a==b or a~=c then
+
+elseif a~=c and c==3 then
+
+else
+
+end
+
+记忆口诀
+1、 去除花括号
+2、逻辑运算符按照上面表格更改
+3、在条件后面加上then
+4、最后加上end
+
+for循环的转换
+
+JavaLua for(int i=0;i<10;i++){ } for i=0,10,1 do end int i = 0; for(;i<10;i++){ } for i=0,9,1 do end int i = 10; for(;i>=10;i--){ } for i=0,10,-1 do end int i = 0; for(;i>10;i=i-2){ } for i=0,10,-2 do end int i = 0; for(;i>10;i=i+2){ } for i=0,10,2 do end for(;;){ } while true do end int[] as = new int[]{1,2,3,4,5,6}; for(int a : as){ } as = {1,2,3,4,5,6}; for i=1,#as-1 do end 
+
+while循环
+
+while(ture){
+}
+
+转lua
+while true do
+
+end
+
+while(a==0){
+
+}
+
+转lua
+while a==0 do
+
+end
+
+记忆口诀
+1、去除花括号
+2、运算符对照上面表格修改
+3、在条件后面加上then
+4、末尾加上end
+
+switch的转换
+
+int a = 10
+switch(a){
+
+case 10: break; //可选 case 9: break; //可选 default : //可选
+
+}
+
+转成lua
+a = 10
+switch(a)
+case 10
+
+case 9
+
+default
+
+end
+
+实例化对象
+
+Java：
+String a = new String("123");
+
+Lua:
+a = String("123")
+
+数组的转换
+
+Java:
+int[] is = new int[]{1,2,3};
+
+Lua:
+is = int{1,2,3}
+
+Java:
+String[] is = new String[]{"1","2","3"};
+
+Lua:
+is = String{1,2,3}
+
+接口的转换
+
+Java:
+Button btn = new Button(this);
+btn.setOnclickListener(new View.OnClickListener(){
+》》
+《《布局封装函数库》》
+《《import"Layout_of_packaging_function_library"
+
+
+--使用方法:
+
+{
+ ScrollView,--纵向滑动控件
+ layout_width="fill",--布局宽度
+ layout_height="fill",--布局高度
+ overScrollMode=View.OVER_SCROLL_NEVER,--隐藏圆弧阴影
+ verticalScrollBarEnabled=false,--隐藏纵向滑条
+ {
+  LinearLayout,--线性布局
+  orientation="vertical",--布局方向
+  -- orientation=横;
+  -- layout_width=罢,--布局宽度
+  -- orientation="horizontal",--水平方向
+  layout_height="fill",--布局高度
+  纽扣控件(ID,"300dp","300dp");
+  纽扣控件(ID,"300dp","300dp");
+  纽扣控件(ID,"300dp","300dp");
+  纽扣控件(ID,"300dp","300dp");
+  纽扣控件(ID,"300dp","300dp");
+  浏览器控件(ID,宽,高,"https://support.qq.com/embed/phone/312401?",UA,JS,背景);
+  卡片圆角布局();
+  按钮控件();
+  --纽扣控件(宽,高,纽扣名称,背景,填充);
+  --纽扣控件("300dp","300dp");
+  -- 纽扣控件("300dp","300dp");
+  -- 纽扣控件("300dp","300dp");
+  -- 纽扣控件("300dp","300dp");
+  卡片控件布局("xiuluo1","浏览器","多个引擎搜索","icon.png"),
+
+ };--线性布局结束!
+
+};--纵向滑动控件结束
+
+
+
+
+
+function 纽扣控件(ID,宽,高,纽扣名称,背景,填充,气泡提示,空显示)
+ return{
+  Button,--纽扣控件
+  id=ID,--控件ID
+  layout_width=宽,--布局宽度
+  layout_height=高,--布局高度
+  background=背景,--布局背景
+  padding=填充,--布局填充
+  error=气泡提示,--气泡提示
+  text=纽扣名称,--文本内容
+  hint=空显示--内容为空时显示
+ };
+end
+
+function 帧布局(ID,宽,高,背景)
+ return{
+  FrameLayout,--帧布局
+  id=ID,--控件ID
+  layout_width=宽,--布局宽度
+  layout_height=高,--布局高度
+  background=背景,--布局背景
+ };--帧布局结束
+end
+
+function 相对布局(ID,宽,高,背景)
+ return {
+  RelativeLayout,--相对布局
+  id=ID,--控件ID
+  layout_width=宽,--布局宽度
+  layout_height=高,--布局高度
+  background=背景,--布局背景
+ };--相对布局结束
+end
+
+
+
+function 绝对布局(ID,宽,高,背景)
+ return {
+  AbsoluteLayout,--绝对布局
+  id=ID,--控件ID
+  layout_width=宽,--布局宽度
+  layout_height=高,--布局高度
+  background=背景,--布局背景
+ };--绝对布局结束
+end
+
+function 表格布局(ID,宽,高,背景)
+ return {
+  TableLayout,--表格布局
+  id=ID,--控件ID
+  layout_width=宽,--布局宽度
+  layout_height=高,--布局高度
+  background=背景,--布局背景
+ };--表格布局结束
+end
+
+function 文本框控件(ID,宽,高,内容,大小,颜色,背景,空显示,气泡提示)
+ return {
+  TextView,--文本框控件
+  id=ID,--控件ID
+  layout_width=宽,--布局宽度
+  layout_height=高,--布局高度
+  background=背景,--布局背景
+  text=内容,--文本内容
+  textSize=大小,--文本大小
+  textColor=颜色,--文本颜色
+  hint=空显示,--内容为空时显示
+  error=气泡提示,--气泡提示
+  --singleLine=true,--禁止换行输入
+ };
+end
+
+
+
+function 图片框控件(ID,宽,高,图片,背景)
+ return {
+  ImageView,--图片框控件
+  id=ID,--控件ID
+  layout_width=宽,--布局宽度
+  layout_height=高,--布局高度
+  background=背景,--布局背景
+  src=图片,--视图路径
+ };
+end
+
+
+
+
+function 圆形图片控件(ID,宽,高,图片,背景)
+ return {
+  CircleImageView,--圆形图片控件
+  id=ID,--控件ID
+  layout_width=宽,--布局宽度
+  layout_height=高,--布局高度
+  background=背景,--布局背景
+  src=图片,--视图路径
+ };
+end
+
+
+
+function 卡片框控件(ID,宽,高,背景,提升,卡片色,圆角)
+ return {
+  CardView,--卡片框控件
+  id=ID,--控件ID
+  layout_width=宽,--布局宽度
+  layout_height=高,--布局高度
+  background=背景,--布局背景
+  cardElevation=提升,--卡片提升
+  cardBackgroundColor=卡片背景色,--卡片背景色
+  radius=圆角,--圆角半径
+ };--卡片框控件结束
+end
+
+
+function 编辑框控件(ID,宽,高,内容,大小,背景,空显示,气泡提示)
+ return {
+  EditText,--编辑框控件
+  id=ID,--控件ID
+  layout_width=宽,--布局宽度
+  layout_height=高,--布局高度
+  background=背景,--布局背景
+  text=内容,--文本内容
+  textSize=大小,--文本大小
+  hint=空显示,--内容为空时显示
+  error=气泡提示,--气泡提示
+  --singleLine=true,--禁止换行输入
+ };
+end
+
+
+
+function 浏览器控件(ID,宽,高,url,UA,JS,背景)
+ return {
+  LuaWebView,--浏览器控件
+  id=ID,--控件ID
+  layout_width=宽,--布局宽度
+  layout_height=高,--布局高度
+  background=背景,--布局背景
+  UA=ua,
+  JS=js,
+  url=url,
+ };
+end
+
+
+
+function 视频控件(ID,宽,高,背景)
+ return {
+  VideoView,--视频控件
+  id=ID,--控件ID
+  layout_width=宽,--布局宽度
+  layout_height=高,--布局高度
+  background=背景,--布局背景
+ };--视频控件
+end
+
+
+function 水平分割线(ID,背景)
+ return {
+  TextView,--水平分割线
+  layout_width="fill",--布局宽度
+  layout_height="1px",--布局高度
+  layout_gravity="center",--重力居中
+  id=ID,--控件ID
+  background=背景,--布局背景
+ };
+end
+
+
+function 垂直分割线(ID,背景)
+ return {
+  TextView,--垂直分割线
+  layout_width="1px",--布局宽度
+  layout_height="fill",--布局高度
+  layout_gravity="center",--重力居中
+  id=ID,--控件ID
+  background=背景,--布局背景
+ };
+end
+
+
+function 复选框控件(ID,宽,高,内容,背景,选中)
+ return {
+  CheckBox,--复选框控件
+  id=ID,--控件ID
+  layout_width=宽,--布局宽度
+  layout_height=高,--布局高度
+  background=背景,--布局背景
+  text=内容,--文本内容
+  checked=选中,--是否选中
+ };
+end
+
+
+function 开关控件(ID,最小宽度,空白距离,内容,大小,颜色,开启时文字,关闭时文字)
+ return {
+  Switch,--开关控件
+  switchMinWidth=最小宽度,--开关最小宽度
+  switchPadding=空白距离,--设置开关与文字的空白距离
+  text=内容,--文本内容
+  textSize=大小,--文本大小
+  textColor=颜色,--文本颜色
+  textOff=开启时文字,--设置开关checked的文字
+  textOn=关闭时文字,--设置开关关闭时的文字  
+  showText=true,--设置是否显示开关上的文字（API21及以上）
+  id=ID,--控件ID
+ };
+end
+
+function Lua编辑控件(ID,宽,高,背景,重力分配)
+ return {
+  LuaEditor,--lua编辑框控件
+  layout_width=宽,--布局宽度
+  layout_height=高,--布局高度
+  layout_weight=重力分配,--重力分配
+  background=背景,--布局背景
+  id=ID,--控件ID
+ };
+end
+
+function 图片按钮控件(ID,宽,高,图片,背景)
+ return {
+  ImageButton,--图片按钮控件
+  id=ID,--控件ID
+  layout_width=宽,--布局宽度
+  layout_height=高,--布局高度
+  src=图片,--视图路径
+ };
+end
+
+
+function 按钮控件(ID,宽,高,背景)
+ return {
+  ToggleButton,--按钮控件
+  id=ID,--控件ID
+  layout_width=宽,--布局宽度
+  layout_height=高,--布局高度
+  background=背景,--布局背景
+ };
+end
+
+function 卡片控件布局(控件,圆角,文本1,文本2,图标)
+ return {
+  CardView,--卡片框控件
+  layout_width="fill",--布局宽度
+  layout_height="60dp",--布局高度
+  layout_margin="5dp",--布局边距
+  cardElevation="2dp",--卡片提升
+  radius=圆角;
+  {
+   LinearLayout,--线性布局
+   orientation="horizontal",--水平方向
+   layout_width="fill",--布局宽度
+   layout_height="fill",--布局高度
+   gravity="center",--重力居中
+   id=控件,--控件ID
+   {
+    LinearLayout,--线性布局
+    layout_weight="1",--重力分配
+    orientation="vertical",--布局方向
+    layout_width="fill",--布局宽度
+    layout_height="fill",--布局高度
+    gravity="center",--重力居中
+    {
+     TextView,--文本框控件
+     gravity='center';--重力属性
+     text=文本1,--文本内容
+     textSize="13sp",--文本大小
+     textColor="#fffde48a",--文本颜色
+    },
+    {
+     TextView,--文本框控件
+     gravity='center';--重力属性
+     text=文本2,--文本内容
+     textSize="11sp",--文本大小
+     textColor="#fffde48a",--文本颜色
+    },
+   },--线性布局 结束
+   {
+    TextView,--垂直分割线
+    layout_width="2dp",--布局宽度
+    layout_height="fill",--布局高度
+    layout_gravity="center",--独立重力居中
+    backgroundColor="#fffde48a",--背景色
+   },
+   {
+    ImageView,--图片框控件
+    layout_width="56dp",--布局宽度
+    layout_height="36dp",--布局高度
+    src=图标,--视图路径
+    --colorFilter="#333333",--图片颜色
+   },
+  },--线性布局 结束
+ }--卡片框控件 结束
+end
+
+
+
+》》
+《《Glide加载图片》》
+《《新版支持了Google推荐的Glide图片加载框架，请您使用该框架，为您的项目更高效轻快的加载图片，只需一句代码，全程掌控图片对象的生命周期，您无需担心任何内存泄漏与加载速度的问题。
+--代码示例
+import "com.bumptech.glide.Glide";
+local gifUrl = "https://c-ssl.duitang.com/uploads/item/201908/11/20190811020557_oqhbv.gif";
+Glide.with(this).load( gifUrl ).into(ImageView控件id);
+》》
+《《GitHub气泡拖动条》》
+《《require "import"
+import "android.app.*"
+import "android.os.*"
+import "android.widget.*"
+import "android.view.*"
+import "com.xw.repo.BubbleSeekBar"
+--import "layout"
+layout={
+ LinearLayout,
+ orientation="vertical",
+ layout_width="fill",
+ layout_height="fill",
+ gravity="center";
+ {
+  BubbleSeekBar,
+  id="Bubbles1",
+  layout_width="80%w",
+ },
+ {
+  BubbleSeekBar,
+  id="Bubbles2",
+  layout_marginTop="24dp";
+  layout_width="80%w",
+ },
+ {
+  BubbleSeekBar,
+  id="Bubbles3",
+  layout_width="80%w",
+  layout_marginTop="24dp";
+ },
+ {
+  BubbleSeekBar,
+  id="Bubbles4",
+  layout_width="80%w",
+  layout_marginTop="24dp";
+ },
+ {
+  BubbleSeekBar,
+  id="Bubbles5",
+  layout_width="80%w",
+  layout_marginTop="24dp";
+ },
+ {
+  BubbleSeekBar,
+  id="Bubbles6",
+  layout_width="80%w",
+  layout_marginTop="24dp";
+ },
+ {
+  BubbleSeekBar,
+  id="Bubbles7",
+  layout_width="80%w",
+  layout_marginTop="24dp";
+ },
+ {
+  BubbleSeekBar,
+  id="Bubbles8",
+  layout_width="80%w",
+  layout_marginTop="24dp";
+ },
+ {
+  BubbleSeekBar,
+  id="Bubbles9",
+  layout_width="80%w",
+  layout_marginTop="24dp";
+ },
+}
+
+--activity.setTitle('AndroLua+')
+--activity.setTheme(android.R.style.Theme_Holo_Light)
+activity.setContentView(loadlayout(layout))
+
+Bubbles1.getConfigBuilder()
+.min(0)--最小值
+.max(5)--最大值
+.progress(2)--设置当前进度
+.sectionCount(5)--设置绘制几个点
+.trackColor(0xFF757575)--设置轨道的颜色
+.secondTrackColor(0xFF3F51B5)--设置进度条色
+.thumbColor(0xFF3F51B5)--设置拖柄的颜色
+.showSectionText()--显示部分文字
+
+.sectionTextColor(0xFF9E9E9E)--拖动条下面文字的默认颜色
+.sectionTextSize(18)
+
+.showThumbText()--设置突出显示下方文字
+.thumbTextColor(0xFF616161)--突出显示字体的颜色
+.thumbTextSize(18)--突出显示文字大小
+
+.bubbleColor(0xFF3F51B5)--气泡的颜色
+.bubbleTextSize(18)--气泡的字体大小
+
+.showSectionMark()--显示标记
+.seekStepSection()--设置滑块只移动到每个点上，不经过路径
+.touchToSeek()--设置从触摸位置开始否则将必须点击拖块拖动
+.sectionTextPosition(BubbleSeekBar.TextPosition.BELOW_SECTION_MARK)--设置标记下方文字显示方式
+.build();--创建
+
+
+Bubbles2.getConfigBuilder()
+.min(0)
+.max(5)
+.progress(2)
+.sectionCount(5)
+.trackColor(0xFF757575)
+.secondTrackColor(0xFFFF5722)
+.thumbColor(0xFFFF5722)
+.showSectionText()
+.sectionTextColor(0xFF9E9E9E)
+.sectionTextSize(18)
+.showThumbText()
+.touchToSeek()
+.thumbTextColor(0xFF616161)
+.thumbTextSize(18)
+.bubbleColor(0xFFFF5722)
+.bubbleTextSize(18)
+.showSectionMark()--显示标记
+.seekBySection()
+.autoAdjustSectionMark()--自动寻找标记
+.sectionTextPosition(BubbleSeekBar.TextPosition.BELOW_SECTION_MARK)
+.build();
+
+
+Bubbles3.getConfigBuilder()
+.min(-50)
+.max(50)
+.sectionCount(10)
+.sectionTextInterval(2)
+.trackColor(0xFF757575)
+.secondTrackColor(0xFF673AB7)
+.seekBySection()
+.showSectionText()
+.sectionTextPosition(BubbleSeekBar.TextPosition.BELOW_SECTION_MARK)
+.build();
+
+
+Bubbles4.getConfigBuilder()
+.min(1)
+.max(1.5)
+.floatType()
+.sectionCount(10)
+.trackColor(0xFF757575)
+.secondTrackColor(0xFFFFC107)
+.showSectionText()
+.showThumbText()--在拖柄停止滑动时在下方显示一个值
+.build();
+
+
+Bubbles5.getConfigBuilder()
+.min(-0.4)
+.max(0.4)
+.progress(0)
+.floatType()
+.sectionCount(10)
+.trackColor(0xFF757575)
+.secondTrackColor(0xFF4CAF50)
+.sectionTextInterval(2)
+.showSectionText()
+.sectionTextPosition(BubbleSeekBar.TextPosition.BELOW_SECTION_MARK)
+.autoAdjustSectionMark()
+.build();
+
+
+Bubbles6.getConfigBuilder()
+.trackColor(0xFF757575)
+.secondTrackColor(0xFF00BCD4)
+.build();
+
+
+
+
+
+Bubbles7.getConfigBuilder()
+.min(1)
+.max(90)
+.progress(0)
+.sectionCount(9)
+.trackColor(0xFF757575)
+.secondTrackColor(0xFF4CAF50)
+.sectionTextInterval(2)
+.showSectionText()
+.sectionTextPosition(BubbleSeekBar.TextPosition.BELOW_SECTION_MARK)
+.autoAdjustSectionMark()
+.build();
+
+Bubbles7.setCustomSectionTextArray({
+ onCustomize=function( sectionCount, array)
+  array.clear();--设置在那个点下面显示哪个文字
+  array.put(1, "bad");
+  array.put(4, "ok");
+  array.put(7, "good");
+  array.put(9, "great");
+  return array;
+ end
+});
+
+--监听回调
+Bubbles7.setOnProgressChangedListener({
+ onProgressChanged=function( bubbleSeekBar, progress, progressFloat, fromUser)
+  if progress <= 10
+   color = 0xFFF44336
+   elseif progress <= 40
+   color = 0xFFE57373
+   elseif progress <= 70
+   color = 0xFF9C27B0
+   elseif progress <= 90
+   color = 0xFF00BCD4
+   else
+   color = 0xFF4CAF50
+  end
+  bubbleSeekBar.setSecondTrackColor(color);
+  bubbleSeekBar.setThumbColor(color);
+  bubbleSeekBar.setBubbleColor(color);
+ end})
+
+
+Bubbles8.getConfigBuilder()
+.max(10)
+.progress(0)
+.sectionCount(10)
+.trackColor(0xFF757575)
+.secondTrackColor(0xFF4CAF50)
+.showSectionText()
+.showSectionMark()--显示标记
+.showThumbText()
+.rtl(true)--从右侧显示
+.sectionTextPosition(BubbleSeekBar.TextPosition.BELOW_SECTION_MARK)
+.autoAdjustSectionMark()
+.build();
+
+
+
+Bubbles9.getConfigBuilder()
+.max(3)
+.progress(0)
+.sectionCount(3)
+.trackColor(0xFF757575)
+.secondTrackColor(0xFF4CAF50)
+.hideBubble()--关闭气泡
+.sectionTextPosition(BubbleSeekBar.TextPosition.BELOW_SECTION_MARK)
+.autoAdjustSectionMark()
+.build();》》
+《《LuaWebView漏洞存在》》
+《《漏洞原理:
+此漏洞类似于 2013 年曝出的 WebView 漏洞，于 Android 4.2 修复
+（https://security.tencent.com/lucky/check_tools.html）。
+
+AndroLua+，Fusion App1.3旧版本 使用的 LuaWebView 利用 WebView 的 addJavascriptInterface 方法给网页提供了调用 Lua 函数的接口，名称为 JsInterface ，内部有 callLuaFunction 方法，用它可以调用任意 Lua 函数。
+
+--有可能被使用fa旧版本，Androlua+的同行做恶搞工程，运行前请看代码
+ 
+利用方法:
+在 HTML 网页中插入 JavaScript 脚本令客户端运行来调用此接口。
+
+示例代码:
+最简单的，调用FA的“退出程序”函数，直接退出应用：JsInterface.callLuaFunction("退出程序");
+
+其它：
+ 
+
+JsInterface.callLuaFunction("require","import");
+--导入AndroLua的import模块,方便进行下一步操作
+
+JsInterface.callLuaFunction("task","os.remove(activity.getLuaDir()..\"/main.lua\")");
+--调用task函数,执行任意代码（示例为删除运行目录下的main.lua文件，使程序无法正常运行）
+
+JsInterface.callLuaFunction("task","os.exit()")");
+--同上（但内容为退出程序）
+
+检查漏洞:
+加载此Js以检查漏洞: 
+alert("漏洞可能"+(window["JsInterface"]&&window["JsInterface"]["callLuaFunction"]?"存在":"不存在"))
+
+当然，不如直接试下攻击: javascript:JsInterface.callLuaFunction("print","漏洞存在")，如果没有看到任何消息，就说明可能不存在这个漏洞
+
+为什么是可能而不是肯定？因为漏洞可能存在于其它名称的接口中...没有进行扫描
+
+ 
+危害:
+Fusion App 能做的，网页都能做，包括：删除所有文件、窃取设备文件、获取其它网站的Cookie及修改正常代码使之不按开发者意愿运行（如：拦截应用的“登录”功能，发送密码到攻击者）等等
+
+--原文链接:壹影博客  https://bk.yyge.net/?post=113
+
+--修复LuaWebView漏洞，dingyi大佬分享的，
+浏览器id.addJsInterface({
+  execute=function()end
+},"androlua")》》
+《《AgentWeb是一个高度封装的WebView支持库》》
+《《--[[
+AgentWeb是一个高度封装的WebView支持库
+https://github.com/Justson/AgentWeb
+
+ALua示例:Github@daisukiKaffuChino
+]]
+import "com.just.agentweb.*"
+
+layout={
+ LinearLayout;
+ orientation="vertical";
+ layout_height="fill";
+ layout_width="fill";
+ {
+  LinearLayout;
+  orientation="horizontal";
+  layout_height="-2";
+  layout_width="fill";
+  {
+   Button;
+   text="刷新";
+   layout_weight="1";
+   id="button";
+  };
+  {
+   Button;
+   layout_weight="1";
+   text="后退";
+   onClick=function()print("功能自己加")end;
+  };
+  {
+   Button;
+   layout_weight="1";
+   text="前进";
+   onClick=function()
+
+
+   end;
+  };
+ };
+ {
+  LinearLayout;
+  orientation="vertical";
+  layout_height="fill";
+  layout_width="fill";
+  id="web";
+ };
+};
+
+
+activity.setContentView(loadlayout(layout))
+
+mAgentWeb = AgentWeb.with(this)
+.setAgentWebParent(web, LinearLayout.LayoutParams(-1, -1))
+.useDefaultIndicator()
+--.setWebChromeClient(mWebChromeClient) --自定义WebChromeClient
+.createAgentWeb()
+.ready()
+.go("https://www.baidu.com")
+
+--获取webview对象   mAgentWeb.getWebCreator().getWebView()
+--查看cookies      AgentWebConfig.getCookiesByUrl(targetUrl)
+--刷新cookies      AgentWebConfig.syncCookie("http://www.jd.com","ID=XXXX")
+--清空缓存        AgentWebConfig.clearDiskCache(this.getContext());
+
+button.onClick=function()--刷新
+ mAgentWeb.getWebCreator().getWebView().reload()
+end
+
+--网页后退
+if mAgentWeb.back() then
+ mAgentWeb.getWebCreator().getWebView().goBack()
+end
+
+--跟随Activity Or Fragment生命周期，释放CPU更省电。
+function onPause()
+ mAgentWeb.getWebLifeCycle().onPause()
+end
+
+function onResume()
+ mAgentWeb.getWebLifeCycle().onResume()
+end
+
+function onDestroy()
+ mAgentWeb.getWebLifeCycle().onDestroy()
+end
+
+--[JavaScript 与 Lua 交互
+
+--[[Lua调用js方法
+function callByAndroid()
+  print("callByAndroid")
+end
+mAgentWeb.getJsAccessEntrace().quickCallJs("callByAndroid");
+]]
+
+
+--假如要自定义WebChromeClient的话
+import "com.lua.*"
+mWebViewClient = LuaWebChrome(LuaWebChrome.IWebChrine{
+ onPageStarted=function(view, url, favicon)
+
+ end
+})
+
+--[[
+<!--如果你的应用需要用到视频，那么请你在使用 AgentWeb 的 Activity 对应的清单文件里加入如下配置-->
+android:hardwareAccelerated="true"
+android:configChanges="orientation|screenSize"
+]]
+--返回
+
+function onKeyDown(keyCode, event)
+ if (mAgentWeb.handleKeyEvent(keyCode,event))
+  return true;
+ end
+end
+
+》》
+《《colorpicker颜色选择器》》
+《《--导入colorpicker颜色选择器:https://github.com/QuadFlask/ColorPicker
+import "com.flask.colorpicker.*"
+import "com.flask.colorpicker.builder.*"
+pickerBuilder=ColorPickerDialogBuilder.with(activity).setTitle("选取颜色").wheelType(ColorPickerView.WHEEL_TYPE.CIRCLE).density(12).showColorEdit(true).setOnColorSelectedListener(OnColorSelectedListener{
+ onColorSelected=function(selectedColor)
+ print(tointeger("0x"..Integer.toHexString(selectedColor)))
+ end
+}).setPositiveButton("设置", ColorPickerClickListener{
+ onClick = function(selectedColor)
+  print(tointeger("0x"..colorEdit.text))
+
+ end
+}).setNegativeButton("放弃", nil)
+pickerDialog = pickerBuilder.build()
+pickerDialog.create()
+pickerDialog.Window.setWindowAnimations(R.style.dialog_anim)
+pickerDialog.show()
+colorEdit = pickerBuilder.getColorEdit()
+colorEdit.setTextColor(0xFD009688)
+colorEdit.setBackgroundColor(0xffffffff)
+
+
+
+
+pickerBuilder=ColorPickerDialogBuilder.with(activity).setTitle("选取颜色").wheelType(ColorPickerView.WHEEL_TYPE.FLOWER).density(12).showColorEdit(true).setOnColorSelectedListener(OnColorSelectedListener{
+ onColorSelected=function(selectedColor)
+ print(tointeger("0x"..Integer.toHexString(selectedColor)))
+ end
+}).setPositiveButton("设置", ColorPickerClickListener{
+ onClick = function(selectedColor)
+  print(tointeger("0x"..colorEdit.text))
+
+ end
+}).setNegativeButton("放弃", nil)
+pickerDialog = pickerBuilder.build()
+pickerDialog.create()
+pickerDialog.Window.setWindowAnimations(R.style.dialog_anim)
+pickerDialog.show()
+colorEdit = pickerBuilder.getColorEdit()
+colorEdit.setTextColor(0xFD009688)
+colorEdit.setBackgroundColor(0xffffffff)
+》》
+《《FloatingActionButton》》
+《《
+require "import"
+import "com.google.android.material.floatingactionbutton.FloatingActionButton"
+import "android.widget.*"
+
+local layout={FrameLayout,
+  layout_height="fill",
+  layout_width="fill",
+  {FloatingActionButton,
+    id="image",
+    layout_height="wrap",
+    layout_width="fill",
+    layout_gravity="bottom|right",
+    layout_margin="24dp",
+  },
+}
+
+activity.setContentView(loadlayout(layout))
+
+import "com.bumptech.glide.Glide"
+--imgres可以是本地图片地址，或者网络链接,图片文件bytes 等等
+local url="https://i01piccdn.sogoucdn.com/f0f06d6293c8a228";
+Glide.with(activity).load(url).into(image);
+
+
+--设置点击事件###
+image.onClick=function()
+  print("点击了FAB")
+end》》
+《《TextInputLayout》》
+《《
+require "import"
+import "android.widget.*"
+import "com.google.android.material.textfield.*"
+import "androidx.appcompat.widget.Toolbar"
+import "com.google.android.material.button.MaterialButton"
+import "com.google.android.material.appbar.AppBarLayout"
+import "android.graphics.Color"
+
+local view_table=
+{LinearLayout,
+  layout_width="match",
+  layout_height="match",
+  orientation=1,
+  {
+    AppBarLayout,
+    layout_width="match",
+    layout_height="wrap",
+    {
+      Toolbar,
+      layout_width="match",
+      layout_height="wrap",
+      --subTitle="",
+      title="TextInputLayout使用示例",
+    },
+  },
+  {TextInputLayout,
+    id="input_layout",
+    layout_height="wrap",
+    padding="24dp",
+    helperText="这是输入框的帮助文本",
+    --prefixText="前缀文本",
+    --suffixText="后缀文本",
+    --error="错误提示",
+    layout_width="match",
+    hint="Text Input",--设置输入框提示文本
+    {TextInputEditText,
+      id="edit_text",
+      layout_height="wrap",
+      layout_width="match",
+    },
+  },
+  {MaterialButton,
+    id="errorbutton",--设置id
+    text="显示错误提示",
+    layout_gravity="right",
+    layout_marginRight="24dp",
+  },
+}
+
+activity.setContentView(loadlayout(view_table))
+activity.window.statusBarColor=Color.parseColor("#03DAC5")
+
+--设置密码明文显示切换按钮开关
+input_layout.setPasswordVisibilityToggleEnabled(true)
+
+
+--设置点击事件
+errorbutton.onClick=function()
+  input_layout.error="这是错误信息"
+end》》
+《《Material消息提示Snackbar》》
+《《
+require "import"
+import "android.view.View"
+import "com.google.android.material.snackbar.Snackbar"
+
+local anchor=activity.findViewById(android.R.id.content)
+
+Snackbar.make(anchor, "Snackbar提示消息", Snackbar.LENGTH_LONG).setAction("按钮", View.OnClickListener{
+  onClick=function(v)
+    print("点击了按钮")
+  end
+}).show();》》
+《《MaterialCardView》》
+《《
+require "import"
+import "android.widget.*"
+import "com.google.android.material.textfield.*"
+import "androidx.appcompat.widget.Toolbar"
+import "com.google.android.material.button.MaterialButton"
+import "com.google.android.material.appbar.AppBarLayout"
+import "android.graphics.Color"
+import "com.google.android.material.card.MaterialCardView"
+
+local view_table=
+{LinearLayout,
+  layout_width="match",
+  layout_height="match",
+  orientation=1,
+  {
+    AppBarLayout,
+    layout_width="match",
+    layout_height="wrap",
+    {
+      Toolbar,
+      layout_width="match",
+      layout_height="wrap",
+      --subTitle="",
+      title="MaterialCardView",
+    },
+  },
+  {MaterialCardView,
+    id="cardview",--设置ID
+    layout_height="wrap",
+    layout_width="fill",
+    layout_margin="24dp",
+    --strokeWidth="2dp", --边框宽度
+    --strokeColor="#03DAC5", --边框颜色
+    cardBackgroundColor="#ffffff",--卡片背景色
+    cardElevation="2dp",--卡片阴影强度
+    radius="4dp",--卡片圆角幅度    
+    {LinearLayout,
+      layout_height="wrap",
+      layout_width="match",
+      orientation=1,
+      padding="24dp",
+      {TextView,
+        id="title",
+        textSize="18sp",
+        text="什么是MaterialCardView？",
+        textColor="#000000",
+        textStyle="bold"
+      },
+      {TextView,
+        id="message",
+        textSize="16sp",
+        text="MaterialCardView 是 CardView 的拓展，它继承与 CardView，所以 CardView 具备的它都具备，除此之外，它还在 CardView 的基础上增加了可以绘制边框这一特性，分别为 strokeColor 和 strokeWidth 这两个属性",
+        layout_marginTop="8dp",
+        textColor="#444444",
+      },
+    },
+  },
+  {
+    MaterialButton,
+    id="button",
+    text="设置边框",
+    layout_gravity="right",
+    layout_marginRight="24dp"
+  },
+}
+
+activity.setContentView(loadlayout(view_table))
+activity.window.statusBarColor=Color.parseColor("#03DAC5")
+
+button.onClick=function()
+  cardview.strokeWidth=4
+  cardview.strokeColor=Color.parseColor("#03DAC5")
+end》》
+《《ShareCompat 分享文本》》
+《《
+--分享媒体资源或文本信息给手机上的其它应用是我们的App常用需求之一。 想要更兼容、更便捷的分享内容到其它应用，请您参考本示例，使用AndroidX框架中的ShareCompat分享框架，为您的App实现分享功能
+import "androidx.core.app.ShareCompat"
+ShareCompat.IntentBuilder.from(activity)
+.setText("文本内容")
+.setType("text/plain")
+.startChooser()》》
+《《LuaWebView-Js交互lua》》
+《《require "import"
+import "android.app.*"
+import "android.os.*"
+import "android.widget.*"
+import "android.view.*"
+import "android.webkit.*"
+import "com.androlua.*"
+require "layout"
+activity.setTitle('AndroLua+')
+activity.setTheme(android.R.style.Theme_Holo_Light)
+--activity.setContentView(loadlayout(layout.main))
+
+layout=LinearLayout(activity)
+activity.setContentView(layout)
+
+web=LuaWebView(activity)
+web.getSettings().setDefaultTextEncodingName("utf-8")
+web.getSettings().setJavaScriptEnabled(true)
+
+
+
+
+jjs={
+ aa=function(v)
+  print ("aa"..v)
+ end,
+ bb=function()
+  return "bb"
+ end,
+ cc=function()
+  web.loadUrl("javascript:showaa('123')")
+  print"cc"
+ end,
+ dd=function()
+  web.loadUrl("javascript:showbb('456')")
+  print"dd"
+ end
+}
+
+web.addJSInterface({
+ execute=function(s)
+  if s == "退出页面" then
+   -- activity.finish()
+   AlertDialog.Builder(this)
+   .setTitle("标题")
+   .setMessage("消息")
+   .setPositiveButton("积极",{onClick=function(v) print"点击了积极按钮"end})
+   .setNeutralButton("中立",nil)
+   .setNegativeButton("否认",nil)
+   .show()
+
+  end
+  return s
+ end
+
+}, "lua")
+
+
+
+--[[js={
+execute=function(s)
+  print(s)
+  return s
+  end}]]
+
+--web.addJSInterface(js,"lua")
+
+--web.addJSInterface(js,"androlua")
+web.loadUrl("file://"..activity.getLuaDir().."/zym/gamelua.html")
+
+
+layout.addView(web)
+
+--点击icon图片测试
+--html部分的代码
+--[[<script type="text/javascript" language="javascript">
+
+function aa(){
+    var str = androlua.aa("cccc");
+    alert(str);
+  }
+
+  function aaa(){
+      var str = lua.execute("退出页面");
+     
+    }
+
+    function bbb(){
+        var str = window.androlua.jss().bb();
+        alert("ddddd");
+      }
+
+      function ccc(){
+          var str = window.androlua.dd();
+          alert(str);
+        }
+
+
+        function showaa(aaa){
+            document.getElementById("id_input").value = "Java调用Html:"+aaa;
+          }
+
+          function showbb( param ){
+              document.getElementById("id_input2").value = "Java调用Html : " + param;
+            }
+            </script>]]
+》》
+

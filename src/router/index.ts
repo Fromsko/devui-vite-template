@@ -1,21 +1,33 @@
-import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
+import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 
 
 const routes: Array<RouteRecordRaw> = [
     {
         path: "/",
-        name: "主界面",
-        redirect: '/home',
+        name: "IndexHomeView",
+        component: () => import('@/views/portal/index.vue'),
         children: [
             {
-                path: "home",
-                name: "首页",
-                meta: {
-                    title: "首页"
-                },
-                component: () => import('@/views/portal/index.vue')
-            }
-        ]
+                path: "api",
+                name: "apiView",
+                redirect: "HelpList",
+                children: [
+                    {
+                        name: "HelpList",
+                        path: "",
+                        component: () => import("@/components/Api/Grid.vue")
+                    },
+                    {
+                        name: "HelpDocs",
+                        path: ":id",
+                        meta: {
+                            title: "接口页面"
+                        },
+                        component: () => import("@/components/Api/NotePage.vue"),
+                    }
+                ]
+            },
+        ],
     },
     {
         path: "/dashboard/system",
@@ -24,7 +36,7 @@ const routes: Array<RouteRecordRaw> = [
         children: [
             {
                 path: "about",
-                name: "关于",
+                name: "首页",
                 meta: {
                     title: "关于页面"
                 },
@@ -49,7 +61,7 @@ const routes: Array<RouteRecordRaw> = [
                             title: "上传页面"
                         },
                         component: () => import('@/components/Upload/index.vue'),
-                    },
+                    }
                 ]
             },
         ]
@@ -62,23 +74,20 @@ const routes: Array<RouteRecordRaw> = [
 ]
 
 const router = createRouter({
-    history: createWebHashHistory(),
+    history: createWebHistory(),
     routes,
 })
 
 router.beforeEach((to, from, next) => {
-    const { meta: { title } } = to
-    document.title = title as string || 'Title'
-
-    next()
-})
+    next();
+});
 
 router.onError((handler) => {
 
 })
 
 router.beforeResolve(to => {
-    if (to.meta.requiresAuth) return false
+    // if (to.meta.requiresAuth) return false
 })
 
 export default router;

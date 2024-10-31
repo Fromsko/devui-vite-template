@@ -6,27 +6,25 @@
                 <span class="title-text">{{ Title }}</span>
             </div>
 
-            <div class="header-list-two">
-                <d-switch size="lg" color="#50D4AB" v-model="modeSwitch" active-value="打开" inactive-value="关闭">
-                    <template #checkedContent>开</template>
-                    <template #uncheckedContent>关</template>
-                </d-switch>
-
-                <d-dropdown close-scope="blank" style="width: 75px">
-                    <span class="account-text">{{ Account }}</span>
-                    <template #menu>
-                        <ul style="padding: 8px">
-                            <li style="text-align: center; user-select: none">退出</li>
-                        </ul>
-                    </template>
-                </d-dropdown>
+            <div class="pr-2 w-fit">
+                <div class="dropdown dropdown-end">
+                    <div tabindex="0" role="button" class="btn btn-outline btn-success m-1 text-sm">{{ Account }}
+                    </div>
+                    <ul tabindex="0"
+                        class="dropdown-content menu bg-base-100 rounded-box z-[1] w-28 p-2 shadow items-center">
+                        <li>
+                            <RouterLink style="text-align: center; user-select: none" to="/">退出</RouterLink>
+                        </li>
+                        <li><a>Item 2</a></li>
+                    </ul>
+                </div>
             </div>
         </d-header>
 
         <d-layout class="sk-body">
             <d-row type="flex">
                 <d-col class="sk-aside">
-                    <MenuTree :default-select-keys="['/home']" :menu-items="AutoGenRoute" />
+                    <MenuTree :default-select-keys="['/dashboard/system/home']" />
                 </d-col>
 
                 <d-col flex="auto" class="sk-container">
@@ -51,19 +49,13 @@
     import Breadcrumb from '@/components/Breadcrumb/index.vue'
     import MenuTree from '@/components/Tree/MenuTree.vue'
 
-    const Account = 'user-select'
+    const Account = 'fromsko'
     const Title = 'Fromsko 后台管理系统'
 
     const router = useRouter()
 
     const allRoutes = router.getRoutes()
     const defaultShow = ref(allRoutes[0].name)
-
-    const modeSwitch = ref(false)
-
-    const AutoGenRoute = [
-        { name: 'system/setting/one', path: '/system/setting/one', title: '测试' },
-    ]
 
     watch(defaultShow, () => {
         router.push({ name: defaultShow.value })

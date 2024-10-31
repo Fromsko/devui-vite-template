@@ -1,8 +1,11 @@
 <template>
     <div class="navbar bg-base-100">
         <div class="flex-1">
-            <a class="btn btn-ghost text-xl">daisyUI</a>
+            <RouterLink class="btn btn-ghost text-xl" to="/">
+                <span class="tooltip tooltip-bottom" data-tip="返回主页">{{ appTitle }}</span>
+            </RouterLink>
         </div>
+
         <div class="flex-none gap-2">
             <div class="form-control">
                 <input type="text" placeholder="Search" class="input input-bordered w-24 md:w-auto" />
@@ -17,12 +20,17 @@
                 <ul tabindex="0"
                     class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
                     <li>
-                        <a class="justify-between">
-                            Profile
+
+                        <RouterLink class="justify-between" to="/dashboard/system">
+                            Dashbord
                             <span class="badge">New</span>
-                        </a>
+                        </RouterLink>
                     </li>
-                    <li><a>Settings</a></li>
+                    <li>
+                        <RouterLink class="justify-between" to="/api">
+                            文档
+                        </RouterLink>
+                    </li>
                     <li><a>Logout</a></li>
                 </ul>
             </div>
@@ -31,5 +39,7 @@
 </template>
 
 <script lang="ts" setup>
+    import { ref } from 'vue'
 
+    const appTitle = ref<String>('Fromsko')
 </script>

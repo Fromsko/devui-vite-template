@@ -1,0 +1,4132 @@
+《《初识Gamelua》》
+《《Gamelua是(©荼山)基于Androlua+开发的一款效率工具，可以在安卓平台上的用 Lua 开发安卓程序，不仅支持调用Java API，而且支持编写安卓界面程序，还可以将自己写的 Lua 程序打包成apk安装文件安装。Lua 语言的简单使没有任何编程经验的用户也能在短时间内开发出安卓程序，因此，在学习Gamelua之前我们需要先学习 Lua 语言。》》
+《《Lua简介》》
+《《Lua 是一种轻量小巧的脚本语言，用标准C语言编写并以源代码形式开放， 其设计目的是为了嵌入应用程序中，从而为应用程序提供灵活的扩展和定制功能。
+Lua 是巴西里约热内卢天主教大学（Pontifical Catholic University of Rio de Janeiro）里的一个研究小组，由Roberto Ierusalimschy、Waldemar Celes 和 Luiz Henrique de Figueiredo所组成并于1993年开发。
+那么我们废话不多说来写第一个 Lua 程序吧！》》
+《《第一个 Lua 程序》》
+《《接下来我们使用 Lua 来输出"Hello World"
+
+print("Hello World")
+
+运行后，会在屏幕上显示 Hello world》》
+《《注释》》
+《《单行注释:
+两个减号是单行注释:
+
+--注释》》
+《《标示符》》
+《《Lua 表示符用于定义一个变量，函数获取其他用户定义的项。标示符以一个字母 A 到 Z 或 a 到 z 或下划线 _ 开头后加上0个或多个字母，下划线，数字（0到9）。
+最好不要使用下划线加大写字母的标示符，因为Lua的保留字也是这样的。
+Lua 不允许使用特殊字符如 @, $, 和 % 来定义标示符。 Lua 是一个区分大小写的编程语言。因此在 Lua 中 W3c 与 w3c 是两个不同的标示符。以下列出了一些正确的标示符：
+
+mohd         zara      abc     move_name
+
+myname50     _temp     j       a23b9  》》
+《《关键词》》
+《《以下列出了 Lua 的保留关键字。保留关键字不能作为常量或变量或其他用户自定义标示符：
+
+and      break	     do      else    elseif   end       false
+for      function  if      in      local    nil	       not
+or	      repeat    return	 then    true     until     while
+
+一般约定，以下划线开头连接一串大写字母的名字（比如 _VERSION）被保留用于 Lua 内部全局变量。》》
+《《全局变量》》
+《《在默认情况下，变量总是认为是全局的。
+全局变量不需要声明，给一个变量赋值后即创建了这个全局变量，访问一个没有初始化的全局变量也不会出错，只不过得到的结果是：nil。
+
+print(b)
+--nil
+b=10
+print(b)
+--10
+
+如果你想删除一个全局变量，只需要将变量赋值为nil。
+
+b = 2
+b = nil
+print(b)
+--nil
+
+这样变量b就好像从没被使用过一样。换句话说, 当且仅当一个变量不等于nil时，这个变量即存在。》》
+《《Lua 数据类型》》
+《《Lua是动态类型语言，变量不要类型定义,只需要为变量赋值。 值可以存储在变量中，作为参数传递或结果返回。
+Lua中有8个基本类型分别为：
+
+nil、boolean、number、string、userdata、function、thread和table。
+
+我们可以使用type函数测试给定变量或者值的类型：
+
+print(type("Hello world"))
+--string
+print(type(10.4*3))
+--number
+print(type(print))
+--function
+print(type(type))
+--function
+print(type(true))
+--boolean
+print(type(nil))
+--nil
+print(type(type(X)))
+--string》》
+《《nil（空）》》
+《《nil 类型表示一种没有任何有效值，它只有一个值 -- nil，例如打印一个没有赋值的变量，便会输出一个 nil 值：
+
+print(type(a))
+--nil
+
+对于全局变量和 table，nil 还有一个"删除"作用，给全局变量或者 table 表里的变量赋一个 nil 值，等同于把它们删掉。》》
+《《boolean（布尔）》》
+《《boolean 类型只有两个可选值：true（真） 和 false（假），Lua 把 false 和 nil 看作是"假"，其他的都为"真"。》》
+《《number（数字）》》
+《《Lua 默认只有一种 number 类型 -- double（双精度）类型（默认类型可以修改 luaconf.h 里的定义），以下几种写法都被看作是 number 类型。》》
+《《string（字符串）》》
+《《字符串由一对双引号或单引号来表示。
+
+string1 = "this is string1"
+string2 = 'this is string2'
+
+在对一个数字字符串上进行算术操作时，Lua 会尝试将这个数字字符串转成一个数字，字符串连接使用的是 ..如：
+
+print("a" .. 'b')
+--ab
+print(157 .. 428)
+--157428
+
+使用 # 来计算字符串的长度，放在字符串前面，如下实例：
+
+len = "www.androlua.com"
+print(#len)
+--16》》
+《《table（表）》》
+《《在 Lua 里，table 的创建是通过"构造表达式"来完成，最简单构造表达式是{}，用来创建一个空表。也可以在表里添加一些数据，直接初始化表:
+
+-- 创建一个空的 table
+local tbl1 = {}
+
+-- 直接初始表
+local tbl2 = {"apple", "pear", "orange", "grape"}
+
+Lua 中的表（table）其实是一个"关联数组"（associative arrays），数组的索引可以是数字或者是字符串。不同于其他语言的数组把 0 作为数组的初始索引，在 Lua 里表的默认初始索引一般以 1 开始。table 不会固定长度大小，有新数据添加时 table 长度会自动增长，没初始的 table 都是 nil。》》
+《《function（函数）》》
+《《在 Lua 中，函数是被看作是"第一类值（First-Class Value）"，函数可以存在变量里:
+
+function factorial1(n)
+    if n == 0 then
+        return 1
+    else
+        return n * factorial1(n - 1)
+    end
+end
+print(factorial1(5))
+factorial2 = factorial1
+print(factorial2(5))
+
+function 可以以匿名函数（anonymous function）的方式通过参数传递:
+
+function anonymous(tab, fun)
+    for k, v in pairs(tab) do
+        print(fun(k, v))
+    end
+end
+tab = { key1 = "val1", key2 = "val2" }
+anonymous(tab, function(key, val)
+    return key .. " = " .. val
+end)》》
+《《thread（线程）》》
+《《在 Lua 里，最主要的线程是协同程序（coroutine）。它跟线程（thread）差不多，拥有自己独立的栈、局部变量和指令指针，可以跟其他协同程序共享全局变量和其他大部分东西。
+线程跟协程的区别：线程可以同时多个运行，而协程任意时刻只能运行一个，并且处于运行状态的协程只有被挂起（suspend）时才会暂停。》》
+《《userdata（自定义类型）》》
+《《userdata 是一种用户自定义数据，用于表示一种由应用程序或 C/C++ 语言库所创建的类型，可以将任意 C/C++ 的任意数据类型的数据（通常是 struct 和 指针）存储到 Lua 变量中调用。》》
+《《Lua 变量》》
+《《变量在使用前，必须在代码中进行声明，即创建该变量。
+编译程序执行代码之前编译器需要知道如何给语句变量开辟存储区，用于存储变量的值。
+Lua 变量有三种类型：全局变量、局部变量、表中的域。
+Lua 中的变量全是全局变量，那怕是语句块或是函数里，除非用 local 显示声明为局部变量。
+局部变量的作用域为从声明位置开始到所在语句块结束。
+变量的默认值均为 nil。
+
+a = 5               -- 全局变量
+local b = 5         -- 局部变量
+
+function joke()
+    c = 5           -- 全局变量
+    local d = 6     -- 局部变量
+end》》
+《《赋值语句》》
+《《赋值是改变一个变量的值和改变表域的最基本的方法。
+
+a = "hello" .. "world"
+t.n = t.n + 1
+
+Lua可以对多个变量同时赋值，变量列表和值列表的各个元素用逗号分开，赋值语句右边的值会依次赋给左边的变量。
+
+a, b = 10, 2*x       <-->       a=10; b=2*x
+
+遇到赋值语句Lua会先计算右边所有的值然后再执行赋值操作，所以我们可以这样进行交换变量的值：
+
+x, y = y, x                     -- swap 'x' for 'y'
+a[i], a[j] = a[j], a[i]         -- swap 'a[i]' for 'a[j]'
+
+当变量个数和值的个数不一致时，Lua会一直以变量个数为基础采取以下策略：
+a. 变量个数 > 值的个数             按变量个数补足nil
+b. 变量个数 < 值的个数             多余的值会被忽略
+例如：
+
+a, b, c = 0, 1
+print(a,b,c)             --> 0   1   nil
+
+a, b = a+1, b+1, b+2     -- value of b+2 is ignored
+print(a,b)               --> 1   2
+
+a, b, c = 0
+print(a,b,c)             --> 0   nil   nil
+
+上面最后一个例子是一个常见的错误情况，注意：如果要对多个变量赋值必须依次对每个变量赋值。
+
+a, b, c = 0, 0, 0
+print(a,b,c)             --> 0   0   0
+
+多值赋值经常用来交换变量，或将函数调用返回给变量：
+
+a, b = f()
+f()
+
+返回两个值，第一个赋给a，第二个赋给b。
+应该尽可能的使用局部变量，有两个好处：
+1. 避免命名冲突。
+2. 访问局部变量的速度比全局变量更快。》》
+《《索引》》
+《《对 table 的索引使用方括号 []。Lua 也提供了 . 操作。
+
+t[i]
+t.i                 -- 当索引为字符串类型时的一种简化写法
+gettable_event(t,i) -- 采用索引访问本质上是一个类似这样的函数调用
+
+例如：
+
+site = {}
+site["key"] = "www.androlua.cn"
+print(site["key"])
+--www.androlua.cn
+print(site.key)
+--www.androlua.cn》》
+《《Lua 循环》》
+《《很多情况下我们需要做一些有规律性的重复操作，因此在程序中就需要重复执行某些语句。
+一组被重复执行的语句称之为循环体，能否继续重复，决定循环的终止条件。
+循环结构是在一定条件下反复执行某段程序的流程结构，被反复执行的程序被称为循环体。
+循环语句是由循环体及循环的终止条件两部分组成的。
+Lua 语言提供了以下几种循环处理方式：
+
+while 循环
+在条件为 true 时，让程序重复地执行某些语句。执行语句前会先检查条件是否为 true。
+
+for 循环
+重复执行指定语句，重复次数可在 for 语句中控制。
+
+Lua repeat...until
+重复执行循环，直到 指定的条件为真时为止
+
+循环嵌套
+可以在循环内嵌套一个或多个循环语句（while、for、do..while）》》
+《《循环控制语句》》
+《《循环控制语句用于控制程序的流程， 以实现程序的各种结构方式。
+Lua 支持以下循环控制语句：
+
+break 语句
+退出当前循环或语句，并开始脚本执行紧接着的语句。》》
+《《无限循环》》
+《《在循环体中如果条件永远为 true 循环语句就会永远执行下去，以下以 while 循环为例：
+
+while( true )
+do
+   print("循环将永远执行下去")
+end》》
+《《Lua 流程控制》》
+《《Lua 编程语言流程控制语句通过程序设定一个或多个条件语句来设定。在条件为 true 时执行指定程序代码，在条件为 false 时执行其他指定代码。
+控制结构的条件表达式结果可以是任何值，Lua认为false和nil为假，true和非nil为真。
+要注意的是Lua中 0 为 true
+
+Lua 提供了以下控制结构语句：
+if 语句
+if 语句由一个布尔表达式作为条件判断，其后紧跟其他语句组成
+
+if...else 语句
+if 语句 可以与 else 语句搭配使用, 在 if 条件表达式为 false 时执行 else 语句代码
+
+if 嵌套语句
+你可以在if 或 else if中使用一个或多个 if 或 else if 语句》》
+《《Lua 函数》》
+《《在Lua中，函数是对语句和表达式进行抽象的主要方法。既可以用来处理一些特殊的工作，也可以用来计算一些值。
+Lua 提供了许多的内建函数，你可以很方便的在程序中调用它们，如print()函数可以将传入的参数打印在控制台上。
+Lua 函数主要有两种用途：
+1.完成指定的任务，这种情况下函数作为调用语句使用；
+2.计算并返回值，这种情况下函数作为赋值语句的表达式使用。
+以下实例定义了函数 max()，参数为 num1, num2，用于比较两值的大小，并返回最大值：
+
+function max(num1, num2)
+
+   if (num1 > num2) then
+      result = num1;
+   else
+      result = num2;
+   end
+
+   return result;
+end
+-- 调用函数
+print("两值比较最大值为 ",max(10,4))
+print("两值比较最大值为 ",max(5,6))
+
+Lua 中我们可以将函数作为参数传递给函数，如下实例：
+
+myprint = function(param)
+   print("这是打印函数 -   ##",param,"##")
+end
+
+function add(num1,num2,functionPrint)
+   result = num1 + num2
+   -- 调用传递的函数参数
+   functionPrint(result)
+end
+myprint(10)
+-- myprint 函数作为参数传递
+add(2,5,myprint)
+
+Lua函数中，在return后列出要返回的值得列表即可返回多值，如：
+
+
+function maximum (a)
+    local mi = 1             -- 最大值索引
+    local m = a[mi]          -- 最大值
+    for i,val in ipairs(a) do
+       if val > m then
+           mi = i
+           m = val
+       end
+    end
+    return m, mi
+end
+
+print(maximum({8,10,23,12,5}))
+
+Lua函数可以接受可变数目的参数，和C语言类似在函数参数列表中使用三点（...) 表示函数有可变的参数。
+Lua将函数的参数放在一个叫arg的表中，#arg 表示传入参数的个数。
+例如，我们计算几个数的平均值：
+
+function average(...)
+   result = 0
+   local arg={...}
+   for i,v in ipairs(arg) do
+      result = result + v
+   end
+   print("总共传入 " .. #arg .. " 个数")
+   return result/#arg
+end
+
+print("平均值为",average(10,5,3,4,5,6))》》
+《《Lua 运算符》》
+《《运算符是一个特殊的符号，用于告诉解释器执行特定的数学或逻辑运算。Lua提供了以下几种运算符类型：
+
+算术运算符,关系运算符,逻辑运算符,其他运算符
+
+算术运算符
+下表列出了 Lua 语言中的常用算术运算符，设定 A 的值为10，B 的值为 20：
+
++	加法	A + B 输出结果 30
+-	减法	A - B 输出结果 -10
+*	乘法	A * B 输出结果 200
+/	除法	B / A 输出结果 2
+%	取余	B % A 输出结果 0
+^	乘幂	A^2   输出结果 100
+-	负号	-A    输出结果v -10
+
+关系运算符
+下表列出了 Lua 语言中的常用关系运算符，设定 A 的值为10，B 的值为 20：
+
+
+==	等于，检测两个值是否相等，相等返回 true，
+否则返回 false	(A == B) 为 false。
+~=	不等于，检测两个值是否相等，相等返回 false，
+否则返回 true<	(A ~= B) 为 true。
+>	大于，如果左边的值大于右边的值，返回 true，
+否则返回 false	(A > B) 为 false。
+<	小于，如果左边的值大于右边的值，返回 false，
+否则返回 true	(A < B) 为 true。
+>=	大于等于，如果左边的值大于等于右边的值，返回 true，
+否则返回 false	(A >= B) 返回 false。
+<=	小于等于， 如果左边的值小于等于右边的值，返回 true，
+否则返回 false	(A <= B) 返回 true。
+
+逻辑运算符
+下表列出了 Lua 语言中的常用逻辑运算符，设定 A 的值为 true，B 的值为 false：
+
+and	逻辑与操作符。
+如果两边的操作都为 true 则条件为 true。
+(A and B) 为 false。
+or	逻辑或操作符。
+如果两边的操作任一一个为 true 则条件为 true。
+(A or B) 为 true。
+not	逻辑非操作符。
+与逻辑运算结果相反，如果条件为 true，逻辑非为 false。
+not(A and B) 为 true。
+
+其他运算符
+下表列出了 Lua 语言中的连接运算符与计算表或字符串长度的运算符：
+
+..	连接两个字符串	a..b
+#	一元运算符，返回字符串或表的长度。
+
+运算符优先级
+从高到低的顺序：
+
+
+^
+not    - (unary)
+*      /
++      -
+..
+<      >      <=     >=     ~=     ==
+and
+or》》
+《《Lua 字符串》》
+《《字符串或串(String)是由数字、字母、下划线组成的一串字符。
+Lua 语言中字符串可以使用以下三种方式来表示：
+
+单引号间的一串字符。
+双引号间的一串字符。
+[[和]]间的一串字符。
+
+以上三种方式的字符串实例如下：
+
+string1 = "ALua手册"
+print("\"字符串 1 是\"",string1)
+--字符串 1 是	ALua手册
+string2 = 'androlua.cn'
+--字符串 2 是	androlua.cn
+print("字符串 2 是",string2)
+string3 = [["Lua 教程"]]
+print("字符串 3 是",string3)
+--字符串 3 是	"Lua 教程"》》
+《《Lua 数组》》
+《《数组，就是相同数据类型的元素按一定顺序排列的集合，可以是一维数组和多维数组。
+Lua 数组的索引键值可以使用整数表示，数组的大小不是固定的。》》
+《《一维数组》》
+《《一维数组是最简单的数组，其逻辑结构是线性表。一维数组可以用for循环出数组中的元素，如下实例：
+
+array = {"Lua", "Tutorial"}
+for i= 0, 2 do
+   print(array[i])
+end
+
+以上代码执行输出结果为：
+
+nil
+Lua
+Tutorial
+
+正如你所看到的，我们可以使用整数索引来访问数组元素，如果知道的索引没有值则返回nil。
+在 Lua 索引值是以 1 为起始，但你也可以指定 0 开始。》》
+《《Lua 迭代器》》
+《《迭代器（iterator）是一种对象，它能够用来遍历标准模板库容器中的部分或全部元素，每个迭代器对象代表容器中的确定的地址
+
+在Lua中迭代器是一种支持指针类型的结构，它可以遍历集合的每一个元素。》》
+《《泛型 for 迭代器》》
+《《泛型 for 在自己内部保存迭代函数，实际上它保存三个值：迭代函数、状态常量、控制变量。
+
+泛型 for 迭代器提供了集合的 key/value 对，语法格式如下：
+
+for k, v in pairs(t) do
+    print(k, v)
+end
+上面代码中，k, v为变量列表；pair(t)为表达式列表。
+
+查看以下实例:
+
+array = {"Lua", "Tutorial"}
+
+for key,value in ipairs(array)
+do
+   print(key, value)
+end
+以上代码执行输出结果为：
+
+Lua
+Tutorial
+
+以上实例中我们使用了 Lua 默认提供的迭代函数 ipairs。
+
+下面我们看看范性for的执行过程：
+
+首先，初始化，计算in后面表达式的值，表达式应该返回范性for需要的三个值：迭代函数、状态常量、控制变量；与多值赋值一样，如果表达式返回的结果个数不足三个会自动用nil补足，多出部分会被忽略。
+第二，将状态常量和控制变量作为参数调用迭代函数（注意：对于for结构来说，状态常量没有用处，仅仅在初始化时获取他的值并传递给迭代函数）。
+第三，将迭代函数返回的值赋给变量列表。
+第四，如果返回的第一个值为nil循环结束，否则执行循环体。
+第五，回到第二步再次调用迭代函数
+。在Lua中我们常常使用函数来描述迭代器，每次调用该函数就返回集合的下一个元素。Lua 的迭代器包含以下两种类型：
+
+1，无状态的迭代器
+2，多状态的迭代器》》
+《《无状态的迭代器》》
+《《无状态的迭代器是指不保留任何状态的迭代器，因此在循环中我们可以利用无状态迭代器避免创建闭包花费额外的代价。
+
+每一次迭代，迭代函数都是用两个变量（状态常量和控制变量）的值作为参数被调用，一个无状态的迭代器只利用这两个值可以获取下一个元素。
+
+这种无状态迭代器的典型的简单的例子是ipairs，他遍历数组的每一个元素。
+
+以下实例我们使用了一个简单的函数来实现迭代器，实现 数字 n 的平方：
+
+function square(iteratorMaxCount,currentNumber)
+   if currentNumber<iteratorMaxCount
+   then
+      currentNumber = currentNumber+1
+   return currentNumber, currentNumber*currentNumber
+   end
+end
+
+for i,n in square,3,0
+do
+   print(i,n)
+end
+
+以上实例输出结果为：
+
+1
+4
+9
+
+迭代的状态包括被遍历的表（循环过程中不会改变的状态常量）和当前的索引下标（控制变量），ipairs和迭代函数都很简单，我们在Lua中可以这样实现：
+
+function iter (a, i)
+    i = i + 1
+    local v = a[i]
+    if v then
+       return i, v
+    end
+end
+
+function ipairs (a)
+    return iter, a, 0
+end
+
+当Lua调用ipairs(a)开始循环时，他获取三个值：迭代函数iter、状态常量a、控制变量初始值0；然后Lua调用iter(a,0)返回1,a[1]（除非a[1]=nil）；第二次迭代调用iter(a,1)返回2,a[2]……直到第一个nil元素。》》
+《《多状态的迭代器》》
+《《很多情况下，迭代器需要保存多个状态信息而不是简单的状态常量和控制变量，最简单的方法是使用闭包，还有一种方法就是将所有的状态信息封装到table内，将table作为迭代器的状态常量，因为这种情况下可以将所有的信息存放在table内，所以迭代函数通常不需要第二个参数。
+
+以下实例我们创建了自己的迭代器：
+
+array = {"Lua", "Tutorial"}
+
+function elementIterator (collection)
+   local index = 0
+   local count = #collection
+   -- 闭包函数
+   return function ()
+      index = index + 1
+      if index <= count
+      then
+         --  返回迭代器的当前元素
+         return collection[index]
+      end
+   end
+end
+
+for element in elementIterator(array)
+do
+   print(element)
+end
+
+以上实例输出结果为：
+
+Lua
+Tutorial
+
+以上实例中我们可以看到，elementIterator 内使用了闭包函数，实现计算集合大小并输出各个元素。》》
+《《Lua 文件 I/O》》
+《《Lua I/O 库用于读取和处理文件。分为简单模式（和C一样）、完全模式。
+
+简单模式（simple model）拥有一个当前输入文件和一个当前输出文件，并且提供针对这些文件相关的操作。
+完全模式（complete model） 使用外部的文件句柄来实现。它以一种面对对象的形式，将所有的文件操作定义为文件句柄的方法
+简单模式在做一些简单的文件操作时较为合适。但是在进行一些高级的文件操作的时候，简单模式就显得力不从心。例如同时读取多个文件这样的操作，使用完全模式则较为合适。
+
+打开文件操作语句如下：
+
+file = io.open (filename , mode)
+mode 的值有：
+
+"r"	以只读方式打开文件，该文件必须存在。
+"w"	打开只写文件，若文件存在则文件长度清为0，即该文件内容会消失。若文件不存在则建立该文件。
+"a"	以附加的方式打开只写文件。若文件不存在，则会建立该文件，如果文件存在，写入的数据会被加到文件尾，即文件原先的内容会被保留。（EOF符保留）
+"r+"	以可读写方式打开文件，该文件必须存在。
+"w+"	打开可读写文件，若文件存在则文件长度清为零，即该文件内容会消失。若文件不存在则建立该文件。
+"a+"	与a类似，但此文件可读可写
+"b"	二进制模式，如果文件是二进制文件，可以加上b》》
+《《I/O 简单模式》》
+《《简单模式使用标准的 I/O 或使用一个当前输入文件和一个当前输出文件。
+
+以下为 file.lua 文件代码，操作的文件为test.lua(如果没有你需要创建该文件)，代码如下：
+
+-- 以只读方式打开文件
+file = io.open("test.lua", "r")
+
+-- 设置默认输入文件为 test.lua
+io.input(file)
+
+-- 输出文件第一行
+print(io.read())
+
+-- 关闭打开的文件
+io.close(file)
+
+-- 以附加的方式打开只写文件
+file = io.open("test.lua", "a")
+
+-- 设置默认输出文件为 test.lua
+io.output(file)
+
+-- 在文件最后一行添加 Lua 注释
+io.write("--  test.lua 文件末尾注释")
+
+-- 关闭打开的文件
+io.close(file)
+执行以上代码，你会发现，输出了 test.ua 文件的第一行信息，并在该文件最后一行添加了 lua 的注释。如我这边输出的是：
+
+-- test.lua 文件
+在以上实例中我们使用了 io."x" 方法，其中 io.read() 中我们没有带参数，参数可以是下表中的一个：
+
+"*n"	读取一个数字并返回它。例：file.read("*n")
+"*a"	从当前位置读取整个文件。例：file.read("*a")
+"*l"（默认）	读取下一行，在文件尾 (EOF) 处返回 nil。例：file.read("*l")
+number	返回一个指定字符个数的字符串，或在 EOF 时返回 nil。例：file.read(5)
+其他的 io 方法有：
+
+io.tmpfile():返回一个临时文件句柄，该文件以更新模式打开，程序结束时自动删除
+
+io.type(file): 检测obj是否一个可用的文件句柄
+
+io.flush(): 向文件写入缓冲中的所有数据
+
+io.lines(optional file name): 返回一个迭代函数,每次调用将获得文件中的一行内容,当到文件尾时，将返回nil,但不关闭文件》》
+《《I/O 完全模式》》
+《《通常我们需要在同一时间处理多个文件。我们需要使用 file:function_name 来代替 io.function_name 方法。以下实例演示了如同同时处理同一个文件:
+
+-- 以只读方式打开文件
+file = io.open("test.lua", "r")
+
+-- 输出文件第一行
+print(file:read())
+
+-- 关闭打开的文件
+file:close()
+
+-- 以附加的方式打开只写文件
+file = io.open("test.lua", "a")
+
+-- 在文件最后一行添加 Lua 注释
+file:write("--test")
+
+-- 关闭打开的文件
+file:close()
+执行以上代码，你会发现，输出了 test.ua 文件的第一行信息，并在该文件最后一行添加了 lua 的注释。如我这边输出的是：
+
+-- test.lua 文件
+read 的参数与简单模式一致。》》
+《《I/O 的其他方法》》
+《《file:seek(optional whence, optional offset): 设置和获取当前文件位置,成功则返回最终的文件位置(按字节),失败则返回nil加错误信息。参数 whence 值可以是:
+
+"set": 从文件头开始
+"cur": 从当前位置开始[默认]
+"end": 从文件尾开始
+offset:默认为0
+不带参数file:seek()则返回当前位置,file:seek("set")则定位到文件头,file:seek("end")则定位到文件尾并返回文件大小
+file:flush(): 向文件写入缓冲中的所有数据
+
+io.lines(optional file name): 打开指定的文件filename为读模式并返回一个迭代函数,每次调用将获得文件中的一行内容,当到文件尾时，将返回nil,并自动关闭文件。
+若不带参数时io.lines() <=> io.input():lines(); 读取默认输入设备的内容，但结束时不关闭文件,如
+
+for line in io.lines("main.lua") do
+
+　　print(line)
+
+　　end
+
+以下实例使用了 seek 方法，定位到文件倒数第 25 个位置并使用 read 方法的 *a 参数，即从当期位置(倒数第 25 个位置)读取整个文件。
+
+-- 以只读方式打开文件
+file = io.open("test.lua", "r")
+
+file:seek("end",-25)
+print(file:read("*a"))
+
+-- 关闭打开的文件
+file:close()
+我这边输出的结果是：
+
+st.lua 文件末尾--test》》
+《《Lua 错误处理》》
+《《程序运行中错误处理是必要的，在我们进行文件操作，数据转移及web service 调用过程中都会出现不可预期的错误。如果不注重错误信息的处理，就会照成信息泄露，程序无法运行等情况。
+任何程序语言中，都需要错误处理。错误类型有：
+1，语法错误
+2，运行错误》》
+《《语法错误》》
+《《语法错误通常是由于对程序的组件（如运算符、表达式）使用不当引起的。一个简单的实例如下：
+-- test.lua 文件
+a == 2
+以上代码执行结果为：
+
+lua: test.lua:2: syntax error near '=='
+
+正如你所看到的，以上出现了语法错误，一个 "=" 号跟两个 "=" 号是有区别的。一个 "=" 是赋值表达式两个 "=" 是比较运算。
+另外一个实例:
+
+for a= 1,10
+   print(a)
+end
+
+执行以上程序会出现如下错误：
+
+lua: test2.lua:2: 'do' expected near 'print'
+
+语法错误比程序运行错误更简单，运行错误无法定位具体错误，而语法错误我们可以很快的解决，如以上实例我们只要在for语句下添加 do 即可：
+
+for a= 1,10
+do
+   print(a)
+end》》
+《《运行错误》》
+《《运行错误是程序可以正常执行，但是会输出报错信息。如下实例由于参数输入错误，程序执行时报错：
+
+function add(a,b)
+   return a+b
+end
+
+add(10)
+
+当我们编译运行以下代码时，编译是可以成功的，但在运行的时候会产生如下错误：
+
+lua: test2.lua:2: attempt to perform arithmetic on local 'b' (a nil value)
+stack traceback:
+    test2.lua:2: in function 'add'
+    test2.lua:5: in main chunk
+    [C]: ?
+
+以下报错信息是由于程序缺少 b 参数引起的。》》
+《《错误处理》》
+《《我们可以使用两个函数：assert 和 error 来处理错误。实例如下：
+
+local function add(a,b)
+   assert(type(a) == "number", "a 不是一个数字")
+   assert(type(b) == "number", "b 不是一个数字")
+   return a+b
+end
+add(10)
+
+执行以上程序会出现如下错误：
+
+lua: test.lua:3: b 不是一个数字
+stack traceback:
+    [C]: in function 'assert'
+    test.lua:3: in local 'add'
+    test.lua:6: in main chunk
+    [C]: in ?
+
+实例中assert首先检查第一个参数，若没问题，assert不做任何事情；否则，assert以第二个参数作为错误信息抛出。》》
+《《error函数》》
+《《语法格式：
+
+error (message [, level])
+
+功能：终止正在执行的函数，并返回message的内容作为错误信息(error函数永远都不会返回)
+通常情况下，error会附加一些错误位置的信息到message头部。
+Level参数指示获得错误的位置:
+Level=1[默认]：为调用error位置(文件+行号)
+Level=2：指出哪个调用error的函数的函数
+Level=0:不添加错误位置信息》》
+《《pcall 和 xpcall、debug》》
+《《Lua中处理错误，可以使用函数pcall（protected call）来包装需要执行的代码。
+pcall接收一个函数和要传递个后者的参数，并执行，执行结果：有错误、无错误；返回值true或者或false, errorinfo。
+语法格式如下
+
+if pcall(function_name, ….) then
+-- 没有错误
+else
+-- 一些错误
+end
+
+简单实例：
+
+> =pcall(function(i) print(i) end, 33)
+33
+true
+
+> =pcall(function(i) print(i) error('error..') end, 33)
+33
+false        stdin:1: error..
+> function f() return false,2 end
+> if f() then print '1' else print '0' end
+0
+
+pcall以一种"保护模式"来调用第一个参数，因此pcall可以捕获函数执行中的任何错误。
+通常在错误发生时，希望落得更多的调试信息，而不只是发生错误的位置。但pcall返回时，它已经销毁了调用桟的部分内容。
+Lua提供了xpcall函数，xpcall接收第二个参数——一个错误处理函数，当错误发生时，Lua会在调用桟展看（unwind）前调用错误处理函数，于是就可以在这个函数中使用debug库来获取关于错误的额外信息了。
+debug库提供了两个通用的错误处理函数:
+
+debug.debug：提供一个Lua提示符，让用户来价差错误的原因
+debug.traceback：根据调用桟来构建一个扩展的错误消息
+
+>=xpcall(function(i) print(i) error('error..') end, function() print(debug.traceback()) end, 33) 33 stack traceback: stdin:1: in function [C]: in function 'error' stdin:1: in function [C]: in function 'xpcall' stdin:1: in main chunk [C]: in ? false nil
+
+xpcall 使用实例 2:
+
+function myfunction ()
+   n = n/nil
+end
+
+function myerrorhandler( err )
+   print( "ERROR:", err )
+end
+
+status = xpcall( myfunction, myerrorhandler )
+print( status)
+
+执行以上程序会出现如下错误：
+
+ERROR:    test2.lua:2: attempt to perform arithmetic on global 'n' (a nil value)
+false》》
+《《Lua 调试(Debug)》》
+《《Lua 提供了 debug 库用于提供创建我们自定义调速器的功能。Lua 本身并未有内置的调速器，但很多开发者共享了他们的 Lua 调速器代码。
+Lua 中 debug 库包含以下函数：
+
+sethook ([thread,] hook, mask [, count]):
+
+1.debug():
+进入一个用户交互模式，运行用户输入的每个字符串。 使用简单的命令以及其它调试设置，用户可以检阅全局变量和局部变量， 改变变量的值，计算一些表达式，等等。
+输入一行仅包含 cont 的字符串将结束这个函数， 这样调用者就可以继续向下运行。
+
+2.getfenv(object):
+返回对象的环境变量。
+
+3.gethook(optional thread):
+返回三个表示线程钩子设置的值： 当前钩子函数，当前钩子掩码，当前钩子计数
+
+4.getinfo ([thread,] f [, what]):
+返回关于一个函数信息的表。 你可以直接提供该函数， 也可以用一个数字 f 表示该函数。 数字 f 表示运行在指定线程的调用栈对应层次上的函数： 0 层表示当前函数（getinfo 自身）； 1 层表示调用 getinfo 的函数 （除非是尾调用，这种情况不计入栈）；等等。 如果 f 是一个比活动函数数量还大的数字， getinfo 返回 nil。
+
+5.debug.getlocal ([thread,] f, local):
+此函数返回在栈的 f 层处函数的索引为 local 的局部变量 的名字和值。 这个函数不仅用于访问显式定义的局部变量，也包括形参、临时变量等。
+
+6.getmetatable(value):
+把给定索引指向的值的元表压入堆栈。如果索引无效，或是这个值没有元表，函数将返回 0 并且不会向栈上压任何东西。
+
+7.getregistry():
+返回注册表表，这是一个预定义出来的表， 可以用来保存任何 C 代码想保存的 Lua 值。
+
+8.getupvalue (f, up)
+此函数返回函数 f 的第 up 个上值的名字和值。 如果该函数没有那个上值，返回 nil 。
+以 '(' （开括号）打头的变量名表示没有名字的变量 （去除了调试信息的代码块）。
+
+10.将一个函数作为钩子函数设入。 字符串 mask 以及数字 count 决定了钩子将在何时调用。 掩码是由下列字符组合成的字符串，每个字符有其含义：
+'c': 每当 Lua 调用一个函数时，调用钩子；
+'r': 每当 Lua 从一个函数内返回时，调用钩子；
+'l': 每当 Lua 进入新的一行时，调用钩子。
+
+11.setlocal ([thread,] level, local, value):
+这个函数将 value 赋给 栈上第 level 层函数的第 local 个局部变量。 如果没有那个变量，函数返回 nil 。 如果 level 越界，抛出一个错误。
+
+12.setmetatable (value, table):
+将 value 的元表设为 table （可以是 nil）。 返回 value。
+
+13.setupvalue (f, up, value):
+这个函数将 value 设为函数 f 的第 up 个上值。 如果函数没有那个上值，返回 nil 否则，返回该上值的名字。
+
+14.traceback ([thread,] [message [, level]]):
+如果 message 有，且不是字符串或 nil， 函数不做任何处理直接返回 message。 否则，它返回调用栈的栈回溯信息。 字符串可选项 message 被添加在栈回溯信息的开头。 数字可选项 level 指明从栈的哪一层开始回溯 （默认为 1 ，即调用 traceback 的那里）。
+
+上表列出了我们常用的调试函数，接下来我们可以看些简单的例子：
+
+function myfunction ()
+print(debug.traceback("Stack trace"))
+print(debug.getinfo(1))
+print("Stack trace end")
+    return 10
+end
+myfunction ()
+print(debug.getinfo(1))
+
+执行以上代码输出结果为：
+
+Stack trace
+stack traceback:
+    test2.lua:2: in function 'myfunction'
+    test2.lua:8: in main chunk
+    [C]: ?
+table: 0054C6C8
+Stack trace end
+
+在以实例中，我们使用到了 debug 库的 traceback 和 getinfo 函数， getinfo 函数用于返回函数信息的表。 》》
+《《调试函数的另一个实例》》
+《《我们经常需要调试函数的内的局部变量。我们可以使用 getupvalue 函数来设置这些局部变量。实例如下：
+
+function newCounter ()
+  local n = 0
+  local k = 0
+  return function ()
+    k = n
+    n = n + 1
+    return n
+    end
+end
+
+counter = newCounter ()
+print(counter())
+print(counter())
+
+local i = 1
+
+repeat
+  name, val = debug.getupvalue(counter, i)
+  if name then
+    print ("index", i, name, "=", val)
+    if(name == "n") then
+        debug.setupvalue (counter,2,10)
+    end
+    i = i + 1
+  end -- if
+until not name
+
+print(counter())
+
+执行以上代码输出结果为：
+
+1
+2
+index    1    k    =    1
+index    2    n    =    2
+11
+
+在以上实例中，计数器在每次调用时都会自增1。实例中我们使用了 getupvalue 函数查看局部变量的当前状态。我们可以设置局部变量为新值。实例中，在设置前 n 的值为 2,使用 setupvalue 函数将其设置为 10。现在我们调用函数，执行后输出为 11 而不是 3。》》
+《《调试类型》》
+《《1，命令行调试
+2，图形界面调试
+
+命令行调试器有：RemDebug、clidebugger、ctrace、xdbLua、LuaInterface - Debugger、Rldb、ModDebug。
+图形界调试器有：SciTE、Decoda、ZeroBrane Studio、akdebugger、luaedit。》》
+《《Lua 垃圾回收》》
+《《Lua 采用了自动内存管理。 这意味着你不用操心新创建的对象需要的内存如何分配出来， 也不用考虑在对象不再被使用后怎样释放它们所占用的内存。
+Lua 运行了一个垃圾收集器来收集所有死对象 （即在 Lua 中不可能再访问到的对象）来完成自动内存管理的工作。 Lua 中所有用到的内存，如：字符串、表、用户数据、函数、线程、 内部结构等，都服从自动管理。
+Lua 实现了一个增量标记-扫描收集器。 它使用这两个数字来控制垃圾收集循环： 垃圾收集器间歇率和垃圾收集器步进倍率。 这两个数字都使用百分数为单位 （例如：值 100 在内部表示 1 ）。
+垃圾收集器间歇率控制着收集器需要在开启新的循环前要等待多久。 增大这个值会减少收集器的积极性。 当这个值比 100 小的时候，收集器在开启新的循环前不会有等待。 设置这个值为 200 就会让收集器等到总内存使用量达到 之前的两倍时才开始新的循环。
+垃圾收集器步进倍率控制着收集器运作速度相对于内存分配速度的倍率。 增大这个值不仅会让收集器更加积极，还会增加每个增量步骤的长度。 不要把这个值设得小于 100 ， 那样的话收集器就工作的太慢了以至于永远都干不完一个循环。 默认值是 200 ，这表示收集器以内存分配的"两倍"速工作。
+如果你把步进倍率设为一个非常大的数字 （比你的程序可能用到的字节数还大 10% ）， 收集器的行为就像一个 stop-the-world 收集器。 接着你若把间歇率设为 200 ， 收集器的行为就和过去的 Lua 版本一样了： 每次 Lua 使用的内存翻倍时，就做一次完整的收集。》》
+《《垃圾回收器函数》》
+《《Lua 提供了以下函数collectgarbage ([opt [, arg]])用来控制自动内存管理:
+
+1， collectgarbage("collect"): 做一次完整的垃圾收集循环。通过参数 opt 它提供了一组不同的功能：
+2， collectgarbage("count"): 以 K 字节数为单位返回 Lua 使用的总内存数。 这个值有小数部分，所以只需要乘上 1024 就能得到 Lua 使用的准确字节数（除非溢出）。
+3， collectgarbage("restart"): 重启垃圾收集器的自动运行。
+4， collectgarbage("setpause"): 将 arg 设为收集器的 间歇率 （参见 §2.5）。 返回 间歇率 的前一个值。
+5， collectgarbage("setstepmul"): 返回 步进倍率 的前一个值。
+6， collectgarbage("step"): 单步运行垃圾收集器。 步长"大小"由 arg 控制。 传入 0 时，收集器步进（不可分割的）一步。 传入非 0 值， 收集器收集相当于 Lua 分配这些多（K 字节）内存的工作。 如果收集器结束一个循环将返回 true 。
+7， collectgarbage("stop"): 停止垃圾收集器的运行。 在调用重启前，收集器只会因显式的调用运行。
+
+以下演示了一个简单的垃圾回收实例:
+
+mytable = {"apple", "orange", "banana"}
+
+print(collectgarbage("count"))
+
+mytable = nil
+
+print(collectgarbage("count"))
+
+print(collectgarbage("collect"))
+
+print(collectgarbage("count"))
+
+执行以上程序，输出结果如下(注意内存使用的变化)：
+
+20.9560546875
+20.9853515625
+0
+19.4111328125》》
+《《Lua 面向对象》》
+《《面向对象编程（Object Oriented Programming，OOP）是一种非常流行的计算机编程架构。
+以下几种编程语言都支持面向对象编程：
+
+C++
+Java
+Objective-C
+Smalltalk
+C#
+Ruby》》
+《《面向对象特征》》
+《《1， 封装：指能够把一个实体的信息、功能、响应都装入一个单独的对象中的特性。
+2， 继承：继承的方法允许在不改动原程序的基础上对其进行扩充，这样使得原功能得以保存，而新功能也得以扩展。这有利于减少重复编码，提高软件的开发效率。
+3， 多态：同一操作作用于不同的对象，可以有不同的解释，产生不同的执行结果。在运行时，可以通过指向基类的指针，来调用实现派生类中的方法。
+4，抽象：抽象(Abstraction)是简化复杂的现实问题的途径，它可以为具体问题找到最恰当的类定义，并且可以在最恰当的继承级别解释问题。》》
+《《Lua 中面向对象》》
+《《我们知道，对象由属性和方法组成。LUA中最基本的结构是table，所以需要用table来描述对象的属性。
+lua中的function可以用来表示方法。那么LUA中的类可以通过table + function模拟出来。
+至于继承，可以通过metetable模拟出来（不推荐用，只模拟最基本的对象大部分时间够用了）。
+
+Lua中的表不仅在某种意义上是一种对象。像对象一样，表也有状态（成员变量）；也有与对象的值独立的本性，特别是拥有两个不同值的对象（table）代表两个不同的对象；一个对象在不同的时候也可以有不同的值，但他始终是一个对象；与对象类似，表的生命周期与其由什么创建、在哪创建没有关系。对象有他们的成员函数，表也有：
+
+Account = {balance = 0}
+function Account.withdraw (v)
+    Account.balance = Account.balance - v
+end
+
+这个定义创建了一个新的函数，并且保存在Account对象的withdraw域内，下面我们可以这样调用：
+
+Account.withdraw(100.00)
+
+一个简单实例
+以下简单的类包含了三个属性： area, length 和 breadth，printArea方法用于打印计算结果：
+
+-- Meta class
+Rectangle = {area = 0, length = 0, breadth = 0}
+-- 派生类的方法 new
+function Rectangle:new (o,length,breadth)
+  o = o or {}
+  setmetatable(o, self)
+  self.__index = self
+  self.length = length or 0
+  self.breadth = breadth or 0
+  self.area = length*breadth;
+  return o
+end
+-- 派生类的方法 printArea
+function Rectangle:printArea ()
+  print("矩形面积为 ",self.area)
+end
+
+创建对象
+创建对象是位类的实例分配内存的过程。每个类都有属于自己的内存并共享公共数据。
+r = Rectangle:new(nil,10,20)
+
+访问属性
+我们可以使用点号(.)来访问类的属性：
+print(r.length)
+
+访问成员函数
+我们可以使用冒号 : 来访问类的成员函数：
+r:printArea()
+内存在对象初始化时分配。
+
+完整实例
+
+以下我们演示了 Lua 面向对象的完整实例：
+
+-- Meta class
+Shape = {area = 0}
+
+-- 基础类方法 new
+function Shape:new (o,side)
+  o = o or {}
+  setmetatable(o, self)
+  self.__index = self
+  side = side or 0
+  self.area = side*side;
+  return o
+end
+
+-- 基础类方法 printArea
+function Shape:printArea ()
+  print("面积为 ",self.area)
+end
+
+-- 创建对象
+myshape = Shape:new(nil,10)
+
+myshape:printArea()
+
+执行以上程序，输出结果为：
+
+面积为     100》》
+《《Lua 继承》》
+《《继承是指一个对象直接使用另一对象的属性和方法。可用于扩展基础类的属性和方法。
+以下演示了一个简单的继承实例：
+
+ -- Meta class
+Shape = {area = 0}
+-- 基础类方法 new
+function Shape:new (o,side)
+  o = o or {}
+  setmetatable(o, self)
+  self.__index = self
+  side = side or 0
+  self.area = side*side;
+  return o
+end
+-- 基础类方法 printArea
+function Shape:printArea ()
+  print("面积为 ",self.area)
+end
+
+接下来的实例，Square 对象继承了 Shape 类:
+
+Square = Shape:new()
+-- Derived class method new
+function Square:new (o,side)
+  o = o or Shape:new(o,side)
+  setmetatable(o, self)
+  self.__index = self
+  return o
+end
+
+完整实例
+以下实例我们继承了一个简单的类，来扩展派生类的方法，派生类中保留了继承类的成员变量和方法：
+
+ -- Meta class
+Shape = {area = 0}
+-- 基础类方法 new
+function Shape:new (o,side)
+  o = o or {}
+  setmetatable(o, self)
+  self.__index = self
+  side = side or 0
+  self.area = side*side;
+  return o
+end
+-- 基础类方法 printArea
+function Shape:printArea ()
+  print("面积为 ",self.area)
+end
+
+-- 创建对象
+myshape = Shape:new(nil,10)
+myshape:printArea()
+
+Square = Shape:new()
+-- 派生类方法 new
+function Square:new (o,side)
+  o = o or Shape:new(o,side)
+  setmetatable(o, self)
+  self.__index = self
+  return o
+end
+
+-- 派生类方法 printArea
+function Square:printArea ()
+  print("正方形面积为 ",self.area)
+end
+
+-- 创建对象
+mysquare = Square:new(nil,10)
+mysquare:printArea()
+
+Rectangle = Shape:new()
+-- 派生类方法 new
+function Rectangle:new (o,length,breadth)
+  o = o or Shape:new(o)
+  setmetatable(o, self)
+  self.__index = self
+  self.area = length * breadth
+  return o
+end
+
+-- 派生类方法 printArea
+function Rectangle:printArea ()
+  print("矩形面积为 ",self.area)
+end
+
+-- 创建对象
+myrectangle = Rectangle:new(nil,10,20)
+myrectangle:printArea()
+
+执行以上代码，输出结果为：
+
+面积为     100
+正方形面积为     100
+矩形面积为     200》》
+《《函数重写》》
+《《Lua 中我们可以重写基础类的函数，在派生类中定义自己的实现方式：
+
+-- 派生类方法 printArea
+function Square:printArea ()
+  print("正方形面积 ",self.area)
+end》》
+
+
+
+《《lua _G 表》》
+《《--   _G是一张表，保存了lua所用的所有全局函数和全局变量
+ 
+ 
+for a,b in pairs(_G) do
+    print(a,"\t",b)
+    if  type(b) == "table" then
+        for x,y in pairs(b) do
+            print("\t","|--",x,y)
+        end
+    end
+end
+ 
+ _G.print("你好")
+ _G["print"]("你好")
+ 
+ 
+print("_G中也保存了自身",  _G , _G._G)
+_G._G._G._G._G._G["print"]("你好啊")
+ 
+ 
+ 
+--全局函数和变量会自动加入到_G表
+ 
+a = 1
+function myfun()
+    print("自定义函数")
+end
+print(_G.a)
+_G.myfun()
+--手动设置全局变量
+_G["b"] = "手动的全局变量"
+print(b)》》
+
+《《翻译网页》》
+《《--请复制到fa里面测试，否则会报错
+--彩云小译是必定能翻译整个网页的，其他的不稳定
+
+items={"谷歌翻译","﻿彩云小译","有道翻译"}
+AlertDialog.Builder(this)
+.setTitle("")
+.setItems(items,{onClick=function(l,v)
+    if v==0 then
+      加载Js([[(function () {
+    'use strict';
+    var userLang = document.documentElement.lang;
+    
+    if (userLang.substr(0, 2) != "zh") {
+        var script = document.createElement('script');
+        script.src = 'https://translate.google.cn/translate_a/element.js?cb=googleTranslateElementInit';
+        document.getElementsByTagName('head')[0].appendChild(script);
+
+        var google_translate_element = document.createElement('div');
+        google_translate_element.id = 'google_translate_element';
+        google_translate_element.style = 'position:fixed; bottom:10px; right:10px; cursor:pointer;z-index:10;';
+        document.documentElement.appendChild(google_translate_element);
+
+        script = document.createElement('script');
+        script.innerHTML = "function googleTranslateElementInit() {" +
+            "new google.translate.TranslateElement({" +
+            "layout: google.translate.TranslateElement.InlineLayout.SIMPLE," +
+            "multilanguagePage: true," +
+            "pageLanguage: 'auto'," +
+            "includedLanguages: 'af,af-ZA,sq,sq-AL,ar,ar-DZ,ar-BH,ar-EG,ar-IQ,ar-JO,ar-KW,ar-LB,ar-LY,ar-MA,ar-OM,ar-QA,ar-SA,ar-SY,ar-TN,ar-AE,ar-YE,hy,hy-AM,az,az-AZ-Cyrl,az-AZ-Latn,,eu,eu-ES,be,be-BY,bg,bg-BG,ca,ca-ES,zh-HK,zh-MO,zh-CN,zh-CHS,zh-SG,zh-TW,zh-CHT,hr,hr-HRcs,cs-CZ,da,da-DK,div,div-MV,nl,nl-BE,nl-NL,en,en-AU,en-BZ,en-CA,en-CB,en-IE,en-JM,en-NZ,en-PH,en-ZA,en-TT,en-GB,en-US,en-ZW,et,et-EE,fo,fo-FO,fa,fa-IR,fi,fi-FI,fr,fr-BE,fr-CA,fr-FR,fr-LU,fr-MC,fr-CH,gl,gl-ES,ka,ka-GE,de,de-AT,de-DE,de-LI,de-LU,de-CH,el,el-GR,gu,gu-IN,he,he-IL,hi,hi-IN,hu,hu-HU,is,is-IS,id,id-ID,it,it-IT,it-CH,ja,ja-JP,kn,kn-IN,kk,kk-KZ,kok,kok-IN,ko,ko-KR,ky,ky-KZ,lv,lv-LV,lt,lt-LT,mk,mk-MK,ms,ms-BN,ms-MY,mr,mr-IN,mn,mn-MN,no,nb-NO,nn-NO,pl,pl-PL,pt,pt-BR,pt-PT,pa,pa-IN,ro,ro-RO,ru,ru-RU,sa,sa-IN,sr-SP-Cyrl,sr-SP-Latn,sk,sk-SK,sl,sl-SI,es,es-AR,es-BO,es-CL,es-CO,西es-CR,es-DO,es-EC,es-SV,es-GT,es-HN,es-MX,es-NI,es-PA,es-PY,es-PE,es-PR,es-ES,es-UY,es-VE,sw,sw-KE,sv,sv-FI,sv-SE,syr,syr-SY,ta,ta-IN,tt,tt-RU,te,te-IN,th,th-TH,tr,tr-TR,uk,uk-UA,ur,ur-PK,uz,uz-UZ-Cyrl,uz-UZ-Latn,vi,vi-VN'" +
+            "}, 'google_translate_element');}";
+        document.getElementsByTagName('head')[0].appendChild(script);
+    }
+  })();]])
+    end
+    if v==1 then
+      加载Js([[(function(){if(!document.body)return;var popup=document.querySelectorAll('.cyxy-target-popup');if(popup&&popup.length>0)return;var trs=document.createElement('script');trs.type='text/javascript';trs.charset='UTF-8';trs.src=('https:'==document.location.protocol?'https://':'http://')+'caiyunapp.com/dest/trs.js';document.body.appendChild(trs);})()]]) end
+    if v==2 then
+      加载Js([[void((function() {var element = document.createElement('script');element.id = 'outfox_seed_js';element.charset = 'utf-8',element.setAttribute('src', 'http://fanyi.youdao.com/web2/seed.js?'+Date.parse(new Date()));document.body.appendChild(element);})())]]) end
+
+  end})
+.show()》》
+
+《《浏览器UA切换》》
+《《items={"移动端UA","桌面端UA","塞班UA","神秘UA","QQ浏览器UA"}
+
+AlertDialog.Builder(this)
+.setTitle("设置UA")
+.setItems(items,{onClick=function(l,v)
+    if v==0 then
+      print("移动端UA")
+      webView.getSettings().setUserAgentString("Mozilla/5.0 (Linux; Android 7.1.2; Build/NJH47F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.109 Safari/537.36")
+      刷新网页()
+    end
+    if v==1 then
+      print("桌面端UA")
+      webView.getSettings().setUserAgentString("User-Agent:Mozilla/5.0 (Windows NT 6.1; rv:2.0.1) Gecko/20100101 Firefox/4.0.1")
+      刷新网页()
+    end
+    if v==2 then
+      print("塞班UA")
+      webView.getSettings().setUserAgentString("user-agent = Mozilla/5.0 (SymbianOS/9.4; Series60/5.0 Nokia5800d-1/60.0.003; Profile/MIDP-2.1 Configuration/CLDC-1.1 ) AppleWebKit/533.4 (KHTML, like Gecko) NokiaBrowser/7.3.1.33 Mobile Safari/533.4 3gpp-gba")
+      刷新网页()
+    end
+    if v==3 then
+      print("神秘UA")
+      webView.getSettings().setUserAgentString("user-agent = Mozilla/5.0Dalvik/2( Linux; U;NEM-AL10Build/HONORNEM-AL10; Youku;7.1.4;)AppleWebKit/537.36( KHTML, like Gecko)Version/4.0Safari/537.36( Baidu;P16.0)iPhone/7.1Android/8.0")
+      刷新网页()
+    end
+    if v==4 then
+      print("QQ浏览器UA")
+      webView.getSettings().setUserAgentString("User-Agent: MQQBrowser/26 Mozilla/5.0 (Linux; U; Android 2.3.7; zh-cn; MB200 Build/GRJ22; CyanogenMod-7) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1")
+      刷新网页()
+    end
+  end})
+.show()》》
+
+《《加载js》》
+《《
+
+function 加载js(id,js)
+  if js==nil then
+   else  
+      id.loadUrl("javascript:".."(function() {"..js.."})()")
+  end
+end
+
+
+function 屏蔽元素(id,table)
+  for i,V in pairs(table) do 
+    加载js(id,[[document.getElementsByClassName(']]..V..[[')[0].style.display='none';]])
+     end
+end
+
+》》
+
+《《屏蔽元素Js》》
+《《--配合网页控制使用效果更加
+document.getElementsByClassName("屏蔽无素")[0].setAttribute("style","display:none")》》
+
+《《LuaGo中文函数库》》
+《《
+加载网页("url")
+
+加载本地文件:加载网页("file:///storage/sdcard0/index.html")
+
+
+加载软件内的html:加载网页("file://"..activity.getLuaDir().."/70个小游戏合集源码/index.html")
+--方法一
+
+webView.loadUrl("file://"..luajava.luadir.."/index.html")
+--方法二
+
+webView.loadUrl("file://"..activity.getLuaGoDir().."/android2.html")
+
+
+import "com.中文辅助类.对话框"--来自fa
+对话框()
+.设置标题("对话框标题")
+.设置消息("对话框消息")
+.设置积极按钮("确定",function()
+  显示消息("点击了确定")--这里是确定按钮点击事件
+end)
+.设置消极按钮("取消")--这后面也可以设置取消按钮点击事件，仿照确实按钮点击事件
+.显示()--显示对话框
+
+
+import "com.中文辅助类.泡沫对话框"--来自fa
+泡沫对话框(301)
+.设置标题("标题")
+.设置消息([[消息]])
+.设置积极按钮("确定",function()
+  显示消息("点击了确定")
+end)
+.设置消极按钮("取消")
+.显示()
+--方法类似对话框，但泡沫对话框只会在初次进入软件时显示
+
+》》
+《《两种桌面快捷方式》》
+《《require "import"
+import "android.app.*"
+import "android.os.*"
+import "android.widget.*"
+import "android.view.*"
+
+
+import "android.net.Uri"
+import "android.content.ComponentName"
+import "android.content.Intent"
+import "android.content.pm.ShortcutInfo"
+import "java.util.ArrayList"
+import "android.graphics.drawable.Icon"
+
+import "layout"
+activity.setTheme(android.R.style.Theme_Material_Light_NoActionBar)
+activity.setContentView(loadlayout(layout))
+
+
+--此工程需要打包后运行
+--如果不打包运行，那么快捷方式将创建在这个IDE的图标上
+
+intent1 = Intent(Intent.ACTION_MAIN);
+intent1.setComponent(ComponentName(activity.getPackageName(),"com.androlua.Main"));
+intent1.setData(Uri.parse("num1"));
+
+intent2 = Intent(Intent.ACTION_MAIN);
+intent2.setComponent(ComponentName(activity.getPackageName(),"com.androlua.Main"));
+intent2.setData(Uri.parse("num2"));
+
+intent3 = Intent(Intent.ACTION_MAIN);
+intent3.setComponent(ComponentName(activity.getPackageName(),"com.androlua.Main"));
+intent3.setData(Uri.parse("num3"));
+
+intent4 = Intent(Intent.ACTION_MAIN);
+intent4.setComponent(ComponentName(activity.getPackageName(),"com.androlua.Main"));
+intent4.setData(Uri.parse("num4"));
+
+--id,快捷方式名字,快捷方式被点击后执行的intent,快捷方式的图标地址
+SHORTCUT_TABLE={
+  {"ID1","文件",intent1,activity.getLuaDir().."/imgs/file.png"},
+  {"ID2","文件夹",intent2,activity.getLuaDir().."/imgs/folder.png"},
+  {"ID3","播放",intent3,activity.getLuaDir().."/imgs/play.png"},
+  {"ID4","搜索",intent4,activity.getLuaDir().."/imgs/magnify.png"},
+}
+
+--快捷方式管理器
+scm = activity.getSystemService(activity.SHORTCUT_SERVICE);
+
+--循环添加到对象ArrayList
+infos = ArrayList();
+for k,v in pairs(SHORTCUT_TABLE) do
+  si = ShortcutInfo.Builder(this,v[1])
+  .setIcon(Icon.createWithBitmap(loadbitmap(v[4])))
+  .setShortLabel(v[2])
+  .setLongLabel(v[2])
+  .setIntent(v[3])
+  .build();
+  infos.add(si);
+end
+
+--添加快捷方式
+scm.setDynamicShortcuts(infos);
+
+--print("快捷方式已创建,不信去长按图标")
+
+
+
+
+function onNewIntent(intent)
+
+  --获得传递过来的数据并转化为字符串
+  local uriString = tostring(intent.getData())
+
+  if "num1"==uriString then
+
+    activity.newActivity("activitys/activity_1")
+
+   elseif "num2"==uriString then
+
+    activity.newActivity("activitys/activity_2")
+
+   elseif "num3"==uriString then
+
+    activity.newActivity("activitys/activity_3")
+
+   elseif "num4"==uriString then
+
+    activity.newActivity("activitys/activity_4")
+
+  end
+
+end
+
+
+
+
+--权限
+<uses-permission android:name="android.launcher.permission.READ_SETTINGS" />
+<!-- 安装快捷方式 -->
+<uses-permission android:name="android.launcher.permission.INSTALL_SHORTCUT" />
+<!-- 卸载快捷方式 -->
+<uses-permission android:name="android.launcher.permission.UNINSTALL_SHORTCUT" />
+
+
+
+
+--这串代码放在主页就行
+function onNewIntent(intent)
+-- 点击快捷方式之后执行的事件。
+print(tostring(intent.getData()))
+end
+
+--向桌面发送快捷方式的函数
+
+function 桌面快捷方式(name,data,bit)
+  import"android.view.animation.Animation$AnimationListener"
+  import"android.graphics.BitmapFactory"
+  import"android.content.Context"
+  import"android.content.Intent"
+  import"android.content.IntentFilter"
+  import"android.net.Uri"
+  import"android.content.IntentSender"
+  import"android.content.ServiceConnection"
+  pcall(function()
+  import"android.graphics.drawable.Icon"
+  
+  end)
+  import"android.content.ComponentName"
+  local intent=Intent("android.intent.action.MAIN")
+  intent.addCategory("android.intent.category.DEFAULT")
+  intent.setComponent(ComponentName(activity.getPackageName(),"com.androlua.Main"))
+  intent.setData(Uri.parse(data))
+  if Build.VERSION.SDK_INT>= 15 then
+    intent.addFlags(524288)intent.addFlags(0x08000000)
+
+  end
+  if Build.VERSION.SDK_INT>=26 then
+    xpcall(function()
+      import"android.content.pm.ShortcutInfo"
+      import "android.content.pm.ShortcutManager"
+
+      activity.getSystemService("shortcut").requestPinShortcut(ShortcutInfo.Builder(activity,name).setIcon(Icon.createWithResource(activity,R.drawable.icon)).setShortLabel(name).setIntent(intent).build(),nil)
+      提示6"添加快捷方式成功"
+    end,function()
+      提示6"添加快捷方式出错"
+    end)
+   else
+    local 桌面快捷方式=Intent("com.android.launcher.action.INSTALL_SHORTCUT")
+    桌面快捷方式.putExtra("android.intent.extra.shortcut.NAME",name)
+    桌面快捷方式.putExtra("android.intent.extra.shortcut.INTENT",intent)
+    桌面快捷方式.putExtra("duplicate",0)
+    桌面快捷方式.putExtra("android.intent.extra.shortcut.ICON",bit)
+    activity.sendBroadcast(桌面快捷方式)
+    提示6"已添加快捷方式"
+  end
+end
+
+
+
+》》
+
+《《对话框三个按扭》》
+《《require "import"
+import "android.app.*"
+import "android.os.*"
+import "android.widget.*"
+import "android.view.*"
+activity.setTitle('AndroLua+')
+activity.setTheme(android.R.style.Theme_Holo_Light)
+
+
+
+--三按钮对话框
+import "android.content.*" 
+dl=AlertDialog.Builder(activity)
+.setTitle("对话框").setMessage("您确定选择退出吗？")
+.setPositiveButton("退出应用",DialogInterface.OnClickListener{
+  onClick=function(v)
+    --print("您选择了退出")
+    activity.finish()
+  end
+})
+.setNegativeButton("转入后台",DialogInterface.OnClickListener{
+  onClick=function(v)
+    intent = Intent(Intent.ACTION_MAIN);
+    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);--当使用这个标志时，如果一个包含此activity的task已经运行了，新的activity不会启动；同时，当前的task将简单的被提到窗口最前面。查看FLAG_ACTIVITY_MULTIPLE_TASK可以禁止这个行为。
+    intent.addCategory(Intent.CATEGORY_HOME);
+    this.startActivity(intent);
+    print("应用已经转入后台，相当于home键")
+  end
+})
+.setNeutralButton("待设置的命令",nil); 
+dl.show()
+》》
+《《多任务-新》》
+《《require "import"
+import "android.app.*"
+import "android.os.*"
+import "android.widget.*"
+import "android.view.*"
+activity.setTitle('AndroLua+')
+activity.setTheme(android.R.style.Theme_Holo_Light)
+
+
+function go(...)
+  require "import"
+  
+  print"mmmmmmm"
+end
+
+function a(s)
+  print(s)
+  end
+  
+function bu()
+  task(go,"xxx",a)
+  
+end
+
+bu()》》
+《《多线程》》
+《《require "import"
+import "android.app.*"
+import "android.os.*"
+import "android.widget.*"
+import "android.view.*"
+activity.setTitle('AndroLua+')
+activity.setTheme(android.R.style.Theme_Holo_Light)
+
+
+
+function foo(a,b)
+print(a,b)
+call("run",3,4)
+end
+
+function run(c,d)
+  while true do
+  print(c,d)
+  end
+end
+
+thread(run,1,2)》》
+《《 静默安装》》
+《《require "import"
+import "android.app.*"
+import "android.os.*"
+import "android.widget.*"
+import "android.view.*"
+activity.setTitle('AndroLua+')
+activity.setTheme(android.R.style.Theme_Holo_Light)
+
+function 静默安装(cmd)
+local p=io.popen("su -c pm install "..cmd)
+  s=p:read("*all")
+  p:close()
+  return s
+end
+
+
+
+
+
+
+
+
+print "开始安装。。。"
+
+静默安装("/sdcard/demo.apk")
+
+
+
+》》
+《《九九乘法》》
+《《for m = 1,9 do
+	s = ""
+	for n = 1,m do
+		s=string.format("%s%d*%d=%d ",s,n,m,n*m)
+	end
+	print(s)
+end》》
+《《蓝牙》》
+《《require "import"
+
+import "android.app.*"
+import "android.os.*"
+import "android.widget.*"
+import "android.view.*"
+import "android.bluetooth.*"
+import "android.content.*"
+import "java.util.UUID"
+import "java.lang.*"
+
+--记得给蓝牙权限
+
+layout={
+  main={
+    LinearLayout,
+    orientation="vertical",
+    {
+      TextView,
+      text="蓝牙操作示例教程",
+      layout_width="fill"
+    },
+  
+  
+  },
+}
+
+activity.setTitle('AndroLua+')
+activity.setTheme(android.R.style.Theme_Holo_Light)
+--布局方式
+layout=LinearLayout(activity)
+layout.Orientation=1
+
+activity.setContentView(layout)
+
+
+
+--创建控件
+txt=TextView(activity)
+bbtxt=TextView(activity)
+取本地蓝牙地址=TextView(activity)
+mac=TextView(activity)
+btmsg=TextView(activity)
+bn1=Button(activity)
+en1=EditText(activity)
+btkj=Button(activity)
+sao=Button(activity)
+fuwuqi=Button(activity)
+huo=Button(activity)
+
+客户端连接=Button(activity)
+en2=EditText(activity)
+发信息=Button(activity)
+
+--这个不解释
+text="检测中。。。"
+bnock=false
+btzt=""
+listbt={}
+sockss=nil
+
+--蓝牙状态链表，statebt()在调用
+zt={["10"]="【己开启】",["11"]="【开启中】",["12"]="【己关闭】",["13"]="【关闭中】",["14"]="【未知。。】"}
+
+--获取蓝牙适配器
+bt=BluetoothAdapter.getDefaultAdapter()
+
+
+--判断蓝牙是否打开
+if bt.isEnabled() then 
+  bnock=true
+  bn1.setText("关闭蓝牙")   
+  else 
+  bnock=false
+  bn1.setText("开启蓝牙")  
+end
+
+--打开蓝牙
+function openbt()
+  bt.enable()
+end
+
+--扫描
+function listbt()
+  --判断是否在扫描中
+   local nn=tostring(bt.getBondedDevices())
+  --处理地址  特么的总感觉那不对，改截取字符
+--  local tx=string.gsub(nn,"%[","")
+--  local ty=string.gsub(tx,"%]","")
+    local ty=string.sub(nn,2,18)
+   if string.len(ty) > 0 then
+     bt.cancelDiscovery()
+     bbtxt.setText("己获取配对数据")
+     sao.setText("开启扫描")
+     en1.setText(ty)
+   end
+   
+end
+
+--关闭扫描
+function closesaomiao()
+  bt.cancelDiscovery()
+ end
+
+--关闭蓝牙
+function closebt()
+  bt.disable()
+end
+
+
+--这个不解释了
+function msg(text)
+  print(text)
+end
+
+
+function statebt()
+  --获取state状态 返回int值
+  local xx=bt.getState()
+  --这里可以不用tostring,改下链表既可
+  local yy=tostring(xx)
+  return zt[yy]
+end
+
+
+--状态显示  12表示打开状况
+txt.setText("当前蓝牙状态:")
+--bbtxt.setText(statebt())
+
+取本地蓝牙地址.setText("我的蓝牙MAC地址:"..bt.getName())
+
+mac.setText(bt.getAddress())
+
+btmsg.setText("信息框:")
+en1.setText("\n\t正在等待联机。。\n\t")
+--编辑框不可编辑
+--en1.setFocusable(false)
+
+btkj.setText("申请蓝牙设备可见")
+sao.setText("获取地址")
+fuwuqi.setText("开启服务器")
+huo.setText("MAC是否可用")
+客户端连接.setText("客户端直连")
+en2.setText("输了内容")
+
+发信息.setText("发送信息")
+
+layout.addView(txt)
+layout.addView(bbtxt)
+layout.addView(取本地蓝牙地址)
+layout.addView(mac)
+layout.addView(bn1)
+layout.addView(btmsg)
+layout.addView(en1)
+layout.addView(btkj)
+layout.addView(sao)
+layout.addView(fuwuqi)
+layout.addView(huo)
+layout.addView(客户端连接)
+layout.addView(en2)
+layout.addView(发信息)
+
+
+function bn1.onClick()
+  if bt.isEnabled() then
+    closebt()
+    bn1.setText("开启蓝牙")
+    bn1.setTextColor(0xff000000)
+    bbtxt.setText(statebt())
+  else
+    openbt()
+    bn1.setText("关闭蓝牙")
+    bn1.setTextColor(0xffff0000)
+    bbtxt.setText(statebt())
+    end 
+end
+
+function btkj.onClick()
+   local kj=Intent(bt.ACTION_REQUEST_DISCOVERABLE)
+   --说好的申请3600秒呢？系统只给120秒！fuck !
+   kj.putExtra(bt.EXTRA_DISCOVERABLE_DURATION,3600)
+   activity.startActivity(kj)
+end
+
+function sao.onClick()
+  --获取己配对的没备列表
+  if bt.isDiscovering() then
+    bbtxt.setText("蓝牙扫描己关闭。。")
+    bt.cancelDiscovery()
+    sao.setText("关闭扫描")
+ else
+    bbtxt.setText("蓝牙扫描己开启。。")
+    bt.startDiscovery()
+    sao.setText("开启扫描")
+    listbt() 
+  end
+ end
+
+function fuwuqi.onClick()
+ --线程运用   
+  if bt.isEnabled() then
+   thread(fuwu,1)  
+   print "己开服务器，等待客户连接！"
+   else
+   print"蓝牙未打开"
+   end
+end
+
+
+function fuwu(txt)
+  require "import"
+  import "android.bluetooth.*"
+  import "android.content.*"
+  import "java.util.UUID"
+  bt=BluetoothAdapter.getDefaultAdapter()
+  local xt="fa87c0d0-afac-11de-8a39-0800200c9a66"
+  local xy="00001101-0000-1000-8000-00805F9B34FB"
+
+  local btbt=UUID.fromString(xy)
+  
+  serverSocket=bt.listenUsingRfcommWithServiceRecord("红米手机",btbt)
+  socks=serverSocket.accept()
+  
+  if socks==nil then
+     socks.close()
+   else
+   print("己连接一个设备")
+   sockss=socks
+   print(socks)
+  end
+
+while socks~=nil do
+  if bt.isEnabled() then
+    bttext=socks.getInputStream()
+    bs=byte[1024]
+    data=bttext.read(bs)
+    print(tostring(String(bs)))
+ else
+  print"蓝牙未打开或己关闭"
+  end  
+end
+
+  
+end
+
+
+
+
+--线程
+
+function huo.onClick()  
+local nnx=tostring(bt.getBondedDevices())
+local tyx=string.sub(nnx,2,18)
+ xxx=bt.checkBluetoothAddress(tyx)
+ en1.setText(tostring(xxx))
+end
+
+
+
+
+function 发信息.onClick()
+ 
+   print(sockss)
+   
+  -- 写数据=socks.getOutputStream()
+end》》
+《《string.dump》》
+《《require "import"
+import "android.widget.*"
+import "android.view.*"
+
+for i=1,7,1 do
+ t=string.byte("中华人民共和国",i)
+ print(t)
+ print(string.char(t))
+ end
+
+
+
+
+function DumpTest()
+print("string.dump test")
+end
+
+local a = string.dump(DumpTest)
+--将函数DumpTest转换成二进制码
+print(a)
+local b = loadstring(a)
+--loadstring(string)可以用来运行一段字符串代码.简单来说，就是把字符串转换成代码。
+print(b) --指针地址
+b()      --继承
+
+ss=string.pack(">", 0x59, 0x7a,118,234,"中文")
+print(ss)
+
+》》
+《《能在子页面调用主页面的import》》
+《《在开头放package.path=package.path..activity.getLuaPath("../../?.lua;")
+然后就可以import主页代码了》》
+《《解析Unicode码》》
+《《function unicode2utf8(s)
+  return loadstring([[return "]]..s
+  :gsub("\\","\\\\")
+  :gsub("\\\\u","\\u")
+  :gsub("\"","\\\"")..[["]])()
+end》》
+《《代码混淆》》
+《《str=[[many字 strings]]
+code="return string.char("
+for i=1,string.len(str) do
+code=code..string.byte(string.sub(str,i,i))..","
+end
+code=string.sub(code,0,string.len(code)-1)..")"
+print(code,"\n\n执行结果\n"..loadstring(code)())
+
+  -----------------------------------------------------------------------------
+    --第三方属性检查完毕
+    -----------------------------------------------------------------------------
+
+
+l={byte(109),byte(97),byte(110),byte(121),byte(229),byte(173),byte(151),byte(32),byte(115),byte(116),byte(114),byte(105),byte(110),byte(103),byte(115)}
+b=byte[#l]
+for k,v in ipairs(l)do
+b[k-1]=v
+end
+print(String(b))
+str=[[many字 strings]]
+code="return string.char("
+for i=1,string.len(str) do
+  code=code..string.byte(string.sub(str,i,i))..","
+end
+code=string.sub(code,0,string.len(code)-1)..")"
+print(code,"\n\n执行结果\n"..loadstring(code)())
+
+  -----------------------------------------------------------------------------
+    --第三方属性检查完毕
+    -----------------------------------------------------------------------------
+
+
+--l={109,97,110,121,229,173,151,32,115,116,114,105,110,103,115}
+--l={byte(109),byte(97),byte(110),byte(121),byte(229),byte(173),byte(151),byte(32),byte(115),byte(116),byte(114),byte(105),byte(110),byte(103),byte(115)}
+str=[[many字 strings]]
+l={}
+for i=1,string.len(str) do
+  table.insert(l,string.byte(string.sub(str,i,i)))
+end
+b=byte[#l]
+for k,v in ipairs(l)do
+  b[k-1]=v
+end
+print(dump(l),String(b))
+
+  -----------------------------------------------------------------------------
+    --第三方属性检查完毕
+    -----------------------------------------------------------------------------
+
+
+str=[[many字 strings]]
+code="return utf8.char("
+for i=1,utf8.len(str) do
+  code=code..utf8.byte(utf8.sub(str,i,i))..","
+end
+code=string.sub(code,0,utf8.len(code)-1)..")"
+print(code,"\n\n执行结果\n"..loadstring(code)())
+
+ -----------------------------------------------------------------------------
+    --第三方属性检查完毕
+    -----------------------------------------------------------------------------
+--print(return utf8.char(109+9999-7777-2222,97+9999-7777-2222,110+9999-7777-2222,121+9999-7777-2222,23383+9999-7777-2222,32+9999-7777-2222,115+9999-7777-2222,116+9999-7777-2222,114+9999-7777-2222,105+9999-7777-2222,110+9999-7777-2222,103+9999-7777-2222,115+9999-7777-2222))
+
+--print(return utf8.char(109+'0',97+'0',110+'0',121+'0',23383+'0',32+'0',115+'0',116+'0',114+'0',105+'0',110+'0',103+'0',115+'0'))		
+
+
+print(loadstring([[return utf8.char(109+'0',97+'0',110+'0',121+'0',23383+'0',32+'0',115+'0',116+'0',114+'0',105+'0',110+'0',103+'0',115+'0')]])())		
+
+
+
+ -----------------------------------------------------------------------------
+    --第三方属性检查完毕
+    -----------------------------------------------------------------------------
+
+str=[[many字 strings]]
+l={}
+for i=1,string.len(str) do
+  l=luajava.astable(String(str).getBytes())
+end
+b=byte[#l]
+for k,v in ipairs(l)do
+  b[k-1]=v
+end
+print(dump(l),String(b))
+
+ -----------------------------------------------------------------------------
+    --第三方属性检查完毕
+    -----------------------------------------------------------------------------
+str=[[many字 strings]]
+l={}
+for i=1,string.len(str) do
+  l=luajava.astable(String(str).toCharArray())
+end
+b=char[#l]
+for k,v in ipairs(l)do
+  b[k-1]=char(v)
+end
+print(dump(l),String(b))
+
+--打印
+
+ -----------------------------------------------------------------------------
+    --第三方属性检查完毕
+    -----------------------------------------------------------------------------
+
+function DumpTest()
+print("jj")
+
+end
+
+
+local a = string.dump(DumpTest)
+--将函数DumpTest转换成二进制码
+--print(a)
+
+str=[[=IAPYthkQWr2DFAH7uAABwAAA5BA10aAGv/rglaD4sACTvMb9SVlXsru5BVrUnoyY1Y3gQGsuLhh9pVrLK0jsf38LvVRIJwf42ZqaYPtbw8GYxN+YAICgoACACYkAoDmZgEBQAxxJ6Dk3LjYm1ng1TWg/BsrylFK4VdzSLgmt2/zDKcCpmHkeg==]]
+code="return utf8.char("
+for i=1,utf8.len(str) do
+  code=code..utf8.byte(utf8.sub(str,i,i)).."+9999-7777-2222,"
+end
+code=utf8.sub(code,0,utf8.len(code)-1)..")"
+--print("\n\n执行结果\n"..loadstring([[return utf8.char(112+9999-7777-2222,114+9999-7777-2222,105+9999-7777-2222,110+9999-7777-2222,116+9999-7777-2222,40+9999-7777-2222,34+9999-7777-2222,106+9999-7777-2222,120+9999-7777-2222,106+9999-7777-2222,120+9999-7777-2222,34+9999-7777-2222,41+9999-7777-2222)		]])())
+
+print(load(loadstring(code)())())
+
+
+----string.dump自检和loadstring自检
+
+local _mirror_string_dump_c_FUNC=string.dump
+local _mirror_loadstring_c_FUNC=loadstring
+local _proxy_string_dump_c_FUMC
+loadstring=function(code,...)
+  print(code)
+  return _mirror_loadstring_c_FUNC(code,...)
+end
+string.dump=function(func,nodebug)
+  if nodebug~=true then nodebug=false end
+  if func==loadstring or func==_proxy_string_dump_c_FUMC then
+    error("unable to dump given function",1)
+   else
+    return _mirror_string_dump_c_FUNC(func,nodebug)
+  end
+end
+_proxy_string_dump_c_FUMC=string.dump
+print(string.dump(function()print(1)end))
+pcall(function()
+  print(string.dump(loadstring))
+  print("string.dump test loadstring run here.")
+end)
+pcall(function()
+  print(string.dump(string.dump))
+  print("string.dump test string.dump run here.")
+end)
+loadstring("print(111)")()
+
+
+local _mirror_string_dump_c_FUNC=string.dump
+local _mirror_loadstring_c_FUNC=loadstring
+loadstring=function(code,...)
+  print(code)
+  return _mirror_loadstring_c_FUNC(code,...)
+end
+string.dump=function(func,nodebug)
+  if nodebug~=true then nodebug=false end
+  if func==loadstring then
+    error("unable to dump given function",1)
+   else
+    return _mirror_string_dump_c_FUNC(func,nodebug)
+  end
+end
+print(string.dump(function()print(1)end))
+pcall(function()
+  print(string.dump(loadstring))
+  print("string.dump test loadstring run here.")
+end)
+loadstring("print(111)")()
+
+
+
+ -----------------------------------------------------------------------------
+    --第三方属性检查完毕
+    -----------------------------------------------------------------------------
+
+
+XLInterceptionTool={
+  ["load"]=function(code,...)
+    print("load:",code)
+  end;
+  ["loadstring"]=function(code,...)
+    print("loadstring:",code)
+  end;
+  ["loadfile"]=function(filepath,...)
+    print("loadfile:",filepath)
+  end;
+  ["dofile"]=function(filepath,...)
+    print("dofile:",filepath)
+  end;
+  ["string.dump"]=function(func,...)
+    print("string.dump:",func)
+  end;
+}
+--lua的各种加载api
+local _mirror_string_dump_c_FUNC=string.dump
+local _mirror_loadstring_c_FUNC=loadstring
+local _mirror_load_c_FUNC=load
+local _mirror_loadfile_c_FUNC=loadfile
+local _mirror_dofile_c_FUNC=dofile
+local _proxy_string_dump_c_FUMC
+loadstring=function(...)
+  XLInterceptionTool["loadstring"](...)
+  return _mirror_loadstring_c_FUNC(...)
+end
+load=function(...)
+  XLInterceptionTool["load"](...)
+  return _mirror_load_c_FUNC(...)
+end
+loadfile=function(...)
+  XLInterceptionTool["loadfile"](...)
+  return _mirror_loadfile_c_FUNC(...)
+end
+dofile=function(...)
+  XLInterceptionTool["dofile"](...)
+  return _mirror_dofile_c_FUNC(...)
+end
+string.dump=function(func,nodebug)
+  XLInterceptionTool["string.dump"](func,nodebug)
+  if nodebug~=true then nodebug=false end
+  if (func==loadstring or
+    func==load or
+    func==loadfile or
+    func==dofile or
+    func==_mirror_activity_doString_java_METHOD or
+    func==_proxy_string_dump_c_FUMC) then
+    error("unable to dump given function",1)
+   else
+    return _mirror_string_dump_c_FUNC(func,nodebug)
+  end
+end
+_proxy_string_dump_c_FUMC=string.dump
+
+
+--测试
+func=loadstring("print(111)")
+print(func,func())
+pcall(function()
+  print(string.dump(loadstring))
+  print("use string.dump test loadstring run here.")
+end)
+
+func=load("print(222)")
+print(func,func())
+pcall(function()
+  print(string.dump(loadstring))
+  print("use string.dump test load run here.")
+end)
+
+print(string.dump(function()print(1)end))
+pcall(function()
+  print(string.dump(string.dump))
+  print("use string.dump test string.dump run here.")
+end)
+ -----------------------------------------------------------------------------
+    --第三方属性检查完毕
+    -----------------------------------------------------------------------------
+activity.setTitle(utf8.char((function()
+    local t={65,110,100,114,111,76,117,97}
+    return table.unpack(t)
+    end)()))
+
+print(utf8.char((function()
+    local t={112,114,105,110,116,40,39,40857,39,41}
+    return table.unpack(t)
+    end)()))
+  
+  
+  --print(loadstring([[return utf8.char(109+'0',97+'0',110+'0',121+'0',23383+'0',32+'0',115+'0',116+'0',114+'0',105+'0',110+'0',103+'0',115+'0')]])())		
+
+
+
+str=[[many字 strings]]
+code="utf8.char((function() \nlocal t={"
+for i=1,utf8.len(str) do
+  code=code..utf8.byte(utf8.sub(str,i,i))..","
+end
+code=string.sub(code,0,utf8.len(code)-1).."} \nreturn table.unpack(t) \n end)())"
+--print(code,"\n\n执行结果\n"..loadstring(code)())
+print(code)
+
+
+
+print(utf8.char((function() 
+local t={109,97,110,121,23383,32,115,116,114,105,110,103,115} 
+return table.unpack(t) 
+ end)()))
+
+
+
+
+--加密工具
+local function encodeBase64(source_str)
+    local b64chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+    local s64 = ''
+    local str = source_str
+
+    while #str > 0 do
+        local bytes_num = 0
+        local buf = 0
+
+        for byte_cnt=1,3 do
+            buf = (buf * 256)
+            if #str > 0 then
+                buf = buf + string.byte(str, 1, 1)
+                str = string.sub(str, 2)
+                bytes_num = bytes_num + 1
+            end
+        end
+
+        for group_cnt=1,(bytes_num+1) do
+            local b64char = math.fmod(math.floor(buf/262144), 64) + 1
+            s64 = s64 .. string.sub(b64chars, b64char, b64char)
+            buf = buf * 64
+        end
+
+        for fill_cnt=1,(3-bytes_num) do
+            s64 = s64 .. '='
+        end
+    end
+
+    return s64
+end
+
+--Pathjia = gg.prompt({[1]='选择要加密的脚本'}, {[1]='/storage/emulated/0'},{[1]='file'})
+--if Pathjia==nil then
+--os.exit()
+--end
+
+local file = io.open("/storage/emulated/0/Android/data/com.tencent.mobileqq/Tencent/QQfile_recv/lua.lua", 'r')
+assert(file)
+
+
+decryption = '---交流群:1033752334\nlocal Yicjm = function(Yicstr)\nlocal b64chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"  \nlocal temp = {}  \nfor i = 1, 64 do    \ntemp[string.sub(b64chars, i, i)] = i  \nend  \ntemp["="] = 0  \nlocal str = ""  \nfor i = 1, #Yicstr, 4 do    \nif not (i > #Yicstr) then      \nlocal data = 0      \nlocal str_count = 0      \nfor j = 0, 3 do        \nlocal str1 = string.sub(Yicstr, i + j, i + j)        \nif not temp[str1] then          \nreturn        \nend        \nif temp[str1] < 1 then          \ndata = data * 64        \nelse          \ndata = data * 64 + temp[str1] - 1          \nstr_count = str_count + 1        \nend      \nend      \nfor j = 16, 0, -8 do        \nif str_count > 0 then          \nstr = str .. string.char(math.floor(data / math.pow(2, j)))          \ndata = math.fmod(data, math.pow(2, j))          \nstr_count = str_count - 1        \nend      \nend    \nend  \nend  \nlocal last = tonumber(string.byte(str, string.len(str), string.len(str)))  \nif last == 0 then    \nstr = string.sub(str, 1, string.len(str) - 1)  \nend  \nreturn str\nend \nlocal base64 = Yicjm("base64加密")\n\nlocal base64 = load(base64)\n\nload(base64)'
+local source_str = file:read('*a')file:close()
+wzdm=encodeBase64(source_str)
+wzdm2 = string.gsub(decryption, "base64加密",wzdm)
+file = io.open("/storage/emulated/0/Android/data/com.tencent.mobileqq/Tencent/QQfile_recv/lua.lua"..'Bx', 'w')
+file:write(wzdm2)
+file:close()
+print('\n交流群:1033752334\n加密成功\n'.."/storage/emulated/0/Android/data/com.tencent.mobileqq/Tencent/QQfile_recv/lua.lua"..'BX')
+
+
+
+》》
+《《扫描中文》》
+《《require "import"
+file=luajava.luadir
+import "java.io.File"
+function fileList(file)
+  return luajava.astable(File(tostring(file)).listFiles())
+end
+err={}
+import "init"
+function nextFile(file)
+  for k,v in pairs(fileList(file)) do
+    if File(tostring(v)).isDirectory() then
+      nextFile(v)
+    end
+    if not string.match(tostring(v),".*/(.-)$"):gsub("%p",""):find("^(%w*)$") then
+      print("文件内有中文"..v)
+    else
+      print("扫描完成，未发现中文。")
+    end
+  end
+end
+nextFile(file)》》
+《《实现->table.insert，如果那个table里有这个值就不添加》》
+《《--先遍历然后变量true
+a={1,2,3,4,5,6,1,2,3,4}
+
+b={}
+for k,v in ipairs(a) do
+  b[v]=true
+end
+
+for v,k in ipairs(b) do
+  print(v)
+end》》
+《《搜索名》》
+《《aa=[[
+文件4667.apk
+文件xkxksk.apk
+文件68464.apk
+]]
+
+for k in aa:gmatch("文件(.-)%papk") do
+   if "文件4667.apk"=="文件"..k..".apk" then
+      print("文件"..k..".apk")
+      else
+     
+      end
+   
+  end
+png={"sx","777","6767777","7338"}
+
+for k,v in ipairs(png) do
+if v:find('777') then
+  print(v)
+  end
+
+end
+
+》》
+《《用其他应用打开（自建对话框布局)》》
+《《require "import"
+import "android.app.*"
+import "android.os.*"
+import "android.widget.*"
+import "android.view.*"
+
+
+layout={
+  LinearLayout;
+  layout_height="fill";
+  layout_width="fill";
+  orientation="vertical";
+  {Button,text="分享文字",id="bt1";};
+  {Button,text="分享文件";id="bt2";};
+  {Button,text="打开链接";id="bt3";}
+};
+
+
+activity.setTheme(R.LuaGo)
+activity.setTitle("用其他应用打开（自建对话框布局）")
+activity.setContentView(loadlayout(layout))
+
+
+
+
+bt1.onClick=function()
+  --意图1（分享文本）
+  import "android.content.Intent"
+  intent1= Intent(Intent.ACTION_SEND)
+  intent1.setType("text/plain")
+  intent1.putExtra(Intent.EXTRA_SUBJECT,"测试")
+  intent1.putExtra(Intent.EXTRA_TEXT, "测试")
+  openIntent(intent1)
+end
+
+bt2.onClick=function()
+  --意图2（打开文件）
+  import "android.webkit.MimeTypeMap"
+  import "android.content.Intent"
+  import "android.net.Uri"
+  import "java.io.File"
+  import "android.content.FileProvider"
+  path=activity.getLuaDir().."/res/path.txt"
+  FileName=tostring(File(path).Name)
+  ExtensionName=FileName:match("%.(.+)")
+  Mime=MimeTypeMap.getSingleton().getMimeTypeFromExtension(ExtensionName)
+  if Mime then
+    intent2 = Intent()
+    intent2.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    intent2.setAction(Intent.ACTION_VIEW);
+    --  intent2.setDataAndType(Uri.fromFile(File(path)), Mime);
+    intent2.setDataAndType(FileProvider.getUriForFile(this,this.getPackageName(),File(path)),Mime)
+    intent2.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);--允许临时的读
+    intent2.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION|Intent.FLAG_GRANT_WRITE_URI_PERMISSION);--允许临时的读和写
+   else
+    print("没有合适的应用打开该文件")
+    return false
+  end
+
+  openIntent(intent2)
+end
+
+
+bt3.onClick=function()
+  import "android.content.Intent"
+  import "android.net.Uri"
+  url="http://baidu.com"
+  intent3 =Intent(Intent.ACTION_VIEW, Uri.parse(url));
+  -- intent3.setClassName("com.android.browser", "com.android.browser.BrowserActivity");
+  openIntent(intent3)
+end
+
+
+
+
+
+
+
+
+function openIntent(intent)
+  --查询是否有该Intent的Activity
+  packageManager =this. getPackageManager();
+  activities = packageManager.queryIntentActivities(intent, 0);
+  --activities里面不为空就有，否则就没有
+  if activities.size() ==1 then
+    this.startActivity(intent)
+   elseif activities.size()>0 then
+    import "android.content.ComponentName"
+    import "com.androlua.LuaAdapter"
+    dialog=AlertDialog.Builder(this)
+    .setView(loadlayout{
+      LinearLayout;
+      Orientation='vertical';
+      layout_width='fill';
+      layout_height='fill';
+      background='#ffffff';
+      {
+        GridView;
+        numColumns=3;
+        layout_width='fill';
+        layout_height='fill';
+        id="list";
+      };
+    })
+    .setTitle("选择应用")
+    .show()
+    item={
+      LinearLayout;
+      Orientation='vertical';
+      layout_width='fill';
+      layout_height='wrap';
+      gravity='center';
+      {
+        ImageView;
+        layout_width='8%w';
+        layout_height='8%w';
+        layout_margin="10dp";
+        id="icon";
+      };
+      {
+        TextView;
+        layout_width='fill';
+        layout_height='wrap';
+        gravity="center";
+        id="name";
+        layout_marginBottom="10dp";
+      };
+      {
+        TextView;
+        layout_width='0';
+        layout_height='0';
+        gravity="center";
+        id="pkgname";
+      };
+      {
+        TextView;
+        layout_width='0';
+        layout_height='0';
+        gravity="center";
+        id="actname";
+      };
+    };
+    data={}
+    adp=LuaAdapter(this,data,item)
+    list.setAdapter(adp)
+    list.onItemClick=function(l,v,o,n)
+      intent.setComponent(ComponentName(v.Tag.pkgname.text,v.Tag.actname.text));
+      this.startActivity(intent)
+      dialog.dismiss()
+    end
+    for i=0,activities.size()-1 do
+      info=activities.get(i)
+      adp.add({pkgname=info.activityInfo.packageName,
+        actname=info.activityInfo.name,
+        name=info.loadLabel(packageManager),
+        icon=info.loadIcon(packageManager)})
+    end
+
+   else
+    print("没有合适的应用打开该内容")
+  end
+
+end》》
+《《解析cjson》》
+《《--导入
+JSON=import "cjson"
+
+--json字符串
+json_str=[==[
+[
+    {
+		"title": "第一本书",
+		"bookId": "book_1"
+	},
+	{
+		"title": "第二本书",
+		"bookId": "book_2"
+	}
+]
+]==]
+
+--解析json
+json_o=JSON.decode(json_str)
+
+--打印table
+print(dump(json_o))
+
+--遍历打印table
+for i,v in ipairs(json_o) do
+  print(v.title,v.bookId)
+end》》
+《《lua创建对象，强烈推荐》》
+《《对象={}
+
+对象.名字=nil
+对象.爱好=nil
+对象.星座=nil
+对象.年龄=16.2
+对象.性别="女"
+对象.发色="黑"
+
+对象.身高=163--math.random(150,170)
+对象.体重=math.random(90,106)
+对象.性格="傻,阔爱,爱吃,呆萌,公主病"
+对象.三围={凶="32A",药="75",臂="86"}
+
+对象.下身长=0.618
+对象.上身长=0.382
+对象.从肚脐眼到脚长=0.9888
+对象.腿长=74.2
+对象.大腿=50.5
+对象.小腿=32.6
+对象.脚踝=19.6
+对象.脚码=38
+
+对象.衣服码号="M"
+print(dump(对象))》》
+《《YLua中文函数库》》
+《《--创建一个类
+local YLua = {}
+function YLua:new()
+  local yswy = {}
+  setmetatable(yswy, self)
+  self.__index = self
+  return yswy
+end
+
+--定义类的成员属性
+YLua.当前脚本运行目录 = activity.getLuaDir()
+
+YLua.屏幕宽度 = activity.getWidth()
+
+YLua.屏幕高度 = activity.getHeight()
+
+
+--定义类的方法
+function YLua:获取脚本当前目录()
+  return self.当前脚本运行目录
+end
+
+
+
+function YLua:写入剪切板(内容)
+  import "android.content.Context"
+  this.getSystemService(Context.CLIPBOARD_SERVICE).setText(tostring(内容))
+end
+
+function YLua:获取剪切板()
+  import "android.content.Context"
+  return this.getSystemService(Context.CLIPBOARD_SERVICE).getText()
+end
+
+function YLua:存储应用数据(key,value)
+  activity.setSharedData(key,value)
+  return true
+end
+
+function YLua:获取应用数据(key)
+  local data = activity.getSharedData(key)
+  return data
+end
+
+function YLua:存储全局变量(名称,内容)
+  activity.getGlobalData()[名称]=内容
+end
+
+function YLua:获取全局变量(名称)
+  return activity.getGlobalData()[名称]
+end
+
+function YLua:进入页面(名称,...)
+  activity.newActivity(名称,...)
+end
+
+function YLua:退出页面()
+  activity.finish()
+end
+
+function YLua:代码查错(内容)
+  local status,error=pcall(loadstring(内容))
+  if not status then
+    print("代码有误：",error)
+  end
+end
+
+function YLua:设置标题(内容)
+  activity.setTitle(内容)
+end
+
+function YLua:设置小标题(内容)
+  activity.getActionBar().setSubtitle(内容)
+end
+
+function YLua:URL编码(内容)
+  import "java.net.URLEncoder"
+  return URLEncoder.encode(内容)
+end
+
+function YLua:URL解码(内容)
+  import "java.net.URLDecoder"
+  return URLDecoder.decode(内容)
+end
+
+function YLua:be64编码(内容)
+  local Base64=luajava.bindClass("android.util.Base64")
+  return Base64.encodeToString(String(内容).getBytes(),Base64.NO_WRAP);
+end
+
+function YLua:be64解码(内容)
+  local Base64=luajava.bindClass("android.util.Base64")
+  return String(Base64.decode(内容,Base64.DEFAULT)).toString()
+end
+
+function YLua:获取网络状态()
+  return activity.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE).getActiveNetworkInfo();
+end
+
+function YLua:新文件夹(path)
+  import "java.io.File"
+  return File(tostring(path)).mkdirs()
+end
+
+function YLua:新文件(path)
+  import "java.io.File"
+  return File(tostring(path)).createNewFile()
+end
+
+function YLua:是文件夹(path)
+  import "java.io.File"
+  return File(tostring(path)).isDirectory()
+end
+
+function YLua:是文件(path)
+  import "java.io.File"
+  return File(tostring(path)).isFile()
+end
+
+
+function YLua:删除文件夹(path)
+  import "java.io.File"
+  return LuaUtil.rmDir(File(tostring(path)))
+end
+
+
+function YLua:删除文件(path)
+  import "java.io.File"
+  return File(tostring(path)).delete()
+end
+
+function YLua:写入文件(路径,内容)
+  import "java.io.File"
+  local f=File(tostring(File(tostring(路径)).getParentFile())).mkdirs()
+  io.open(tostring(路径),"w"):write(tostring(内容)):close()
+end
+
+function YLua:读取文件(路径)
+  return io.open(路径):read("*a")
+end
+
+function YLua:追加写入(路径,内容)
+  io.open(tostring(路径),"a+"):write(tostring(内容)):close()
+end
+
+function YLua:替换文件字符串(路径,旧,新)
+  路径=tostring(路径)
+  内容=io.open(路径):read("*a")
+  return io.open(路径,"w+"):write(tostring(内容:gsub(旧,新))):close()
+end
+
+function YLua:是WiFi网络()
+  wifi = activity.Context.getSystemService(Context.WIFI_SERVICE)
+  wi = wifi.isWifiEnabled()
+  if wi==true then
+    connManager = activity.getSystemService(Context.CONNECTIVITY_SERVICE)
+    mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
+    if tostring(mWifi):find("none)") then
+      return false
+     else
+      return true
+    end
+   else
+    return false
+  end
+end
+
+function YLua:有网络()
+  return activity.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE).getActiveNetworkInfo()
+end
+
+
+function YLua:是数据网络()
+  manager = activity.getSystemService(Context.CONNECTIVITY_SERVICE);
+  gprs = manager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState();
+  if tostring(gprs)== "CONNECTED" then
+    return true
+   else
+    return false
+  end
+end
+
+function YLua:安装应用(路径)
+  import "android.content.Intent"
+  import "android.net.Uri"
+  intent = Intent(Intent.ACTION_VIEW)
+  intent.setDataAndType(Uri.parse("file://"..路径), "application/vnd.android.package-archive")
+  intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+  activity.startActivity(intent)
+end
+
+function YLua:返回桌面()
+  activity.moveTaskToBack(true)
+end
+
+function YLua:隐藏状态栏()
+  activity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
+end
+
+function YLua:设置状态栏颜色(a)
+  activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS).setStatusBarColor(a)
+end
+
+function YLua:设置标题栏颜色(a)
+  import "android.graphics.drawable.ColorDrawable"
+  activity.ActionBar.setBackgroundDrawable(ColorDrawable(a))
+end
+
+function YLua:显示标题栏()
+  activity.ActionBar.show()
+end
+
+function YLua:隐藏标题栏()
+  activity.ActionBar.hide()
+end
+
+function YLua:竖屏()
+  activity.setRequestedOrientation(1)
+end
+
+function YLua:横屏()
+  activity.setRequestedOrientation(0)
+end
+
+function YLua:随机数(a,b)
+  return math.random(a,b)
+end
+
+function YLua:获取文件大小(文件路径)
+  import "android.text.format.Formatter"
+  return Formatter.formatFileSize(activity,文件路径.length())
+end
+
+function YLua:调用系统打开文件(path)
+  import "android.webkit.MimeTypeMap"
+  import "android.content.Intent"
+  import "android.net.Uri"
+  import "java.io.File"
+  FileName=tostring(File(path).Name)
+  ExtensionName=FileName:match(".+%.(%w+)$")
+  Mime=MimeTypeMap.getSingleton().getMimeTypeFromExtension(ExtensionName)
+  if Mime then
+    intent = Intent();
+    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    intent.setAction(Intent.ACTION_VIEW);
+    intent.setDataAndType(Uri.fromFile(File(path)), Mime);
+    activity.startActivity(intent);
+   else
+    print("找不到可以用来打开此文件的程序")
+  end
+end
+
+function YLua:判断数组中值是否存在(字符串,二维表)
+  local 临时表={}
+  for key,value in pairs(二维表) do
+    临时表[value] = true
+  end
+  if 临时表[字符串] then
+    return true;
+   else
+    return false
+  end
+end
+
+function YLua:取文件后缀(文件名)
+  return 文件名:match(".+%.(%w+)$")
+end
+
+function YLua:取文件名称(文件名)
+  return 文件名:match("(.+)%.%w+$")
+end
+
+function YLua:取文件完整名称(文件名)
+  return 文件名:match(".+%/(.+)$")
+end
+
+function YLua:提示(内容)
+  Toast.makeText(activity, 内容,Toast.LENGTH_SHORT).show()
+end
+
+function YLua:分享文字(内容)
+  import "android.content.Intent"
+  local intent=Intent(Intent.ACTION_SEND);
+  intent.setType("text/plain");
+  intent.putExtra(Intent.EXTRA_SUBJECT, "分享");
+  intent.putExtra(Intent.EXTRA_TEXT, tostring(内容));
+  intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+  activity.startActivity(Intent.createChooser(intent,"分享到:"));
+end
+
+function YLua:重启应用()
+  import "android.content.Intent"
+  local intent = activity.getPackageManager().getLaunchIntentForPackage(activity.getPackageName());
+  intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+  activity.startActivity(intent);
+end
+
+function YLua:安装应用(安装包路径)
+  import "android.content.Intent"
+  import "android.net.Uri"
+  intent = Intent(Intent.ACTION_VIEW)
+  intent.setDataAndType(Uri.parse("file://"..安装包路径), "application/vnd.android.package-archive")
+  intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+  activity.startActivity(intent)
+end
+
+function YLua:打开指定应用(包名)
+  import "android.content.Intent"
+  import "android.content.pm.PackageManager"
+  this.startActivity(activity.getPackageManager().getLaunchIntentForPackage(包名))--填写应用包名
+end
+
+function YLua:检查文件夹(下载目录)
+  import "java.io.*"
+  if File(下载目录).isDirectory()then
+   else
+    File(下载目录).mkdirs()
+  end
+end
+
+function YLua:包含汉字(sequence)
+  import "java.util.regex.Pattern"
+  import "java.util.regex.Matcher"
+  format = "[\\u4E00-\\u9FA5\\uF900-\\uFA2D]"
+  result = false
+  pattern = Pattern.compile(format)
+  matcher = pattern.matcher(sequence)
+  result = matcher.find()
+  return result
+end
+
+function YLua:获取状态栏高度()
+  import "android.os.Build"
+  if Build.VERSION.SDK_INT >= 19 then
+    resourceId = activity.getResources().getIdentifier("status_bar_height", "dimen", "android")
+    return activity.getResources().getDimensionPixelSize(resourceId)
+   else
+    return 0
+  end
+end
+
+function YLua:沉浸状态栏()
+  if Build.VERSION.SDK_INT >= 19 then
+    activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+  end
+end
+
+function YLua:dp转px(sdp)
+  dm=this.getResources().getDisplayMetrics()
+  types={px=0,dp=1,sp=2,pt=3,["in"]=4,mm=5}
+  n,ty=sdp:match("^(%-?[%.%d]+)(%a%a)$")
+  return TypedValue.applyDimension(types[ty],tonumber(n),dm)
+end
+
+function YLua:微信扫一扫()
+  import "android.content.Intent"
+  import "android.content.ComponentName"
+  intent = Intent();
+  intent.setComponent( ComponentName("com.tencent.mm", "com.tencent.mm.ui.LauncherUI"));
+  intent.putExtra("LauncherUI.From.Scaner.Shortcut", true);
+  intent.setFlags(335544320);
+  intent.setAction("android.intent.action.VIEW");
+  activity.startActivity(intent);
+end
+
+function YLua:支付宝扫一扫()
+  import "android.net.Uri"
+  import "android.content.Intent"
+  uri = Uri.parse("alipayqr://platformapi/startapp?saId=10000007");
+  intent = Intent(Intent.ACTION_VIEW, uri);
+  activity.startActivity(intent);
+end
+
+function YLua:获取设备标识码()
+  import "android.provider.Settings$Secure"
+  return Secure.getString(activity.getContentResolver(), Secure.ANDROID_ID)
+end
+
+function YLua:获取IMEI()
+  import "android.content.Context"
+  return activity.getSystemService(Context.TELEPHONY_SERVICE).getDeviceId()
+end
+
+function YLua:获取状态栏高度()
+  return activity.getResources().getDimensionPixelSize(luajava.bindClass("com.android.internal.R$dimen")().status_bar_height)
+end
+
+function YLua:获取设备型号()
+  return Build.MODEL
+end
+
+function YLua:获取ROM类型()
+  return string.upper(Build.MANUFACTURER)
+end
+
+function YLua:获取SDK版本()
+  return tonumber(Build.VERSION.SDK)
+end
+
+function YLua:获取安卓版本()
+  return Build.VERSION.RELEASE
+end
+
+function YLua:获取屏幕尺寸()
+  import "android.util.DisplayMetrics"
+  local dm = DisplayMetrics();
+  activity.getWindowManager().getDefaultDisplay().getMetrics(dm);
+  diagonalPixels = Math.sqrt(Math.pow(dm.widthPixels, 2) + Math.pow(dm.heightPixels, 2));
+  return diagonalPixels / (160 * dm.density);
+end
+
+function YLua:获取手机内置存储剩余空间()
+  fs = StatFs(Environment.getDataDirectory().getPath())
+  return 格式化文件大小(fs.getAvailableBytes())
+end
+
+function YLua:获取手机内置存储空间()
+  path = Environment.getExternalStorageDirectory()
+  stat = StatFs(path.getPath())
+  blockSize = stat.getBlockSize()
+  totalBlocks = stat.getBlockCount()
+  return 格式化文件大小(blockSize * totalBlocks)
+end
+
+function YLua:解压缩(压缩路径,解压缩路径)
+  xpcall(function()
+    ZipUtil.unzip(压缩路径,解压缩路径)
+  end,function()
+    print("解压文件 "..压缩路径.." 失败")
+  end)
+end
+
+function YLua:压缩(原路径,压缩路径,名称)
+  xpcall(function()
+    LuaUtil.zip(原路径,压缩路径,名称)
+  end,function()
+    print("压缩文件 "..原路径.." 至 "..压缩路径.."/"..名称.." 失败")
+  end)
+end
+
+function YLua:重命名文件(旧,新)
+  import "java.io.File"
+  xpcall(function()
+    File(旧).renameTo(File(新))
+  end,function()
+    print("重命名文件 "..旧.." 失败")
+  end)
+end
+
+function YLua:移动文件(旧,新)
+  import "java.io.File"
+  xpcall(function()
+    File(旧).renameTo(File(新))
+  end,function()
+    print("移动文件 "..旧.." 至 "..新.." 失败")
+  end)
+end
+
+function YLua:文件修改时间(path)
+  import "java.io.File"
+  f = File(path);
+  time = f.lastModified()
+  return time
+end
+
+function YLua:内置存储路径(t)
+  return Environment.getExternalStorageDirectory().toString().."/"..t
+end
+
+function YLua:获取视频第一帧(path)
+  import "android.media.MediaMetadataRetriever"
+  media = MediaMetadataRetriever()
+  media.setDataSource(tostring(path))
+  return media.getFrameAtTime()
+end
+
+function YLua:px2dp(pxValue)
+  local scale = this.getResources().getDisplayMetrics().density
+  return (pxValue / scale + 0.5)
+end
+
+function YLua:dp2px(dpValue)
+  local scale = this.getResources().getDisplayMetrics().density
+  return (dpValue * scale + 0.5)
+end
+
+function YLua:sp2px(spValue)
+  local fontScale = this.getResources().getDisplayMetrics().scaledDensity
+  return (spValue * fontScale + 0.5)
+end
+
+function YLua:全屏()
+  activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+end
+
+function YLua:退出全屏()
+  activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+end
+
+function YLua:复制文本(文本)
+  activity.getSystemService(Context.CLIPBOARD_SERVICE).setText(文本)
+end
+
+
+
+
+--使用方法如下
+
+--创建对象
+yswy = YLua:new()
+
+--访问对象属性
+--print(yswy.当前脚本运行目录)
+
+--访问对象方法
+--print(yswy:获取脚本当前目录())
+
+
+
+
+
+
+
+--类的继承
+中文函数库 = yswy:new()
+
+function 中文函数库:new()
+  o = o or yswy:new()
+  setmetatable(o, self)
+  self.__index = self
+  return o
+end
+
+--派生类的方法
+function 中文函数库:获取屏幕高度()
+  return self.屏幕高度
+end
+
+
+--覆写类的方法
+function 中文函数库:获取脚本当前目录()
+  return "什么也没有"
+end
+
+
+
+--访问对象属性
+--print(中文函数库.屏幕高度)
+
+--访问对象方法
+print(中文函数库:获取脚本当前目录())》》
+《《获取系统语言》》
+《《--获取语言
+Locale.getDefault().getLanguage()
+--中文返回zh
+--英文返回en
+--日语返回ja
+
+--获取国家
+Locale.getDefault().getCountry()
+--中国返回CN
+--日本返回JP
+--其他百度语言和国家代码
+
+语言=Locale.getDefault().getLanguage()
+国家=Locale.getDefault().getCountry()
+
+print(语言,国家)》》
+《《遍历设置字体》》
+《《--遍历设置字体
+import "android.graphics.Typeface"
+font=Typeface.create("宋体",Typeface.BOLD)
+function setFont(view)
+  if luajava.instanceof(view,TextView) then
+    view.setTypeface(font)
+   elseif luajava.instanceof(view,ViewGroup) then
+    for i=0,view.getChildCount()-1 do
+      setFont(view.getChildAt(i))
+    end
+  end
+  --来源：柯南
+end
+setFont(activity.getDecorView())》》
+《《无状态的迭代器》》
+《《无状态的迭代器是指不保留任何状态的迭代器，因此在循环中我们可以利用无状态迭代器避免创建闭包花费额外的代价。
+
+每一次迭代，迭代函数都是用两个变量（状态常量和控制变量）的值作为参数被调用，一个无状态的迭代器只利用这两个值可以获取下一个元素。
+
+这种无状态迭代器的典型的简单的例子是ipairs，他遍历数组的每一个元素。
+
+以下实例我们使用了一个简单的函数来实现迭代器，实现 数字 n 的平方：
+
+function square(iteratorMaxCount,currentNumber)
+  if currentNumber<iteratorMaxCount
+    then
+    currentNumber = currentNumber+1
+    return currentNumber, currentNumber*currentNumber
+  end
+end
+
+for i,n in square,3,0
+  do
+  print(i,n)
+end
+
+以上实例输出结果为：
+
+1
+4
+9
+
+迭代的状态包括被遍历的表（循环过程中不会改变的状态常量）和当前的索引下标（控制变量），ipairs和迭代函数都很简单，我们在Lua中可以这样实现：
+
+function iter (a, i)
+  i = i + 1
+  local v = a[i]
+  if v then
+    return i, v
+  end
+end
+
+function ipairs (a)
+  return iter, a, 0
+end
+
+当Lua调用ipairs(a)开始循环时，他获取三个值：迭代函数iter、状态常量a、控制变量初始值0；然后Lua调用iter(a,0)返回1,a[1]（除非a[1]=nil）；第二次迭代调用iter(a,1)返回2,a[2]……直到第一个nil元素。》》
+《《签名验证》》
+《《
+--签名验证
+import "android.content.pm.PackageManager"
+--获取包管理器
+local pm = activity.getPackageManager();
+local pm=pm.getPackageInfo(activity.getPackageName(),PackageManager.GET_SIGNATURES).signatures[0].hashCode()
+
+--下面这一段是将校验内容复制到剪切板
+--打包后自己签名打开软件一遍 会自动复制到剪切板 然后复制到下面
+import "android.content.*"
+activity.getSystemService(Context.CLIPBOARD_SERVICE)
+.setText(tostring(pm))--这个获取完后记得删掉
+
+--将获取到的粘贴骚这个pms=后面
+--例如pms=-94378134
+pms=
+
+if pm~=pms then
+  print"不通过"
+end
+》》
+《《跑马灯文本控件》》
+《《跑马灯文本控件必须加入以下属性才能使用
+ellipsize="marquee";
+focusableInTouchMode=true;
+focusable=true;
+singleLine=true;》》
+《《lua异常处理》》
+《《require "import"
+import "android.app.*"
+import "android.os.*"
+import "android.widget.*"
+import "android.view.*"
+--lua有两个函数可以捕获异常
+--pcall(fun[,arg1,...])
+--xpcall(fun,errfun,[,arg1,...])
+
+--对比两个函数,xpcall多了异常处理
+
+function add(a,b)
+
+  a = a+b
+
+  return a
+
+end
+
+
+--正常调用
+print(add(1,3))
+
+
+p=2
+
+
+function err()
+  print("不能相加")
+end
+
+
+--安全调用,若出现异常,则会调用err函数,程序不会崩溃,继续执行下面的代码
+xpcall(add,err,1,p)
+
+
+print("==========")
+
+local fun=function()
+  import"lg"
+end
+
+xpcall(fun,
+function(e)
+  print("报错:\n"..e)
+end
+)
+
+--方法二
+
+
+--错误监听
+local fun=function()
+  import"lg"
+end
+--监听结束
+
+--错误事件
+tryCatch=function(fun)
+  local ret,errMessage=pcall(fun);
+  错误=ret and "false" or "true"
+  --print("是否错误:\n"..错误.." \n\n出错信息:\n" .. (errMessage or "无"));
+
+  if 错误=="true" then--错误提示
+    local ret,errMessage=pcall(fun)
+    print("\n错误详情：\n"..errMessage)
+   else--无错误正常执行
+    print("没有错误发生")
+  end
+
+end
+
+tryCatch(fun)--调用错误
+》》
+《《安全地执行lua代码》》
+《《--安全地执行lua代码
+load([[print(233)]],nil,"t",{
+--设置可调用的函数
+["print"]=print,
+})()》》
+《《正则表达式》》
+《《.(点): 与任何字符配对
+%a: 与任何字母配对
+%c: 与任何控制符配对(例如\n)
+%d: 与任何数字配对
+%l: 与任何小写字母配对
+%p: 与任何标点(punctuation)配对
+%s: 与空白字符配对
+%u: 与任何大写字母配对
+%w: 与任何字母/数字配对
+%x: 与任何十六进制数配对
+%z: 与任何代表0的字符配对
+%x(此处x是非字母非数字字符): 与字符x配对. 主要用来处理表达式中有功能的字符(^$()%.[]*+-?)的配对问题, 例如%%与%配对[数个字符类]: 与任何[]中包含的字符类配对. 例如[%w_]与任何字母/数字, 或下划线符号(_)配对[^数个字符类]: 与任何不包含在[]中的字符类配对. 例如[^%s]与任何非空白字符配对
+
+当上述的字符类用大写书写时, 表示与非此字符类的任何字符配对. 例如, %S表示与任何非空白字符配对.
+
+%a  星期简写
+%A  星期大写
+%b  月份简写
+%B  月份大写
+%c  日期时间
+%d  月份天数
+%H  小时[24进制]
+%I  小时[12进制]
+%j  年中第几天
+%m  月份
+%M 分钟
+%p  am或pm
+%S  秒数
+%w  星期
+%W  第几周
+%x  日期
+%X  时间
+%y  两位数的月份
+%Y 完整的月份
+%z  时区
+%% 百分号
+
+
+
+%c - 接受一个数字, 并将其转化为ASCII码表中对应的字符
+%d, %i - 接受一个数字并将其转化为有符号的整数格式
+%o - 接受一个数字并将其转化为八进制数格式
+%u - 接受一个数字并将其转化为无符号整数格式
+%x - 接受一个数字并将其转化为十六进制数格式, 使用小写字母
+%X - 接受一个数字并将其转化为十六进制数格式, 使用大写字母
+%e - 接受一个数字并将其转化为科学记数法格式, 使用小写字母e
+%E - 接受一个数字并将其转化为科学记数法格式, 使用大写字母E
+%f - 接受一个数字并将其转化为浮点数格式
+%g(%G) - 接受一个数字并将其转化为%e(%E, 对应%G)及%f中较短的一种格式
+%q - 接受一个字符串并将其转化为可安全被Lua编译器读入的格式
+%s - 接受一个字符串并按照给定的参数格式化该字符串
+为进一步细化格式, 可以在%号后添加参数. 参数将以如下的顺序读入:
+
+(1) 符号: 一个+号表示其后的数字转义符将让正数显示正号. 默认情况下只有负数显示符号.
+(2) 占位符: 一个0, 在后面指定了字串宽度时占位用. 不填时的默认占位符是空格.
+(3) 对齐标识: 在指定了字串宽度时, 默认为右对齐, 增加-号可以改为左对齐.
+(4) 宽度数值
+(5) 小数位数/字串裁切: 在宽度数值后增加的小数部分n, 若后接f(浮点数转义符, 如%6.3f)则设定该浮点数的小数只保留n位, 若后接s(字符串转义符, 如%5.3s)则设定该字符串只显示前n位.
+
+
+--实例
+string1 = "Lua"
+string2 = "Tutorial"
+number1 = 10
+number2 = 20
+-- 基本字符串格式化
+print(string.format("基本格式化 %s %s",string1,string2))
+-- 日期格式化
+date = 2; month = 1; year = 2014
+print(string.format("日期格式化 %02d/%02d/%03d", date, month, year))
+-- 十进制格式化
+print(string.format("%.4f",1/3))
+
+--[[
+以上代码执行结果为：
+
+基本格式化 Lua Tutorial
+日期格式化 02/01/2014
+0.3333
+]]
+
+--其他例子：
+
+string.format("%c", 83)                 -- 输出S
+string.format("%+d", 17.0)              -- 输出+17
+string.format("%05d", 17)               -- 输出00017
+string.format("%o", 17)                 -- 输出21
+string.format("%u", 3.14)               -- 输出3
+string.format("%x", 13)                 -- 输出d
+string.format("%X", 13)                 -- 输出D
+string.format("%e", 1000)               -- 输出1.000000e+03
+string.format("%E", 1000)               -- 输出1.000000E+03
+string.format("%6.3f", 13)              -- 输出13.000
+string.format("%q", "One\nTwo")         -- 输出"One\
+                                        -- 　　Two"
+string.format("%s", "monkey")           -- 输出monkey
+string.format("%10s", "monkey")         -- 输出    monkey
+string.format("%5.3s", "monkey")        -- 输出  mon》》
+《《最方便的二进制调用》》
+《《 --SCP二进制中文函数调用模块(所有框架通用)
+
+--【1】调用二进制中文函数模块包↓
+function 二进制执行(二进制路径,二进制开关提示)--中文函数
+二进制调用=activity.getLuaDir(二进制路径)--自动获取lua文件的执行路径,只需填二进制在插件的目录路径即可
+local Root,exit,numb=os.execute("su")
+if Root==true then--判断有root则执行以下命令↓
+os.execute("su -c chmod 777 "..二进制调用)--授予777权限
+Runtime.getRuntime().exec("su -c "..二进制调用)--执行二进制功能
+print(二进制开关提示)
+else--没有root则执行以下命令↓
+os.execute("chmod 777 "..二进制调用)--授予777权限
+Runtime.getRuntime().exec(""..二进制调用)--执行二进制功能
+print(二进制开关提示)
+end
+end
+--调用路径写入>>>二进制执行(二进制路径,二进制提示)
+
+-------------------------------------------------------------我是分割线
+
+---【2】二进制调用模块包↓
+
+--全枪聚点无后
+function a1.OnCheckedChangeListener()
+if a1.checked then
+二进制执行("libso/a01_on","全枪聚点无后开启成功")
+else
+二进制执行("libso/a01_off","全枪聚点无后关闭成功")
+end
+end
+》》
+《《好看的对话框》》
+《《require "import"
+import "android.app.*"
+import "android.os.*"
+import "android.widget.*"
+import "android.view.*"
+
+import "android.net.Uri"
+import "android.content.ComponentName"
+import "android.content.Intent"
+
+--import "layout"
+--activity.setTitle('AndroLua+')
+activity.setTheme(android.R.style.Theme_DeviceDefault_Light)
+--activity.setContentView(loadlayout(layout))
+import "java.io.File"
+--布局表中调用
+import "android.graphics.Typeface"
+function 字体(t)
+  return Typeface.createFromFile(File(activity.getLuaDir().."/res/"..t..".ttf"))
+end
+强调色=0xffef7584
+文字=0xFF212121
+function 输入对话框(标题,HINT,点击事件,中立按钮,中立按钮点击事件,点击按钮之后是否关闭)
+  import "android.app.AlertDialog"
+  function 关闭对话框()
+    dl.dismiss()
+  end
+  --输入对话框
+  InputLayout={
+    LinearLayout;
+    orientation="vertical";
+    Focusable=true,
+    FocusableInTouchMode=true,
+    --[[ {
+      TextView;
+      id="Prompt",
+      textSize="15sp",
+      layout_marginTop="10dp";
+      layout_marginLeft="3dp",
+      layout_width="80%w";
+      layout_gravity="center",
+      text="输入路径:";
+    };]]
+    {
+      TextView;
+      layout_width="fill";
+      id="标题b";
+      --  gravity="center";
+      textColor=文字;--卡片背景颜色--#F17F42
+      layout_height="fill";
+      textSize="18sp";
+      --onClick=关闭对话框;
+      padding="20dp";
+      paddingBottom="0dp";
+    };
+    {
+      EditText;
+      hint=HINT;
+      -- text="/sdcard/";
+      layout_marginTop="22dp";
+      layout_marginBottom="22dp";
+      layout_margin="10dp";
+      layout_width="fill";
+      layout_gravity="center",
+      id="edit";
+     -- Typeface=字体("Product");
+      --  cursorVisible=false;--隐藏编辑框光标,设置为true则显示
+    };
+    {
+      FrameLayout;
+      layout_width="fill";
+      {
+        LinearLayout;
+        --layout_gravity="end";
+        {
+          CardView;--卡片控件
+          id="floatbuttonm";
+          --  layout_gravity="right|bottom";
+          CardElevation='0dp';--卡片阴影
+          --adjustViewBounds=true,
+          -- layout_margin="24dp",
+          layout_width='-2';--卡片宽度
+          layout_height='-2';--卡片高
+          radius='4dp';--卡片圆角
+          CardBackgroundColor=0;--卡片背景颜色--#F17F42
+          -- Gravity="center",
+          layout_marginRight="10dp";
+          layout_marginTop="10dp";
+          layout_marginBottom="14dp";
+          layout_marginLeft="8dp";
+          {
+            TextView;
+            layout_width="fill";
+            id="bu0";
+            gravity="center";
+            text="中立";
+            textColor=文字;--卡片背景颜色--#F17F42
+            layout_height="fill";
+            textSize="14sp";
+            --  onClick=中立按钮点击事件;
+            paddingRight="16dp";
+            paddingLeft="16dp";
+            paddingTop="10dp";
+            paddingBottom="10dp";
+          };
+        };
+      };
+      {
+        LinearLayout;
+        layout_gravity="end";
+        --layout_width="fill";
+        {
+          CardView;--卡片控件
+          id="floatbuttonm";
+          --  layout_gravity="right|bottom";
+          CardElevation='0dp';--卡片阴影
+          --adjustViewBounds=true,
+          -- layout_margin="24dp",
+          layout_width='-2';--卡片宽度
+          layout_height='-2';--卡片高
+          radius='4dp';--卡片圆角
+          CardBackgroundColor=0;--卡片背景颜色--#F17F42
+          -- Gravity="center",
+          layout_marginRight="10dp";
+          layout_marginTop="10dp";
+          layout_marginBottom="14dp";
+          {
+            TextView;
+            layout_width="fill";
+            id="bu1";
+            gravity="center";
+            text="取消";
+            textColor=文字;--卡片背景颜色--#F17F42
+            layout_height="fill";
+            textSize="14sp";
+            onClick=关闭对话框;
+            paddingRight="16dp";
+            paddingLeft="16dp";
+            paddingTop="10dp";
+            paddingBottom="10dp";
+          };
+        };
+        {
+          CardView;--卡片控件
+          id="floatbuttonm";
+          --  layout_gravity="right|bottom";
+          CardElevation='4dp';--卡片阴影
+          --adjustViewBounds=true,
+          -- layout_margin="24dp",
+          layout_width='-2';--卡片宽度
+          layout_height='-2';--卡片高
+          radius='4dp';--卡片圆角
+          CardBackgroundColor=强调色;--卡片背景颜色--#F17F42
+          -- Gravity="center",
+          layout_marginRight="18dp";
+          layout_marginTop="10dp";
+          layout_marginBottom="14dp";
+          {
+            TextView;
+            layout_width="fill";
+            id="bu2";
+            gravity="center";
+            text="确定";
+            textColor="#ffffff";
+            layout_height="fill";
+            textSize="14sp";
+            --onClick=点击事件;
+            paddingRight="16dp";
+            paddingLeft="16dp";
+            paddingTop="10dp";
+            paddingBottom="10dp";
+          };
+        };
+      };
+    };
+  };
+  tDialog=AlertDialog.Builder(this)
+  --.setTitle(标题)
+  .setView(loadlayout(InputLayout))
+  --[[  .setPositiveButton("确定",{onClick=点击事件})
+  .setNeutralButton(中立按钮,{onClick=中立按钮点击事件})
+  .setNegativeButton("取消",nil)]]
+  标题b.text=标题
+  dl=tDialog.show()
+  p=dl.getWindow().getAttributes();
+  p.width=(activity.Width);
+  dl.getWindow().setAttributes(p);
+  -- DialogButtonFilter(tDialog,1,io.open("/data/data/"..activity.getPackageName().."/其他部件强调色储存.xml"):read("*a"))
+  import "android.graphics.PorterDuffColorFilter"
+  import "android.graphics.PorterDuff"
+  --修改编辑框颜色
+  edit.getBackground().setColorFilter(PorterDuffColorFilter(强调色,PorterDuff.Mode.SRC_ATOP));
+  波纹(bu1,0xFF7F7F7F)
+  波纹(bu2,0xFF7F7F7F)
+  波纹(bu0,0xFF7F7F7F)
+  --设置加粗
+  bu1.getPaint().setFakeBoldText(true)
+  --设置加粗
+  标题b.getPaint().setFakeBoldText(true)
+  --设置加粗
+  bu0.getPaint().setFakeBoldText(true)
+  --设置加粗
+  bu2.getPaint().setFakeBoldText(true)
+  if 中立按钮=="" then
+    --控件不可视
+    bu0.setVisibility(View.INVISIBLE)
+   else
+    bu0.text=中立按钮
+  end
+  bu2.onClick=function()
+    点击事件()
+    if 中立按钮=="" then
+      关闭对话框()
+    end
+  end
+  bu0.onClick=function()
+    中立按钮点击事件()
+    if 中立按钮=="" then
+      关闭对话框()
+    end
+  end
+end
+function 波纹(id,颜色)
+  import "android.content.res.ColorStateList"local attrsArray = {android.R.attr.selectableItemBackgroundBorderless}
+  local typedArray =activity.obtainStyledAttributes(attrsArray)
+  ripple=typedArray.getResourceId(0,0)
+  Pretend=activity.Resources.getDrawable(ripple)
+  Pretend.setColor(ColorStateList(int[0].class{int{}},int{颜色}))
+  id.setBackground(Pretend.setColor(ColorStateList(int[0].class{int{}},int{颜色})))
+end
+--例
+输入对话框("QQ强制聊天",
+  "输入QQ号...",
+  function()
+ if edit.Text == "" or #edit.Text < 5 or #edit.Text > 10 then
+        edit.Error="请正确输入"
+        else
+--QQ聊天
+url="mqqwpa://im/chat?chat_type=wpa&uin="..edit.text
+activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+end
+  end,
+  "",
+  function(v)end)》》
+《《伪分析版混淆》》
+《《function Tabgsub(str,tab_in,tab_from)
+  str = tostring(str)
+  for k,v in ipairs(tab_in) do
+    v = tostring(v)
+    if type(tab_from)=="table" then
+      str = str:gsub(v,tab_from[k])
+     else
+      str = str:gsub(v,tab_from)
+    end
+  end
+  return str
+end
+
+math.randomseed(os.time())
+math.random(1)
+function Rand(num)--生成混淆码
+  local tab={"O","o","0"}
+  local str=tab[math.random(1,#tab-1)]
+  for i=1,num-1 do
+    str = str..tab[math.random(1,#tab)]
+  end
+  return str
+end
+
+inf={
+  "=","= +=",
+  " +",
+  "%. +"," +%.",
+  "%[ +"," +]","%] +%["
+
+}
+
+from={
+  " = ","==",
+  " ",
+  ".",".",
+  "[","]","]["
+
+}
+
+
+function getInt(code)--获得变量
+  local str=""
+  local tab={}
+  for k in code:gmatch("(%S+) = ") do
+    if not str:find(k) and not k:find("%[") and not k:find("%.") then
+      tab[#tab+1]=k
+      str = str..k.." "
+    end
+  end
+  return tab
+end
+
+Man={}
+function IntForm(code)--调用此函数用于更新混淆
+  if Man[code]==nil then
+    local hx
+    while true
+      hx=Rand(8)
+      if not table.find(Man,hx) then
+        break
+      end
+    end
+    Man[code]=hx
+  end
+  return Man[code]
+end
+
+function Hxgsub(code,tab)
+  code = "<"..code..">"--此处负责执行替换动作
+  for k,v in ipairs(tab) do
+    code = code:gsub("(.)("..v..")(.)",function(r1,r2,r3)
+      -- r1,r2,r3=tostring(r1),tostring(r2),tostring(r3)
+      if r1:find"%a" or r3:find"%a" and not r1:find"=" then
+        return r1..r2..r3
+       else
+        return r1..IntForm(r2)..r3
+      end
+    end)
+  end
+  return code:gsub("^<",""):gsub(">$","")
+end
+
+
+code=[[
+ a=代码放这里
+ print(a)
+ if a==1 then
+ end
+]]
+
+
+rcode=Tabgsub(code,inf,from)
+
+hxcode=Hxgsub(code,getInt(rcode))
+
+print(hxcode)--混淆后字符
+
+
+
+
+-- Hi:) 
+--不想整词法分析 整了个挨打的做法
+--主要是rcode这个变量的表
+--目前没得办法扫到全部变量 因为过滤了.那些的懒得整
+--还有在对于大量代码的情况下有可能出现我没考虑过的情况出现导致错误
+--所以玩玩就好了》》
+《《lua test》》
+《《require "import"
+import "android.app.*"
+import "android.os.*"
+import "android.widget.*"
+import "android.view.*"
+--import "layout"
+--activity.setTitle('AndroLua+')
+--activity.setTheme(android.R.style.Theme_Holo_Light)
+--activity.setContentView(loadlayout(layout))
+
+
+local _env={}
+
+setmetatable(_env,{
+ __index=function(self,key)
+  return _G[key]
+ end
+})
+
+local str=(io.readall(activity.getLuaDir("func.lua")))
+
+pcall(load(str,"js","bt",_env))
+
+local write={}
+
+local format=[[function %s(...)
+   return activity.doString([=[%s]=],{...})
+end]]
+
+
+
+--[=[
+str=[[many字 strings]]
+code="return string.char("
+for i=1,string.len(str) do
+code=code..string.byte(string.sub(str,i,i))..","
+end
+code=string.sub(code,0,string.len(code)-1)..")"
+print(code,"\n\n执行结果\n"..loadstring(code)())
+]=]
+
+if table.size(_env)>0 then
+ table.foreach(_env,function(k,v)
+
+  local dumpStr=string.dump(v)
+  table.insert(write,format:format(k,dumpStr))
+ end)
+end
+
+
+local runStr=table.concat(write,"\n\n")
+io.open(activity.getLuaDir("fua.lua"),"w"):write(runStr):close()
+load(runStr)()
+print(runStr)
+
+--标题()
+print(dp2px(5))
+》》
+《《gmatch示例简化你的代码》》
+《《
+--程序启动时会执行的事件
+
+以前的代码=[==[
+items={}
+for i=1,36 do
+ table.insert(items,"解析🌐"..tostring(i))
+end
+AlertDialog.Builder(this)
+.setTitle("备用解析")
+.setItems(items,{onClick=function(l,v) 
+    if v==0 then     
+加载网页("http://jx.1ff1.cn/?url="..webView.getUrl());
+end
+    if v==1 then
+加载网页("https://www.pangujiexi.cc/jiexi.php?url="..webView.getUrl());
+end
+    if v==2 then
+加载网页("http://v.qiytv.cn/?url="..webView.getUrl());
+end
+    if v==3 then
+加载网页("https://jiexi.bm6ig.cn/?url="..webView.getUrl());
+end
+    if v==4 then
+加载网页("http://t.qiytv.cn/?url="..webView.getUrl());
+end
+    if v==5 then
+加载网页("http://jx.isryun.com/?v="..webView.getUrl());
+end
+    if v==6 then
+加载网页("http://api.69ne.com/?url="..webView.getUrl());
+end
+    if v==7 then
+加载网页("https://api.aaaak.pw/q/?url="..webView.getUrl());
+end
+    if v==8 then
+加载网页("http://www.xuanbo.top/?url="..webView.getUrl());
+end
+    if v==9 then
+加载网页("https://jsap.attakids.com/?url="..webView.getUrl());
+end
+    if v==10 then
+加载网页("https://jx. sigyjiexi.com/?url="..webView.getUrl());
+end
+    if v==11 then
+加载网页("http://www.6g6d.cn/jx/?url="..webView.getUrl());
+end
+    if v==12 then
+加载网页("https://z1.m1907.cn?jx="..webView.getUrl());
+end
+    if v==13 then
+加载网页("http://api.myzch.cn/?url="..webView.getUrl());
+end
+    if v==14 then
+加载网页("http://ysz.myzch.cn/?url="..webView.getUrl());
+end
+    if v==15 then
+加载网页("http://jx.myzch.cn/?v="..webView.getUrl());
+end
+    if v==16 then
+加载网页("http://api.zncss.com/?url="..webView.getUrl());
+end
+    if v==17 then
+加载网页("http://api.baiyug.vip/?url="..webView.getUrl());
+end
+    if v==18 then
+加载网页("https://123dan.top/jie/xi?url="..webView.getUrl());
+end
+    if v==19 then
+加载网页("https://jx.fuxing56.com/jiexi/?url="..webView.getUrl());
+end
+    if v==20 then
+加载网页("https://www.1717yun.com/beiyong/?url="..webView.getUrl());
+end
+    if v==21 then
+加载网页("https://vip.mpos.ren/v/?url="..webView.getUrl());
+end
+    if v==22 then
+加载网页("jx.sinbinchina.com/?v="..webView.getUrl());
+end
+    if v==23 then
+加载网页("https://api.iztyy.com/jiexi/?url="..webView.getUrl());
+end
+    if v==24 then
+加载网页("https://by.dybhn.com/?url="..webView.getUrl());
+end
+    if v==25 then
+加载网页("https://v.dybhn.com/index.php?url="..webView.getUrl());
+end
+    if v==26 then
+加载网页("https://www.ckmov.vip/api.php?url="..webView.getUrl());
+end
+    if v==27 then
+加载网页("http://at520.cn/jx/?url="..webView.getUrl());
+end
+    if v==28 then
+加载网页("http://beijixs.cn/?url="..webView.getUrl());
+end
+    if v==29 then
+加载网页("http://playx.top/?url="..webView.getUrl());
+end
+    if v==30 then
+加载网页(" http://bofang.online/?url="..webView.getUrl());
+end
+    if v==31 then
+加载网页("http://api.6uzi.com/?url="..webView.getUrl());
+end
+    if v==32 then
+加载网页("http://nitian9.com/?url="..webView.getUrl());
+end
+    if v==33 then
+加载网页("http://api.oopw.top/jiexi/?url="..webView.getUrl());
+end
+    if v==34 then
+加载网页("http://mimijiexi.top/?url="..webView.getUrl());
+end
+    if v==35 then
+加载网页("http://jx.178du.com/jx2.php?url="..webView.getUrl());
+end
+
+ end})
+.show()
+
+]==]
+
+
+
+
+新代码模板=[==[
+items={}
+for i=1,36 do
+  table.insert(items,"解析🌐"..tostring(i))
+end
+AlertDialog.Builder(this)
+.setTitle("备用解析")
+.setItems(items,{onClick=function(l,v) 
+    local 解析=%s
+    加载网页(解析[v+1]..tostring(网页链接))
+    end})
+.show()
+
+]==]--这里的%s即将要格式化
+
+
+要格式化的={}--可以是字符串，这里为了方便就用table
+
+for t,c in 以前的代码:gmatch([[加载网页%("(.-)"]]) do
+  table.insert(要格式化的,t)--字符串的话直接拼接就行了
+end
+
+
+--如果是字符串就不用dump
+要格式化的=dump(要格式化的)
+
+--删除dump后前面的键
+要格式化的=要格式化的:gsub("%[.-%].-=","")
+
+
+--格式化一下
+新代码=string.format(新代码模板,要格式化的)
+
+--复制文本(新代码)--复制一下
+
+
+--成品在悬浮窗点击事件内
+
+--悬浮按钮点击时执行的事件
+items={}
+for i=1,36 do
+  table.insert(items,"解析🌐"..tostring(i))
+end
+AlertDialog.Builder(this)
+.setTitle("备用解析")
+.setItems(items,{onClick=function(l,v) 
+    local 解析={
+   "http://jx.1ff1.cn/?url=" ;
+   "https://www.pangujiexi.cc/jiexi.php?url=" ;
+   "http://v.qiytv.cn/?url=" ;
+   "https://jiexi.bm6ig.cn/?url=" ;
+   "http://t.qiytv.cn/?url=" ;
+   "http://jx.isryun.com/?v=" ;
+   "http://api.69ne.com/?url=" ;
+   "https://api.aaaak.pw/q/?url=" ;
+   "http://www.xuanbo.top/?url=" ;
+   "https://jsap.attakids.com/?url=" ;
+   "https://jx. sigyjiexi.com/?url=" ;
+   "http://www.6g6d.cn/jx/?url=" ;
+   "https://z1.m1907.cn?jx=" ;
+   "http://api.myzch.cn/?url=" ;
+   "http://ysz.myzch.cn/?url=" ;
+   "http://jx.myzch.cn/?v=" ;
+   "http://api.zncss.com/?url=" ;
+   "http://api.baiyug.vip/?url=" ;
+   "https://123dan.top/jie/xi?url=" ;
+   "https://jx.fuxing56.com/jiexi/?url=" ;
+   "https://www.1717yun.com/beiyong/?url=" ;
+   "https://vip.mpos.ren/v/?url=" ;
+   "jx.sinbinchina.com/?v=" ;
+   "https://api.iztyy.com/jiexi/?url=" ;
+   "https://by.dybhn.com/?url=" ;
+   "https://v.dybhn.com/index.php?url=" ;
+   "https://www.ckmov.vip/api.php?url=" ;
+   "http://at520.cn/jx/?url=" ;
+   "http://beijixs.cn/?url=" ;
+   "http://playx.top/?url=" ;
+   "http://bofang.online/?url=" ;
+   "http://api.6uzi.com/?url=" ;
+   "http://nitian9.com/?url=" ;
+   "http://api.oopw.top/jiexi/?url=" ;
+   "http://mimijiexi.top/?url=" ;
+   "http://jx.178du.com/jx2.php?url=" ;
+  } ;
+    加载网页(解析[v+1]..tostring(网页链接))
+    end})
+.show()
+
+》》
+《《实现机器人无缝交流源码，不卡顿》》
+《《 require "import"
+import "android.app.*"
+import "android.os.*"
+import "android.widget.*"
+import "android.view.*"
+layout={
+  LinearLayout,
+  layout_width="-1",
+  layout_height="-1",
+  orientation="vertical",
+  {
+    LinearLayout,
+    layout_width="-1",
+    layout_height="-1",
+    orientation="vertical",
+    layout_weight="1",
+    {
+      ScrollView,
+      layout_width="-1",
+      layout_height="-1",
+      fillViewport="true",
+      id="scrollView",
+      {
+        LinearLayout,
+        layout_width="-1",
+        layout_height="-1",
+        background="#FFFFFFFF",
+        orientation="vertical",
+        paddingLeft="30dp",
+        paddingRight="30dp",
+        id="lt",
+      },
+    },
+  },
+  {
+    LinearLayout,
+    layout_width="100%w",
+    layout_height="50dp",
+    orientation="horizontal",
+    {
+      EditText,
+      layout_width="80%w",
+      layout_height="50dp",
+      textSize="15sp",
+      id="et",
+    },
+    {
+      Button,
+      layout_width="20%w",
+      layout_height="50dp",
+      text="发送",
+      onClick="发送信息",
+    },
+  },
+}
+activity.setContentView(loadlayout(layout))
+
+function 发送信息()
+
+  a=tostring(et.getText())
+
+  MeLayout={
+    TextView,
+    layout_width="-1",
+    layout_height="50dp",
+    Gravity="center|right",
+    textSize="18sp",
+    text=a,
+  }
+
+  lt.addView(loadlayout(MeLayout))
+  dataurl="http://i.itpk.cn/api.php?question="..a
+  Http.get(dataurl,null,"utf8",nil,function(code,content,cookie,header)
+    RobotLayout={
+      TextView,
+      layout_width="50%w",
+      layout_height="-2",
+      Gravity="center|left",
+      textSize="20sp",
+      text=content,
+    }
+    lt.addView(loadlayout(RobotLayout))
+  end)
+  et.setText("")
+  scrollView.fullScroll(ScrollView.FOCUS_DOWN);
+--使弹出的输入法不影响布局
+activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+end》》

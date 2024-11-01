@@ -1,7 +1,11 @@
 # element-plus-vite-starter
 
 
-![alt text](docs/home_page.png)
++ 前台
+  ![alt text](docs/index_page.png)
+
++ 后台
+  ![alt text](docs/home_page.png)
 ## Project setup
 
 ```bash

@@ -1,0 +1,4488 @@
+《《设置全局控件样式》》
+《《
+require "import"
+import "android.app.*"
+import "android.os.*"
+import "android.widget.*"
+import "android.view.*"
+
+--一定要放在activity.setContentView之前
+function TextView()
+  return luajava.bindClass("android.widget.TextView")()
+  .setBackgroundColor(0xffff7f7f)
+end
+import "layout"
+
+
+--可以用这个方法给全局的文本设置字体
+--精髓就是要放在加载布局函数之前
+
+activity.setContentView(loadlayout("layout"))
+》》
+
+
+
+《《关闭输入法hideSoftInputFromWindow》》
+《《
+ --关闭输入法
+  import "android.view.inputmethod.InputMethodManager"
+  local imm = activity.getSystemService(Context.INPUT_METHOD_SERVICE)
+  if imm.isActive() then
+    imm.hideSoftInputFromWindow(编辑框父控件.getApplicationWindowToken(), 0)
+  end
+》》
+
+
+
+
+《《默认不弹出EditText编辑框》》
+《《
+Focusable=true,
+FocusableInTouchMode=true,
+    --放入父控件
+》》
+
+
+《《监听EditText器编辑框文本改变事件》》
+《《
+main_list_so.addTextChangedListener({
+  onTextChanged=function()
+    if main_list_so.Text == "" then
+      _ENV[updatelist]() else
+      _ENV[updatelist](main_list_so.Text)
+    end
+  end
+})
+》》
+
+
+
+《《package.loaded 遍历已载入的脚本》》
+《《
+--列出所有被 require 过的 package
+for k,v in pairs(package.loaded) do
+    print("loaded package："..k)
+end
+》》
+
+
+
+《《package.loaded 重新载入脚本》》
+《《package.loaded["script.data"] = nil
+  import "script.data"
+--[[
+如果想重置某个脚本的状态，需要在 再一次 require 前，加上 package.loaded[luafile] = nil，然后再重新 require ,
+就能重置该脚本的状态了。
+]]
+》》
+
+
+
+《《获取状态栏高度》》
+《《import "android.content.Context" 
+local a = activity.getResources().getDimensionPixelSize(activity.getResources().getIdentifier("status_bar_height", "dimen", "android"))
+print(a)》》
+
+
+《《编辑框只允许输入指定字符》》
+《《
+编辑框.setKeyListener(DigitsKeyListener.getInstance("1234567890qwertyuiopasdfghjklzxcvbnm_."));
+》》
+
+《《列表滚动到底部》》
+《《列表.setSelectionFromTop(列表.getCount(),列表.getCount())》》
+
+《《时间戳转时间格式》》
+《《os.date("%H:%M", tointeger(这里是时间戳))》》
+
+
+
+《《防止编辑框弹出键盘》》
+《《FocusableInTouchMode=true;
+Focusable=true;
+
+--放在父控件上》》
+
+
+
+
+
+
+《《id.getParent()获取父控件对象》》
+《《id.getParent()》》
+
+
+
+《《适配器滚动到指定位置/回到刷新前位置》》
+《《
+--刷新前获取滚动的位置
+local pos = pack_list1.getFirstVisiblePosition()
+
+--开始刷新适配器
+pack_list1.Adapter = adp
+
+--回到之前的位置
+pack_list1.setSelection(pos)
+》》
+
+
+《《防止屏幕休眠/屏幕常亮2》》
+《《import "android.view.WindowManager"
+activity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+--放在加载loayut之前》》
+
+
+
+
+《《隐藏所有子控件》》
+《《
+local getID = true
+  local idcount = 1
+  while getID do
+    getID = 父控件.getChildAt(idcount)
+    idcount = idcount + 1
+    if getID then
+      getID.visibility=8
+    end
+  end
+
+  idcount = nil
+  getID = nil
+》》
+
+
+
+《《获取控件子控件ID》》
+《《
+父控件.getChildAt(1)
+》》
+
+
+《《CheckBox多选框改颜色(着色)》》
+《《
+import "android.content.res.ColorStateList"
+  import "android.content.Context"
+  local function tintList(color)
+    return ColorStateList({
+      {android.R.attr.state_checked},
+      {-android.R.attr.state_checked}
+    }, {color,color})
+  end
+  id.setButtonTintList(tintList(0xffededed))
+
+》》
+
+
+《《EditText限制编辑框输入长度》》
+《《
+import "android.text.InputFilter"
+id.setFilters({InputFilter.LengthFilter(8)})
+--editText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(20)})
+》》
+
+
+《《PageView去除滑动效果》》
+《《id.setCurrentItem(i, false)
+--放在点击事件里面，作用和showPage一样，都是切换界面
+》》
+
+
+《《PageView禁止滑动》》
+《《id.setUserInputEnabled(false);》》
+
+
+《《进度条数值调整》》
+《《jindu.incrementProgressBy(-1)--数值减1
+jindu.incrementProgressBy(1)--数值加1》》
+
+
+《《ScrollView滚动到指定位置》》
+《《
+ScrollView.FOCUS_DOWN;//底部
+ScrollView.FOCUS_UP;//顶部
+ScrollView.FOCUS_LEFT;//左边
+ScrollView.FOCUS_RIGHT;//右边
+id.fullScroll(ScrollView.FOCUS_DOWN)
+》》
+
+
+
+
+《《zipr：超级zip操作封装库》》
+《《
+--引入封装库
+import "zipr"
+
+
+--解压zip：zip路径, 解压到的路径, 密码(nil表示不设密码)   返回 true/false
+local re = zipr.unzip(p, out)  --没有密码
+local re = zipr.unzip(p, out, pass)
+if re then
+print("解压成功")
+end
+
+
+--压缩zip：要压缩的路径, 压缩到的路径(不包含文件名), 密码(nil表示不设密码)   返回 true/false
+local re = zipr.zip(p, out) --不设密码
+local re = zipr.zip(p, out, pass)
+if re then
+print("压缩成功")
+end
+
+
+--解压单文件：要解压的zip,要解压的文件名,解压到的文件夹,密码   返回 true/false
+local re = zipr.unzips(p, n, out) --没有密码
+local re = zipr.unzips(p, n, out, pass)
+if re then
+print("单文件解压成功")
+end
+
+
+--zip是否有密码：zip压缩包路径  返回 true/false
+local re = zipr.haspass(p)
+if re then
+print("这个zip文件有密码")
+end
+
+
+--zip文件列表：zip压缩包路径  返回table
+local re = zipr.list(p)
+print(dump(re))
+
+
+ --获取zip内文件大小：zip路径，文件路径  返回 int
+local re = zipr.size(p, n)
+print(re)
+
+
+--压缩文件(自定义zip名称)：需要压缩的路径，压缩到的路径，zip文件名称(xx.zip)   返回true/false
+local re = zipr.zipn(input, out, name)
+if re then
+print("压缩成功")
+end
+
+
+--获取zip文件内容：zip路径，文件路径，编码方式(默认 utf-8 )  返回字符串
+local re = zipr.read(p,n,code)
+print(re)
+
+
+》》
+
+
+
+
+
+
+
+《《box2D物理引擎》》
+《《PolygonDef类--多变形
+density = 0--密度
+friction = 0.8; -- 设置多边形的摩擦力
+restitution = 0; -- 设置多边形的恢复力 弹力
+
+CircleDef(); -- 实例一个圆形的皮肤
+  density = 0; -- 初始圆形为静态
+  friction = 0.8; -- 初始圆形的摩擦力
+  restitution = 0.3; -- 初始圆形的恢复力
+  radius = r / RATE; -- 初始圆形的半径
+
+BodyDef(); -- 实例一个刚体对象
+allowSleep 是否允许睡眠
+angle--角
+angularDamping--旋转速度调节 越大旋转越慢
+fixedRotation--br是否固定物体使其不旋转
+isBullet--br是否是子弹 高速移动物体请设置true 否则会碰撞失败
+isSleeping--br是否为睡眠状态 设置初始为休眠状态 受力活动
+linearDamping--线性阻尼
+position--位置
+massData--自定义物体数据
+userData--自定义类
+
+body 物体类
+createShape(shape)--创建形状
+destroyShape(shape)--破坏形状
+setMass(mass)--设置质量
+setMassFromShapes()
+applyForce(Vec2(500,0),Vec2(0,0));--施加力 加速度力循序渐进
+setXForm(Vec2(10,10),0)--设置坐标传送物体
+getPosition--f 获取中心位置
+getAngle()--f 获取旋转角
+getWorldCenter()--返回vec2
+getLocalCenter()--返回vec2
+setLinearVelocity()--设置线性速度
+getLinearVelocity()--返回vec2 获取线性速度
+setAngularVelocity()--设置角速度
+getAngularVelocity()--f 获取角速度
+applyTorque(f)--施加扭矩
+applyImpulse(vec2,vec2)--施加(力)新的速度与原有速度叠加
+getMass() --f 获取质量
+getInertia()--f 获得惯性
+getWorldPoint(Vec2) --获取世界点
+getWorldVector(Vec2)--获取世界矢量
+getLocalPoint(Vec2)--获取局部点
+getLocalVector(Vec2)--获取局部矢量
+isBullet()--获取是否是子弹
+setBullet()--设置为子弹
+isStatic()--获取是否休眠
+isDynamic()--获取是否是动态的 density为零返回false
+isFrozen()--获取是否被冻结了
+isSleeping()--获取睡眠状态
+allowSleeping(boolean)--允许睡眠
+wakeUp()--唤醒
+getShapeList()--获取形状列表 调整形状参数
+getJointList()--获取关节对象列表 调整关节参数
+getNext()
+getUserData()--获取自定义类
+synchronizeTransform()--同步形状
+isConnected()--链接
+advance(f)--获取未来对象状态
+getLinearVelocityFromWorldPoint(veac2)--从世界点获取线速度
+getLinearVelocityFromLocalPoint(veac2)--从局部点获取线速度
+putToSleep()--设置睡眠
+setUserData()--设置自定义类
+getWorld()--获取当前对象所在世界
+
+Shape 形状类
+uidcount
+m_body
+m_density 密度 0为静态
+m_filter 
+m_friction 摩擦力
+m_isSensor 是否为传感器
+m_next --list下一个
+m_proxyId   Integer.MAX_VALUE
+m_restitution 弹力
+m_sweepRadius 扫描半径
+m_type --自定义形状 UNKNOWN_SHAPE,CIRCLE_SHAPE,POLYGON_SHAPE,SHAPE_TYPE_COUNT
+m_userData --自定义类
+uid 
+Shape(ShapeDef)
+getFriction()--获取摩擦力
+setFriction(float friction)--设置摩擦力
+getRestitution()--获取弹力
+setRestitution(float restitution)--设置弹力
+setFilterData(FilterData filter)--设置过滤器
+getFilterData()--获取过滤器
+{filter类
+  categoryBits --种类 优先级 0为不碰撞
+  groupIndex --分组
+  maskBits --碰撞种类 相同碰撞
+}
+getType()--获取形状
+{
+    UNKNOWN_SHAPE,--未知形状
+    CIRCLE_SHAPE,--圆形
+    POLYGON_SHAPE,--多边形
+    SHAPE_TYPE_COUNT--计数形状
+}
+isSensor()--是否是传感器
+getUserData()--获取自定义类
+setUserData(Object o)--设置自定义类
+getBody()--获取bogdy
+getNext()
+getSweepRadius()--扫描半径
+synchronize(BroadPhase broadPhase, XForm transform1, XForm transform2)
+refilterProxy(BroadPhase broadPhase, XForm transform)
+create(ShapeDef def)--创建shapedef
+destroy(Shape s)--破坏
+destructor()--清理沉余
+createProxy(BroadPhase broadPhase, XForm transform)--创建代理
+destroyProxy(BroadPhase broadPhase)--销毁代理
+
+shapeDef类
+    public float density = 0.0f;--密度
+    public FilterData filter = new FilterData();--过滤器
+    public float friction = 0.2f;--摩擦力
+    public boolean isSensor;--是否为传感器
+    public float restitution = 0.0f;--弹力
+    public ShapeType type = ShapeType.UNKNOWN_SHAPE;--形状
+    public Object userData = null;--自定义类
+
+
+
+World类
+World(AABB,Gravity,true) -3-为true时允许物体休眠
+getBodyCount()--获取对象数量
+getJointCount --获取关节数量
+getContactCount() 获取碰撞体数量
+setGravity(Vec2(0,10)) --设置重力 (x轴,y轴)
+getGravity() v--获取重力
+getGroundBody() --获取地面物体
+getBodyList() --获取body对象列表
+    getBodyList().m_next --下一个
+getJointList() --获取关节列表
+setDestructionListener--设置销毁监听器
+setBoundaryListener --设置边界监听器
+setContactListener --设置碰撞监听器
+  ContactListener{
+  add=function( contactPoint)--每当有碰撞会调用此函数添加新的接触点
+  end,
+  persist=function( contactPoint)--持续碰撞调用此函数
+  end,
+  remove=function( contactPoint)--脱离碰撞调用此函
+  end,
+  result=function( contactResult)--	发生碰撞（有新的接触点被监听到）会调用此函数 持续碰撞时也会调用此函数
+  end,
+  }
+setContactFilter --设置碰撞过滤器
+  ContactFilter{
+    shouldCollide=function(Shape shape, Shape shape2)
+      end
+  }
+setDebugDraw() --设置调试绘图
+createBody() --创建新对象
+destroyBody() --删除对象
+createJoint --创建关节
+destroyJoint --删除关节
+step(f,i)--f 时间步1/60 i 迭代次数10
+postStep(f,i)--后步骤
+registerPostStep(Steppable)--注册后步骤
+unregisterPostStep(Steppable) --销毁后步骤
+refilter(Shape shape) --参照过滤器--形状过滤器
+setWarmStarting(b) --设置热启动
+setPositionCorrection(b)--设置位置校正
+setContinuousPhysics(b)--设置连续物理
+validate() 
+getProxyCount() --获取代理数量
+getPairCount() --获取配对数量
+getWorldAABB() v--获取世界边界
+inRange(AABB) --是否在范围内
+solve(TimeStep) --设置线程
+solveTOI(TimeStep)
+drawShape(Shape,XForm,Color3f,b)--绘制形状
+drawJoint(Joint) -+绘制关节
+drawDebugData() --绘制debug
+
+contactPoint --类
+    public float friction;--摩擦力
+    public ContactID id = new ContactID();
+    public Vec2 normal = new Vec2();
+    public Vec2 position = new Vec2();
+    public float restitution;--复原
+    public float separation;--分离
+    public Shape shape1;--获取碰撞1外形
+    public Shape shape2;--获取碰撞2外形
+    public Vec2 velocity;--速度
+》》
+
+
+
+
+
+
+《《游戏实例：井字棋》》
+《《require "import"
+import "android.app.*"
+import "android.os.*"
+import "android.widget.*"
+import "android.view.*"
+import "android.graphics.Color"
+import "android.graphics.PorterDuff"
+import "android.graphics.Paint"
+
+
+layout=--全屏框架
+{
+  LinearLayout;--线性控件
+  orientation='vertical';--布局方向
+  layout_width='fill';--布局宽度
+  layout_height='fill';--布局高度
+  gravity='center';--控件内容的重力方向
+  {
+    GridView,
+    numColumns=3,
+    layout_height='100%w',
+    layout_width='100%w',
+    id="grid",
+  },
+}
+activity.setContentView(loadlayout(layout))
+
+
+import "android.graphics.Paint"
+import "com.androlua.LuaDrawable"
+
+w=activity.width
+
+--第一版，待完善
+
+item={
+  TextView,
+  layout_width=w/3,
+  layout_height=w/3,
+  TextSize="50",
+  Gravity="center",
+  id="tv",
+}
+
+data={}
+adp=LuaAdapter(activity,data,item)
+grid.setAdapter(adp)
+
+for i=1,9 do
+  table.insert(data,{tv=""})
+end
+
+--画个UI框
+myLuaDrawable=LuaDrawable(function(mCanvas,mPaint,mDrawable)
+
+  mPaint1 = Paint();
+  mPaint1.setStrokeWidth(20)
+  mPaint1.setAntiAlias(true)
+  mPaint1.setStyle(Paint.Style.STROKE)
+  mPaint1.setColor(0x88000000)
+
+  mCanvas.drawLine(0,w/3,w,w/3,mPaint1)
+  mCanvas.drawLine(0,w*2/3,w,w*2/3,mPaint1)
+  mCanvas.drawLine(w/3,0,w/3,w,mPaint1)
+  mCanvas.drawLine(w*2/3,0,w*2/3,w,mPaint1)
+
+end)
+
+grid.background=myLuaDrawable
+
+a=true
+
+grid.onItemClick=function(l,v,p,i)
+
+  --轮流下棋的逻辑
+  if v.Text=="" then
+
+    if a==true then
+      v.Text="✔"
+      a=false
+     else
+      v.Text="✘"
+      a=true
+    end
+   else
+    print("这里下过了,不能再下了哦")
+  end
+
+  function 判断三棋连珠(x,y,z)
+
+    if x==y and y==z and x==z then
+
+      if x=="" and y=="" and z=="" then
+
+       elseif x=="✔" and y=="✔" and z=="✔" then
+        print("✔胜利,游戏结束")
+       elseif x=="✘" and y=="✘" and z=="✘" then
+        print("✘胜利,游戏结束")
+      end
+      --return true
+    end
+    --return false
+  end
+
+  --判断横竖是否相连
+  for i=0,8 do
+
+    if i%3 == 0 then
+      x=grid.getChildAt(i)
+      y=grid.getChildAt(i+1)
+      z=grid.getChildAt(i+2)
+      判断三棋连珠(x.Text,y.Text,z.Text)
+    end
+
+    if i<=2 then
+      x=grid.getChildAt(i)
+      y=grid.getChildAt(i+3)
+      z=grid.getChildAt(i+6)
+      判断三棋连珠(x.Text,y.Text,z.Text)
+    end
+  end
+
+  --判断两条交叉斜线是否相连
+  x=grid.getChildAt(0)
+  y=grid.getChildAt(4)
+  z=grid.getChildAt(8)
+  判断三棋连珠(x.Text,y.Text,z.Text)
+
+  x=grid.getChildAt(2)
+  y=grid.getChildAt(4)
+  z=grid.getChildAt(6)
+  判断三棋连珠(x.Text,y.Text,z.Text)
+end
+》》
+
+
+
+
+
+《《游戏实例：贪吃蛇》》
+《《require "import"
+import "android.app.*"
+import "android.os.*"
+import "android.widget.*"
+import "android.view.*"
+import "android.graphics.Color"
+import "android.graphics.PorterDuff"
+import "android.graphics.Paint"
+--构建布局
+layout={
+  LinearLayout;--线性控件
+  orientation='vertical';--布局方向
+  layout_width='fill';--布局宽度
+  layout_height='fill';--布局高度
+  gravity='center';--控件内容的重力方向
+  {
+    SurfaceView;
+    id="sureface";
+    layout_width='100%w';
+    layout_height='100%w';
+  };
+  {
+    FrameLayout;
+    {
+      Button;
+      text="↑";
+      onClick="up";
+      layout_gravity="center";
+    };
+    layout_width="fill";
+  };
+  {
+    FrameLayout;
+    {
+      LinearLayout;
+      {
+        Button;
+        text="←";
+        onClick="left";
+      };
+      {
+        Button;
+        text="↓";
+        onClick="down";
+      };
+      {
+        Button;
+        text="→";
+        onClick="right";
+      };
+      layout_gravity="center";
+    };
+    layout_width="fill";
+  };
+};
+
+activity.setContentView(loadlayout(layout))
+
+
+import 'android.graphics.*'
+
+function random(...)
+  math.randomseed(tonumber(string.reverse(os.clock()))*100000)
+  return math.random(...)
+end
+
+
+local W=activity.Width
+local H=activity.Height
+local bmp=Bitmap.createBitmap(W,H,Bitmap.Config.RGB_565)
+local g=Canvas(bmp)
+local pen=Paint()
+local w=W/24
+local m=23
+local x=1
+local y=1
+local rect={}
+local _rect={}
+local n=4
+rect[1]=Rect(w,w,w,w)
+_rect[1]={x=1,y=1}
+
+function p()
+  X= random (0,m)
+  Y= random (0,m)
+  _Rect=Rect(X*w,Y*w,(X+1)*w-1,(Y+1)*w-1)
+end
+
+p()
+local f=0
+local m_x=0
+local m_y=0
+function tick()
+  g=holder.lockCanvas()
+
+  --如果画布尚未创建
+  if not g then
+    return
+  end
+
+  --如果超过屏幕
+  x=x+m_x
+  y=y+m_y
+  if x>m then
+    x=0
+   elseif x<0 then
+    x=m
+   elseif y>m then
+    y=0
+   elseif y<0 then
+    y=m
+  end
+
+  --移动蛇体位置
+  local rectangle=Rect(x*w,y*w,(x+1)*w-1,(y+1)*w-1)
+  table.insert (rect,1,rectangle)
+  table.insert (_rect,1,{x=x,y=y})
+  rect[n+1]= nil
+  _rect[n+1]= nil
+
+  --如果遇到食物
+  if x==X and y==Y then
+    n=n+1
+    p()
+    f=f+10
+    tm.Interval=math.max(tm.Interval-2,20)
+    activity.Title= '得分：' ..f
+  end
+
+  --如果遇到自己
+  recth=_rect[1]
+  for r=5,#rect do
+    if recth.x==_rect[r].x and recth.y==_rect[r].y then
+      n=r
+      rect[n]=nil
+      f=0
+      activity.Title= '得分：' ..f
+     elseif n<r then
+      rect[r]=nil
+    end
+  end
+
+  --绘制蛇和食物
+  g.drawColor(0xffffffff)
+  for k,rectangle in ipairs (rect) do
+    g.drawRect(rectangle,pen)
+  end
+  g.drawRect(_Rect,pen)
+  g.drawLine(0,W,W,W,pen)
+  holder.unlockCanvasAndPost(ca)
+end
+
+tm=Ticker()
+tm.Interval=200
+tm.Enabled= true
+tm.onTick=tick
+
+function up()
+  if st~='d' then
+    m_x,m_y=0,-1
+    st='u'
+  end
+end
+
+function down()
+  if st~='u' then
+    m_x,m_y=0,1
+    st='d'
+  end
+end
+
+function left()
+  if st~='r' then
+    m_x,m_y=-1,0
+    st='l'
+  end
+end
+
+function right()
+  if st~='l' then
+    m_x,m_y=1,0
+    st='r'
+  end
+end
+
+
+callback=SurfaceHolder.Callback{
+  surfaceChanged=function(holder,format,width,height)
+  end,
+  surfaceCreated=function(holder)
+    ca=holder.lockCanvas()
+
+    --如果没有启动定时器则启动
+    if not tm.isRun() then
+      tm.start()
+      right()
+    end
+    holder.unlockCanvasAndPost(ca)
+  end,
+  surfaceDestroyed=function(holder)
+  end
+}
+holder=sureface.getHolder()
+holder.addCallback(callback)
+
+function onStart()
+  tm.Enabled=true
+end
+
+function onStop()
+  tm.Enabled=false
+end
+
+
+》》
+
+
+
+
+
+
+
+
+《《OpenGL模块》》
+《《require "import"
+import "gl"
+import "android.app.*"
+import "android.os.*"
+import "android.widget.*"
+import "android.view.*"
+import "android.opengl.*"
+activity.setTitle('AndLua+')
+--activity.setTheme( android.R.style.Theme_Holo_Light_NoActionBar_Fullscreen)
+
+mTriangleData ={
+    0.0, 0.6, 0.0,
+    -0.6, 0.0, 0.0,
+    0.6, 0.0, 0.0,
+    };
+mTriangleColor = {
+    1, 0, 0, 0,
+    0, 1, 0, 0,
+    0, 0, 1, 0,
+    };
+
+sr=GLSurfaceView.Renderer{
+    onSurfaceCreated=function(gl2, config)
+        gl.glDisable(gl.GL_DITHER);
+        gl.glHint(gl.GL_PERSPECTIVE_CORRECTION_HINT, gl.GL_FASTEST);
+        gl.glClearColor(0, 0, 0, 0);
+        gl.glShadeModel(gl.GL_SMOOTH);
+        gl.glClearDepth(1.0)
+        gl.glEnable(gl.GL_DEPTH_TEST);
+        gl.glDepthFunc(gl.GL_LEQUAL);
+        end,
+    onDrawFrame=function(gl2, config)
+        gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT);
+        gl.glMatrixMode(gl.GL_MODELVIEW);
+        gl.glLoadIdentity();
+        gl.glRotate(0,1,1,1)
+        gl.glTranslate(0, 0,0);
+        gl.glEnableClientState(gl.GL_VERTEX_ARRAY);
+        gl.glEnableClientState(gl.GL_COLOR_ARRAY);
+        gl.glVertexPointer( mTriangleData,3);
+        gl.glColorPointer(mTriangleColor,4);
+        gl.glDrawArrays( gl.GL_TRIANGLE_STRIP , 0, 3);
+        gl.glFinish();
+        gl.glDisableClientState(gl.GL_VERTEX_ARRAY);
+        gl.glDisableClientState(gl.GL_COLOR_ARRAY);
+        end,
+    onSurfaceChanged= function (gl2, w, h)
+        gl.glViewport(0, 0, w, h);
+        gl.glLoadIdentity();
+        ratio =  w / h;
+        gl.glFrustum(-rautio, ratio, -1, 1, 1, 10);
+        end
+    }
+
+glSurefaceView = GLSurfaceView(activity);
+glSurefaceView.setRenderer(sr);
+activity.setContentView(glSurefaceView);》》
+
+
+
+
+《《canvas 模块》》
+《《require "import"
+import "canvas"
+import "android.app.*"
+import "android.os.*"
+import "android.widget.*"
+import "android.view.*"
+import "android.graphics.*"
+activity.setTitle('AndLua+')
+
+paint=Paint()
+paint.setARGB(100,0,250,0)
+paint.setStrokeWidth(20)
+paint.setTextSize(28)
+
+sureface = SurfaceView(activity);
+callback=SurfaceHolder_Callback{
+    surfaceChanged=function(holder,format,width,height)
+        end,
+    surfaceCreated=function(holder)
+        ca=canvas.lockCanvas(holder)
+        if (ca~=nil) then
+            ca:drawRGB(0,79,90)
+            ca:drawRect(0,0,200,300,paint)
+            end
+        canvas.unlockCanvasAndPost(holder,ca)
+        end,
+    surfaceDestroyed=function(holder)
+        end
+    }
+holder=sureface.getHolder()
+holder.addCallback(callback)
+activity.setContentView(sureface)》》
+
+
+
+《《飞机大战》》
+《《require "import"
+import "android.app.*"
+import "android.os.*"
+import "android.widget.*"
+import "android.view.*"
+import "android.graphics.Color"
+import "android.graphics.PorterDuff"
+import "android.graphics.Paint"
+activity.setTitle('飞机大战/wsdx')
+activity.setTheme(android.R.style.Theme_Holo_Light)
+activity.setContentView(loadlayout({
+  RelativeLayout;
+  layout_width="fill";
+  background="#fe000000";
+  layout_height="fill";
+  id="back";
+}))
+
+count = 0
+--画面刷新次数
+
+config = {
+  air_width = 160,
+  air_height = 320,
+  --飞机宽高
+
+  pop_width = 30,
+  pop_height = 30,
+  --子弹宽高
+
+  ene_width = 160,
+  ene_height = 320,
+  --敌人宽高
+}
+--相关配置
+
+pos = {
+  x = 400,
+  y = 1000,
+  size = {config.air_width,config.air_height}
+}
+--记录飞机位置
+
+enes = {
+  {x=100,y=0,speed={0,1}}
+}
+--敌人
+
+pops = {
+}
+
+
+
+
+--分数
+score = {
+kill = 0,
+}
+
+
+
+
+
+
+back.onTouch = function(v,e)
+  pos.x = e.x-75
+  pos.y =e.y-160
+  return true
+end
+
+function daf(c)
+  --核心：绘制函数
+
+  local width = c.getWidth()
+  local height = c.getHeight()
+
+  --c.drawColor(Color.TRANSPARENT,PorterDuff.Mode.CLEAR);
+  local pa = Paint()
+  pa.setColor(0xFF0000ff)
+  pa.setStyle(pa.style.FILL)
+  c.drawRect(pos.x,pos.y,pos.x+config.air_width,pos.y+config.air_height,pa)
+  pa.setTextSize(50)
+  pa.setColor(0xFFFFFFFF)
+  c.drawText("飞机",pos.x+30,pos.y+160,pa)
+
+  for k,ep in pairs(pops) do
+
+    if ep.from == "e" then
+      pa.setColor(0xFFFF0000)
+     else
+      pa.setColor(0xFF0000FF)
+    end
+
+    --绘制子弹
+    c.drawRect(ep.x,ep.y,ep.x+ep.size[1],ep.y+ep.size[2],pa)
+
+    respeed(ep)
+
+    ep.from = ep.from or "a"
+
+
+    if checkscreen(ep,width,height) then
+      table.remove(pops,k)
+    end
+
+    for k,en in pairs(enes) do
+      if isBit(ep,en) and ep.from == "a" then
+        table.remove(enes,k)
+        score.kill = score.kill + 1
+      end
+    end
+
+    if isBit(ep,pos) then
+      if ep.from == "e" then
+        --失败
+        activity.finish()
+      end
+    end
+  end
+
+  pa.setColor(0xFF00FF00)
+
+  for k,ep in pairs(enes) do
+
+    --绘制敌人
+
+    c.drawRect(ep.x,ep.y,ep.x+ep.size[1],ep.y+ep.size[2],pa)
+
+    respeed(ep)
+
+    pa.setColor(0xFFFFFFFF)
+    c.drawText("敌人",ep.x+30,ep.y+160,pa)
+
+    pa.setColor(0xFF00FF00)
+    if checkscreen(ep,width,height) then
+      table.remove(enes,k)
+    end
+
+    if isBit(ep,pos) then
+      activity.finish()
+    end
+
+
+
+  end
+
+  --分数
+  pa.setColor(0xFF000000)
+  pa.setTextSize(50)
+  c.drawText("得分: "..score.kill, 50, 80, pa)
+
+
+  return c
+end
+
+
+
+
+
+
+
+
+
+
+da = LuaDrawable(daf)
+back.setBackground(da)
+
+function ffi()
+  back.invalidate()
+  count = count + 1
+
+  if count >= 20000 then
+    count = 0
+  end
+
+  if count % 35 == 0 then
+    shut({x = pos.x + (config.air_width/2),y= pos.y + (config.air_height/2),from = "a",speed={0,-20}})
+
+    for k,en in pairs(enes) do
+      shut({x = en.x + (en.size[1]/2),y = en.y + (en.size[2]*1.2),from = "e",speed={0,20}})
+    end
+
+  end
+
+  if count % 50 == 0 then
+    --生成新敌人
+    local en = {}
+    en.x = math.random(1,2000)
+    en.y = 0
+    en.speed = {math.random(-20,20),math.random(1,20)}
+    en.size = {config.ene_width,config.ene_height}
+    table.insert(enes,en)
+  end
+end
+
+function fi()
+  call("ffi")
+end
+
+gt = timer(fi,100,10)
+--刷新画面
+
+
+
+
+
+function respeed(en)
+  --反应速度
+  en.x = en.x + en.speed[1]
+  en.y = en.y + en.speed[2]
+end
+
+
+
+
+
+
+function checkscreen(en,w,h)
+  --检查是否超出屏幕
+
+  if (en.x > w or en.x < 0) or (en.y>h or en.y < 0) then
+    return true
+   else
+    return false
+  end
+end
+
+
+
+
+
+
+function loadpos()
+  --加载属性
+  for k,en in pairs(pops) do
+    if not en.size then
+      en.size = {}
+      en.size[1] = config.pop_width
+      en.size[2] = config.pop_height
+    end
+  end
+
+  for k,en in ipairs(enes) do
+    if not en.size then
+      en.size = {}
+      en.size[1] = config.ene_width
+      en.size[2] = config.ene_height
+    end
+  end
+end
+
+
+
+
+
+
+function isBit(en1,en2)
+  --判断碰撞
+  local po1 = {en1.x,en1.y}
+  --一号左上点
+
+  local po2 = {en1.x+en1.size[1],en1.y+en1.size[2]}
+  --一号右下点
+
+  --local po3 = {en2.x,en2.y}
+  --二号左上点
+
+  --local po4 = {en2.x+en2.size[1],en2.y+en2.size[2]}
+  --二号右下点
+
+  local po4 = {en2.x+en2.size[1],en2.y}
+  --二号左下点
+
+  if (po1[1] > en2.x and po1[1] < en2.x+en2.size[1]) and (po1[2] > en2.y and po1[2] < en2.y + en2.size[2]) then
+    return true
+  end
+
+  if (po2[1] > en2.x and po2[1] < en2.x+en2.size[1]) and (po2[2] > en2.y and po2[2] < en2.y + en2.size[2]) then
+    return true
+  end
+
+  if (po4[1] > en2.x and po4[1] < en2.x+en2.size[1]) and (po4[2] > en2.y and po4[2] < en2.y + en2.size[2]) then
+    return true
+  end
+
+  return false
+end
+
+
+
+
+
+loadpos()
+
+
+
+
+
+
+
+function onStop()
+  gt.stop()
+end
+
+function shut(o)
+  local o = o or {}
+  local en = o or {}
+  en.size = o.size or {config.pop_width,config.pop_height}
+  en.speed = o.speed or {0,0}
+  en.x = o.x or 0
+  en.y = o.y or 0
+  table.insert(pops,en)
+end》》
+
+
+
+《《重力球》》
+《《require "import"
+import "android.app.*"
+import "android.os.*"
+import "android.widget.*"
+import "android.view.*"
+import "android.content.Context"
+import "android.hardware.Sensor"
+import "android.hardware.SensorEvent"
+import "android.hardware.SensorEventListener"
+import "android.hardware.SensorManager"
+--小绵羊233 1935528751
+
+import "android.graphics.PorterDuffColorFilter"
+import "android.graphics.PorterDuff"
+import "android.graphics.drawable.ColorDrawable"
+
+
+--原物理传感器改造成重力球，倾斜角度越大，小球加速度越大
+
+
+--dp转px--
+function dp2px(dpValue)
+  local scale = this.getResources().getDisplayMetrics().density
+  return (dpValue * scale)
+end
+R=dp2px(30)
+W=activity.getWidth()
+H=activity.getHeight()
+xc=W/2-R--球位于中心时左上角x坐标
+yc=H/2-R--球位于中心时左上角y坐标
+
+
+
+activity.setContentView(loadlayout({
+  LinearLayout;
+  id="nio";
+  orientation="vertical";
+  {
+    RelativeLayout;
+    layout_width="fill";
+    background="#FFFFFF";
+    layout_height="fill";
+    gravity="center";
+    id="ht";
+    {
+      CardView;
+      CardElevation="4dp";
+      radius="30dp";
+      layout_width="60dp";
+      background="#0090ff";
+      layout_height="60dp";
+      layout_marginTop="90dp";
+      layout_marginLeft="100dp";
+      id="ho";
+      {
+        Button;
+        style="?android:attr/buttonBarButtonStyle";
+        textColor="#FFFFFF";
+        layout_width="fill";
+        layout_height="fill";
+        text="+";
+        textSize="30dp";
+        id="hy";
+      };
+    };
+    {
+      TextView;
+      id="tv",
+      gravity="center";
+      text=[==[这是一个传感器的物理效果，不是很好，但是...]==];
+    };
+    {
+      TextView;
+      layout_marginTop="100dp";
+    };
+  };
+}))
+
+vx=0
+vy=0
+
+传感器 = activity.getSystemService(Context.SENSOR_SERVICE)
+local 加速度传感器 = 传感器.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+sensorEventListener=SensorEventListener({
+  onSensorChanged=function(event)
+    ax = event.values[0]
+    ay = event.values[1]
+    vx=vx-ax
+    vy=vy+ay
+    if vx<R-W/2 then
+      ho.setX(0)
+     elseif vx>W/2-R then
+      ho.setX(W-2*R)
+     else
+      ho.setX(xc+vx)
+    end
+    if vy<R-H/2 then
+      ho.setY(0)
+     elseif vy>H/2-R then
+      ho.setY(H-2*R)
+     else
+      ho.setY(yc+vy)
+    end
+  end,nil
+})
+传感器.registerListener(sensorEventListener, 加速度传感器, SensorManager.SENSOR_DELAY_NORMAL)
+
+
+function onDestroy()
+  传感器.unregisterListener(sensorEventListener)
+end》》
+
+
+
+
+
+
+《《汉诺塔小游戏》》
+《《require "import"
+import "android.app.*"
+import "android.os.*"
+import "android.widget.*"
+import "android.view.*"
+import "android.graphics.Color"
+
+
+activity.setContentView(loadlayout({
+  FrameLayout,
+  layout_width="fill",
+  layout_height="fill",
+  id="mFrameLayout",
+}))
+activity.setRequestedOrientation(0)
+
+
+AINDEX = ... or 3
+
+
+
+--开发者:DIFFFFFFT
+--QQ:672228275
+--描述:这是一款小游戏,名字叫汉诺塔小游戏
+--基本没啥bug了,优化下UI和音效效果会更好
+--代码没啥规范，写的有点烂
+
+
+--官网:http://www.hannuota.cn/
+--汉诺塔游戏规则:你要将所有的盒子从TOWER 1移动到TOWER 3
+--你每次只能移动一个盒子。
+--游戏最重要的规则是大的盒子不能放在小的盒子上面
+
+--听说牛逼的人直接挑战第九关
+
+
+
+
+
+
+
+
+
+
+SCREEN_WIDTH = activity.getHeight()
+SCREEN_HEIGHT = activity.getWidth()
+
+MAX_A = SCREEN_WIDTH/3
+MAX_B = SCREEN_WIDTH/3
+MAX_C = SCREEN_WIDTH/3
+
+COLOR_TABLE = {
+  "#FF800020",
+  "#FF854F18",
+  "#FF858500",
+  "#FF1B850C",
+  "#FF008585",
+  "#FF002185",
+  "#FF640085",
+  "#FF850064",
+  "#FFC00090",
+  "#FFC02711",
+}
+
+
+
+
+function dp2px(dp)
+  local TypedValue= import "android.util.TypedValue"
+  local a,b=dp:match("^(%-?[%.%d]+)(%a%a)$")
+  return TypedValue.applyDimension(1,tonumber(a),activity.getResources().getDisplayMetrics())
+end
+
+
+
+function A(AINDEX)
+  local class = {}
+
+
+  local views = {}
+  local num = 0
+
+  class.AINDEX=AINDEX
+
+  class.addView=function()
+
+    num = num + 1
+    item_w = (SCREEN_WIDTH/3)-dp2px("20dp")*(num-1)
+    item_x = (SCREEN_WIDTH/3-item_w)/2
+    item_y = (SCREEN_HEIGHT)-dp2px("40dp")*num
+
+    local item = loadlayout({
+      TextView,
+      gravity="center",
+      layout_width=item_w,
+      layout_height="40dp",
+      x=item_x,
+      y=item_y,
+      tag=0,
+      text="",
+      textSize=0,
+      backgroundColor=COLOR_TABLE[num],
+    })
+
+    mFrameLayout.addView(item)
+    class.onTouch(item)
+    table.insert(views,item)
+
+    if num == AINDEX then
+      item.Text = "first"
+    end
+
+  end
+
+
+  class.a2a=function(item)
+    item.setX((SCREEN_WIDTH/3-item.getWidth())/2)
+    item.setY((SCREEN_HEIGHT)-dp2px("40dp")*(#views))
+  end
+  class.a2b=function(item)
+    if BQ.a2b(item) then
+      return
+    end
+    table.remove(views,table.find(views,item))
+    if #views~=0 then
+      views[#views].Text="first"
+    end
+  end
+  class.a2c=function(item)
+    if CQ.a2c(item) then
+      return
+    end
+    table.remove(views,table.find(views,item))
+    if #views~=0 then
+      views[#views].Text="first"
+    end
+    if CQ.win() then
+      return true
+    end
+  end
+
+
+
+  class.b2a=function(item)
+    if #views~=0 then
+      if item.getWidth() >= views[#views].getWidth() then
+        BQ.b2b(item)
+        return true
+      end
+    end
+
+    BQ.b2a(item)
+
+    item.setX((SCREEN_WIDTH/3-item.getWidth())/2)
+    item.setY((SCREEN_HEIGHT)-dp2px("40dp")*(#views+1))
+    item.tag = 0
+
+    if #views~=0 then
+      views[#views].Text=""
+    end
+    table.insert(views,item)
+  end
+
+  class.b2b=function(item)
+    BQ.b2b(item)
+  end
+  class.b2c=function(item)
+    BQ.b2c(item)
+    if CQ.win() then
+      return true
+    end
+  end
+
+
+
+  class.c2a=function(item)
+    if #views~=0 then
+      if item.getWidth() >= views[#views].getWidth() then
+        CQ.c2c(item)
+        return true
+      end
+    end
+
+    CQ.c2a(item)
+
+    item.setX((SCREEN_WIDTH/3-item.getWidth())/2)
+    item.setY((SCREEN_HEIGHT)-dp2px("40dp")*(#views+1))
+    item.tag = 0
+
+    if #views~=0 then
+      views[#views].Text=""
+    end
+    table.insert(views,item)
+  end
+  class.c2b=function(item)
+    CQ.c2b(item)
+  end
+  class.c2c=function(item)
+    CQ.c2c(item)
+    if CQ.win() then
+      return true
+    end
+  end
+
+
+  class.onTouch=function(item)
+
+    item.onTouch=function(view,event)
+      ACTION = event.getAction()
+      if ACTION == MotionEvent.ACTION_DOWN then
+
+       elseif ACTION == MotionEvent.ACTION_MOVE then
+        sx = event.getRawX()
+        sy = event.getRawY()
+        l = view.getLeft()
+        t = view.getTop()
+
+        if item.Text == "first" then
+          view.setX(sx+l-(view.getWidth()/2))
+          view.setY(sy+t-(view.getHeight()/2))
+        end
+
+       elseif ACTION == MotionEvent.ACTION_UP then
+
+        if item.Text ~= "first" then
+          return false
+        end
+
+        lastx = event.getRawX()
+        lasty = event.getRawY()
+
+        if lastx >= 0 and lastx <= SCREEN_WIDTH/3 then
+          tag = 0
+         elseif lastx >= SCREEN_WIDTH/3 and lastx <= SCREEN_WIDTH*2/3 then
+          tag = 1
+         else
+          tag = 2
+        end
+
+        if item.tag==0 and tag==0 then
+          class.a2a(item)
+         elseif item.tag==0 and tag==1 then
+          class.a2b(item)
+         elseif item.tag==1 and tag==0 then
+          class.b2a(item)
+         elseif item.tag==1 and tag==1 then
+          class.b2b(item)
+         elseif item.tag==0 and tag==2 then
+          class.a2c(item)
+         elseif item.tag==2 and tag==0 then
+          class.c2a(item)
+         elseif item.tag==2 and tag==2 then
+          class.c2c(item)
+         elseif item.tag==1 and tag==2 then
+          class.b2c(item)
+         elseif item.tag==2 and tag==1 then
+          class.c2b(item)
+        end
+
+      end
+      return true
+    end
+
+  end
+
+
+
+  for i=1,AINDEX do
+    class.addView()
+  end
+
+
+  return class
+end
+
+
+
+function B()
+  local class = {}
+
+  local views = {}
+
+  class.a2b=function(item)
+    if #views~=0 then
+      if item.getWidth() >= views[#views].getWidth() then
+        AQ.a2a(item)
+        return true
+      end
+    end
+
+    item.setX((SCREEN_WIDTH-item.getWidth())/2)
+    item.setY(SCREEN_HEIGHT-dp2px("40dp")*(#views+1))
+    item.tag = 1
+    if #views~=0 then
+      views[#views].Text=""
+    end
+    table.insert(views,item)
+  end
+
+  class.b2a=function(item)
+    table.remove(views,table.find(views,item))
+    if #views~=0 then
+      views[#views].Text="first"
+    end
+  end
+
+  class.b2b=function(item)
+    item.setX((SCREEN_WIDTH-item.getWidth())/2)
+    item.setY(SCREEN_HEIGHT-dp2px("40dp")*(#views))
+  end
+
+  class.b2c=function(item)
+    if CQ.b2c(item) then
+      return
+    end
+    table.remove(views,table.find(views,item))
+    if #views~=0 then
+      views[#views].Text="first"
+    end
+    if CQ.win() then
+      return true
+    end
+  end
+
+  class.c2b=function(item)
+    if #views~=0 then
+      if item.getWidth() >= views[#views].getWidth() then
+        CQ.c2c(item)
+        return true
+      end
+    end
+
+    item.setX((SCREEN_WIDTH-item.getWidth())/2)
+    item.setY(SCREEN_HEIGHT-dp2px("40dp")*(#views+1))
+    item.tag = 1
+    if #views~=0 then
+      views[#views].Text=""
+    end
+    table.insert(views,item)
+  end
+
+  return class
+end
+
+
+
+
+function C()
+
+  local class = {}
+
+  local views = {}
+
+  class.a2c=function(item)
+    if #views~=0 then
+      if item.getWidth() >= views[#views].getWidth() then
+        AQ.a2a(item)
+        return true
+      end
+    end
+
+    item.setX(((SCREEN_WIDTH*5)/6)-item.getWidth()/2)
+    item.setY(SCREEN_HEIGHT-dp2px("40dp")*(#views+1))
+    item.tag = 2
+    if #views~=0 then
+      views[#views].Text=""
+    end
+    table.insert(views,item)
+    if class.win() then
+      return true
+    end
+  end
+
+
+  class.c2a=function(item)
+    table.remove(views,table.find(views,item))
+    if #views~=0 then
+      views[#views].Text="first"
+    end
+  end
+
+  class.c2c=function(item)
+    item.setX(((SCREEN_WIDTH*5)/6)-item.getWidth()/2)
+    item.setY(SCREEN_HEIGHT-dp2px("40dp")*(#views))
+  end
+
+  class.b2c=function(item)
+    if #views~=0 then
+      if item.getWidth() >= views[#views].getWidth() then
+        BQ.b2b(item)
+        return true
+      end
+    end
+    item.setX(((SCREEN_WIDTH*5)/6)-item.getWidth()/2)
+    item.setY(SCREEN_HEIGHT-dp2px("40dp")*(#views+1))
+    item.tag = 2
+    if #views~=0 then
+      views[#views].Text=""
+    end
+    table.insert(views,item)
+    if class.win() then
+      return true
+    end
+  end
+
+  class.c2b=function(item)
+    if BQ.c2b(item) then
+      return
+    end
+    table.remove(views,table.find(views,item))
+    if #views~=0 then
+      views[#views].Text="first"
+    end
+  end
+
+  class.win=function()
+
+    if #views==AQ.AINDEX then
+
+      dialog=AlertDialog.Builder(this)
+      .setTitle("Win")
+      .setMessage("你赢了")
+      .setPositiveButton("下一关",{onClick=function(v)
+          activity.finish()
+          activity.newActivity("main",{AINDEX+1})
+          activity.overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out)
+        end})
+      .setNeutralButton("退出游戏",{onClick=function(v)
+          activity.finish()
+        end})
+      .setNegativeButton("重玩",{
+        onClick=function(v)
+          activity.finish()
+          activity.newActivity("main",{AINDEX})
+          activity.overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out)
+        end})
+      .show()
+      dialog.setCanceledOnTouchOutside(false);
+      dialog.create()
+
+      return true
+
+    end
+
+  end
+
+  return class
+end
+
+
+
+
+
+
+
+
+
+AQ = A(AINDEX)
+BQ = B()
+CQ = C()
+
+
+
+
+
+mFrameLayout.addView(loadlayout({
+  Button,
+  text="下一关",
+  onClick=function()
+    activity.finish()
+    activity.newActivity("main",{AINDEX+1})
+    activity.overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out)
+  end
+}))
+
+
+mFrameLayout.addView(loadlayout({
+  Button,
+  text="游戏规则",
+  x="100dp",
+  onClick=function()
+    dialog=AlertDialog.Builder(this)
+    .setTitle("游戏规则")
+    .setMessage([[你要将所有的盒子从TOWER 1移动到TOWER 3,你每次只能移动一个盒子。游戏最重要的规则是大的盒子不能放在小的盒子上面]])
+    .setPositiveButton("确定",nil)
+    .show()
+    dialog.setCanceledOnTouchOutside(false)
+    dialog.create()
+  end
+}))
+
+
+
+
+》》
+
+
+
+《《理线游戏》》
+《《require "import"
+import "android.app.*"
+import "android.os.*"
+import "android.widget.*"
+import "android.view.*"
+import "android.graphics.Paint"
+import "com.androlua.LuaDrawable"
+
+activity.setContentView(loadlayout({
+  LinearLayout,
+  orientation="vertical",
+  gravity="center",
+  layout_width=-1,
+  layout_height=-1,
+  {
+    TextView,
+    text="理线",
+    textSize=20,
+  },
+  {
+    TextView,
+    text="游戏目标：移动端点，使所有的线条互不相交。",
+    textSize=13,
+  },
+  {
+    FrameLayout,
+    id="屏",
+    layout_width=activity.getWidth(),
+    layout_height=activity.getWidth(),
+  }
+}
+));
+--[[
+作者Rzin
+没啥想说的。
+]]
+
+
+端点尺寸=10;--显示尺寸，非触摸尺寸
+端点颜色=0xffaa1144;
+线条宽度=2;
+线条颜色=0xff4411aa;
+
+
+local 端点={
+  --各端点的坐标。
+  {250,250},
+  {500,500},
+  {300,300},
+  {450,450},
+  {200,400},
+  {100,600},
+  {350,470},
+  {600,180},
+  {350,200}
+};
+
+local 线条={
+  --各线条的端点序号。
+  {1,3},
+  {2,4},
+  {3,5},
+  {6,4},
+  {2,5},
+  {6,2},
+  {7,1},
+  {6,7},
+  {1,5},
+  {6,8},
+  {2,8},
+  {9,4},
+  {3,2},
+  {9,1},
+  {7,4},
+  {3,4}
+};
+
+
+function 刷新屏(p0,p1,p2,p3)
+  --参：端点尺寸，端点颜色，线条宽度，线条颜色。
+  屏.setBackground(
+  LuaDrawable(
+  function(v0)
+    local v1=Paint();--端点画笔
+    v1.setColor(p1);
+    v1.setStrokeWidth(1);
+    v1.setStyle(Paint.Style.FILL);
+    v1.setAntiAlias(true);
+    v1.setDither(true);
+    local v2=Paint();--线条画笔
+    v2.setColor(p3);
+    v2.setStrokeWidth(p2);
+    v2.setStyle(Paint.Style.STROKE);
+    v2.setAntiAlias(true);
+    v2.setDither(true);
+    for i=1,#线条,1 do--画线条
+      v0.drawLine(
+      端点[线条[i][1]][1],端点[线条[i][1]][2],
+      端点[线条[i][2]][1],端点[线条[i][2]][2],
+      v2);
+    end
+    for i=1,#端点,1 do--画端点
+      v0.drawCircle(
+      端点[i][1],端点[i][2],
+      p0,v1);
+    end
+  end
+  ));
+end
+
+function 判断相交()
+  function 向量叉乘(p0,p1,p2)
+    return (p1[1]-p0[1])*(p2[2]-p0[2])-(p1[2]-p0[2])*(p2[1]-p0[1]);
+  end
+  function 判断(p0,p1)
+    local A={端点[线条[p0][1]][1],端点[线条[p0][1]][2]};
+    local B={端点[线条[p0][2]][1],端点[线条[p0][2]][2]};
+    local C={端点[线条[p1][1]][1],端点[线条[p1][1]][2]};
+    local D={端点[线条[p1][2]][1],端点[线条[p1][2]][2]};
+    if(向量叉乘(A,B,C)*向量叉乘(A,B,D)<=0
+     &&向量叉乘(C,D,A)*向量叉乘(C,D,B)<=0
+     &&向量叉乘(A,B,C)*向量叉乘(A,B,D)+
+       向量叉乘(C,D,A)*向量叉乘(C,D,B)~=0)then
+      --目前存在的bug：无法识别重合的线条，将视为不相交。
+      --其实是因为我懒的弄了，也是有办法解决的，比较麻烦。
+      return true;
+    end
+    return false;
+  end
+  for i=1,#线条,1 do
+    for j=i+1,#线条,1 do
+      if(判断(i,j))then
+        return true;
+      end
+    end
+  end
+  return false;
+end
+
+
+
+
+
+
+
+
+选中端点=0;
+屏.onTouch=function(p0,p1)
+  local v0=p1.getAction()&255;
+  if(v0==0)then--判断选中的端点
+    local x=p1.getX();
+    local y=p1.getY();
+    for i=1,#端点,1 do
+      if(端点[i][1]-21<x&&x<端点[i][1]+21
+        &&端点[i][2]-21<y&&y<端点[i][2]+21)then
+        选中端点=i;
+        break
+      end
+    end
+   elseif(v0==2&&选中端点>0)--移动端点
+    端点[选中端点][1]=p1.getX();
+    端点[选中端点][2]=p1.getY();
+    刷新屏(端点尺寸,端点颜色,线条宽度,线条颜色);
+   elseif(v0==1&&选中端点>0)--移动结束判断输赢
+    if(!判断相交())then
+      print("成功理清所有线条。");
+    end
+    选中端点=0;
+    刷新屏(端点尺寸,端点颜色,线条宽度,线条颜色);
+  end
+  return true;
+end
+
+
+刷新屏(端点尺寸,端点颜色,线条宽度,线条颜色);
+
+
+
+
+》》
+
+
+
+《《别踩白块儿》》
+《《require "import"
+import "android.app.*"
+import "android.os.*"
+import "android.widget.*"
+import "android.view.*"
+
+--activity.setTitle('AndroLua+')
+--activity.setTheme(android.R.style.Theme_Holo_Light)
+activity.setContentView(loadlayout({
+  LinearLayout;
+  layout_height="fill";
+  layout_width="fill";
+  orientation="horizontal";
+  id="back";
+  {
+    AbsoluteLayout;
+    layout_height="fill";
+    layout_width="25%w";
+  --  orientation="vertical";
+    id="road1";
+  };
+  {
+    AbsoluteLayout;
+    layout_height="fill";
+    layout_width="25%w";
+  --  orientation="vertical";
+    id="road2";
+  };
+  {
+    AbsoluteLayout;
+    layout_height="fill";
+    layout_width="25%w";
+   -- orientation="vertical";
+    id="road3";
+  };
+  {
+    AbsoluteLayout;
+    layout_height="fill";
+    layout_width="25%w";
+   -- orientation="vertical";
+    id="road4";
+  };
+}))
+
+--小绵羊出品
+
+
+
+难度=8
+fps=15
+speed=4*难度
+speedquack=4000*(1/难度)
+fans=0
+
+quack=loadlayout(
+{
+  Button;
+  layout_width="22%w";
+  id="quacks",
+  layout_height="20%h";
+  background="#000000";
+})
+
+roadn={
+  [1]=road1,
+  [2]=road2,
+  [3]=road3,
+  [4]=road4,
+}
+quack.onClick=function(v)
+  roadn[last].removeView(v)
+end
+
+back.onClick=function(v)
+  gametick.stop()
+  addtick.stop()
+  Toast.makeText(activity,"游戏结束.",Toast.LENGTH_SHORT).show()
+  Toast.makeText(activity,tostring("得分:"..tointeger(fans).."  "),Toast.LENGTH_SHORT).show()
+
+end
+
+newquack=math.random(1,4)
+last=newquack
+--loadstring("road"..tostring(newquack)..".addView(quack)")()
+
+
+gametick=Ticker()
+gametick.Period=1000/fps
+gametick.onTick=function()
+
+
+  function foreach(v)
+    for i=0, v.getChildCount() do
+      local child=v.getChildAt(i)
+
+      if pcall(function() child.getChildCount() end) then
+        foreach(child)
+       else
+        --print(type(child))
+        switch(type(child))
+         case "android.widget.Button"
+          if child.getY()>activity.getHeight() then
+            if child.getText()~=" " then
+              gametick.stop()
+              addtick.stop()
+              Toast.makeText(activity,"游戏结束.",Toast.LENGTH_SHORT).show()
+              Toast.makeText(activity,tostring("得分:"..tointeger(fans).."  "),Toast.LENGTH_SHORT).show()
+             else
+
+            end
+          end
+          child.setY(child.getY()+speed)
+        end
+
+      end
+    end
+  end
+
+  foreach(back)
+end
+n=0
+quacktab={}
+addtick=Ticker()
+addtick.Period=speedquack
+addtick.onTick=function()
+
+
+  quacktab=loadlayout(
+  {
+   Button;
+    layout_width="22%w";
+    onClick=function(v)
+      fans=fans+speed/10
+      v.setText(" ")
+      v.getParent().removeView(v)
+    end,
+    id="quacks",
+    layout_height="20%h";
+    background="#000000";
+  })
+
+  quacktab.setY(-0.25*activity.getHeight())
+
+  n=n+1
+
+
+  newquack=math.random(1,4)
+  while newquack==last do
+    newquack=math.random(1,4)
+  end
+  last=newquack
+  roadn[newquack].addView(quacktab)
+end
+
+
+gametick.start()
+addtick.start()
+
+function onDestroy()
+  gametick.stop()
+  addtick.stop()
+end》》
+
+
+
+《《视力游戏》》
+《《require "import"
+import "android.app.*"
+import "android.os.*"
+import "android.widget.*"
+import "android.view.*"
+layout={
+  LinearLayout,
+  orientation="vertical",
+  layout_width="fill",
+  layout_height="fill",
+  {
+    TextView,
+    text="欢迎使用。",
+    layout_width="fill",
+  },
+}
+
+
+aa={
+
+  GridLayout;
+  layout_width="wrap";
+  layout_height="wrap";  
+  columnCount="6",
+};
+
+
+function vv(a)
+  i= {
+    Button;
+    background="#FFFFFFFF";
+    id=a;
+    layout_width="16%w";
+    layout_height="50dp";
+    layout_margin="3";
+    textSize="12sp";
+  };
+  table.insert(aa,i)
+end
+for i=1,42,1 do
+  vv("ee"..i)
+end
+
+activity.setContentView(loadlayout(aa))
+idd={ee1,ee2,ee3,ee4,ee5,ee6,
+  ee7,ee8,ee9,ee10,ee11,ee12,
+  ee13,ee14,ee15,ee16,ee17,ee18,
+  ee19,ee20,ee21,ee22,ee23,ee24,
+  ee25,ee26,ee27,ee28,ee29,ee30,
+  ee31,ee32,ee33,ee34,ee35,ee36}
+ff=0
+bo=true
+正确=0
+错误=0
+提示=5
+function 随机颜色()
+  f1=Integer.toHexString(155+正确)
+  f2=Integer.toHexString(math.random(22,255))
+  f3=Integer.toHexString(math.random(22,255))
+  f4=Integer.toHexString(math.random(22,255))
+  f5="ff"..f2..f3..f4
+  f6=f1..f2..f3..f4
+  for i=1,#idd do
+    idd[i].BackgroundColor=tonumber(f5,16)
+  end
+  ff=math.random(1,36)
+  idd[ff].BackgroundColor=tonumber(f6,16)
+  return ff
+end
+时间=0
+ti=Ticker()
+ti.Period=1000
+ti.onTick=function()
+  时间=时间+1
+  ee40.setText("时间\n"..时间)
+  if 时间==100 then
+    ti.stop()
+    print("已结束")
+    ee42.setText("评分\n"..正确-错误+(提示-5))
+    ee39.setClickable(false)
+    for i=1,36 do
+      idd[1].setClickable(false)
+      idd[i].BackgroundColor=0xFFFFFFFF
+    end
+  end
+end
+
+ti.start()
+随机颜色()
+
+for i=1,#idd do
+  idd[i].onClick=function(x)
+    s=tostring(x)
+    s= s:sub(#s-2,#s-1)
+    s=tonumber(s,16)+1
+    idd[i].setText("")
+    if s==ff then
+      随机颜色()
+      正确=正确+1
+      ee42.setText("评分\n"..正确-错误+(提示-5))
+      ee37.setText("正确"..tostring(正确))
+      bo=true
+     else
+      错误=错误+1
+      ee42.setText("评分\n"..正确-错误+(提示-5))
+      ee38.setText("错误\n"..错误)
+      if 错误==5 then
+        ti.stop()
+        print("已结束")
+        ee42.setText("评分\n"..正确-错误+(提示-5))
+        ee39.setClickable(false)
+        for i=1,36 do
+          idd[i].setClickable(false)
+          idd[i].BackgroundColor=0xFFFFFFFF
+        end
+      end
+    end
+  end
+end
+ee37.setText("正确\n"..正确)
+ee38.setText("错误\n"..错误)
+ee39.setText("提示\n"..提示)
+ee40.setText("时间\n"..时间)
+ee41.setText("重新\n".."开始")
+ee42.setText("评分\n".."0")
+
+ee39.onClick=function(x)
+  if bo then
+    if 提示>0 then
+      提示=提示-1
+      idd[ff].setText("^_^")
+      ee42.setText("评分\n"..正确-错误+(提示-5))
+      ee39.setText("提示\n"..提示)
+      bo=false
+     else
+      print("提示次数已用完")
+    end
+   else
+    print("已提示,请操作")
+  end
+end
+
+ee41.onClick=function(x)
+  activity.recreate()
+end
+
+function onDestroy()
+  ti.stop()
+end
+
+
+--写代码时间过长易引起眼疲劳
+--构思代码时间过长易掉头发
+--注意劳逸结合
+--二哈+》》
+
+
+
+
+《《五子棋(单机版)》》
+《《require "import"
+import "android.app.*"
+import "android.os.*"
+import "android.widget.*"
+import "android.view.*"
+import "com.androlua.LuaDrawable"
+import "android.graphics.Paint"
+
+w=activity.width
+activity.setContentView(loadlayout({
+  LinearLayout;
+  orientation="vertical";
+  layout_height="fill";
+  layout_width="fill";
+  Gravity="center",
+  {
+    GridView,
+    numColumns=15,
+    layout_height=w,
+    layout_width=w,
+    id="grid",
+  },
+  {
+    TextView,
+    id="tstv",
+  },
+}))
+
+item={
+  TextView,
+  layout_width=w/15,
+  layout_height=w/15,
+  TextSize="0",
+  Gravity="center",
+  id="tv",
+}
+data={}
+adp=LuaAdapter(activity,data,item)
+grid.setAdapter(adp)
+
+pos={}
+for i=0,15*15-1 do
+  table.insert(data,{tv=""})
+  local x=i%15
+  local y=i//15
+  table.insert(pos,{
+    x=x,
+    y=y,
+    x1=x+y,--斜坐标
+    y1=x-y,
+    value="0",
+  })
+end
+
+--给五子棋画个UI框
+
+ItemWH=w/15
+
+InitBoardDrawable=LuaDrawable(function(mCanvas,mPaint,mDrawable)
+
+  mPaint1 = Paint();
+  mPaint1.setStrokeWidth(2)
+  mPaint1.setAntiAlias(true)
+  mPaint1.setStyle(Paint.Style.STROKE)
+  mPaint1.setColor(0x88000000)
+  mPaint1.setTextSize(20)
+
+  zby={"a","b","c","d","e","f","g","h","i","j","k","l","m","n","o"}
+
+  mCanvas.drawColor(0xFFF7E7B6)
+
+  for i=0,14 do
+    --横线
+    mCanvas.drawLine(ItemWH/2,ItemWH/2+i*ItemWH,w-ItemWH/2,ItemWH/2+i*ItemWH,mPaint1)
+    --竖线
+    mCanvas.drawLine(ItemWH/2+i*ItemWH,ItemWH/2,ItemWH/2+i*ItemWH,w-ItemWH/2,mPaint1)
+
+    mCanvas.drawText(tostring(i+1),ItemWH/2+i*ItemWH-8,ItemWH/3,mPaint1)
+
+    mCanvas.drawText(zby[i+1],ItemWH/3-8,ItemWH/2+i*ItemWH+8,mPaint1)
+
+  end
+
+  mPaint1.setStyle(Paint.Style.FILL)
+  mCanvas.drawCircle(w/2, w/2, ItemWH/8, mPaint1)
+  mCanvas.drawCircle(ItemWH/2+3*ItemWH, ItemWH/2+3*ItemWH, ItemWH/8, mPaint1)
+  mCanvas.drawCircle(ItemWH/2+11*ItemWH, ItemWH/2+3*ItemWH, ItemWH/8, mPaint1)
+  mCanvas.drawCircle(ItemWH/2+3*ItemWH, ItemWH/2+11*ItemWH, ItemWH/8, mPaint1)
+  mCanvas.drawCircle(ItemWH/2+11*ItemWH, ItemWH/2+11*ItemWH, ItemWH/8, mPaint1)
+end)
+
+grid.background=InitBoardDrawable
+
+--黑棋子背景
+BlackPieceDrawable=LuaDrawable(function(mCanvas,mPaint,mDrawable)
+  mPaint1 = Paint();
+  mPaint1.setStrokeWidth(20)
+  mPaint1.setAntiAlias(true)
+  mPaint1.setStyle(Paint.Style.FILL)
+  mPaint1.setColor(0xff000000)
+  mCanvas.drawCircle(ItemWH/2, ItemWH/2, ItemWH/3.5, mPaint1)
+end)
+
+--白棋子背景
+WhitePieceDrawable=LuaDrawable(function(mCanvas,mPaint,mDrawable)
+  mPaint1 = Paint();
+  mPaint1.setStrokeWidth(20)
+  mPaint1.setAntiAlias(true)
+  mPaint1.setStyle(Paint.Style.FILL)
+  mPaint1.setColor(0xffffffff)
+  mCanvas.drawCircle(ItemWH/2, ItemWH/2, ItemWH/3.5, mPaint1)
+end)
+
+function 判断是否五子连珠(p)
+  x=p%15--列坐标
+  y=p//15--行坐标
+  x1=x+y--斜坐标1
+  y1=x-y--斜坐标2
+  strx=""
+  stry=""
+  strx1=""
+  stry1=""
+  for k,v in pairs(pos)
+    if v.x==x then
+      strx=strx..v.value
+    end
+    if v.y==y then
+      stry=stry..v.value
+    end
+    if v.x1==x1 then
+      strx1=strx1..v.value
+    end
+    if v.y1==y1 then
+      stry1=stry1..v.value
+    end
+  end
+  if string.find(strx,"11111")~=nil or string.find(stry,"11111")~=nil or string.find(strx1,"11111")~=nil or string.find(stry1,"11111")~=nil then
+    return 1
+  end
+  if string.find(strx,"22222")~=nil or string.find(stry,"22222")~=nil or string.find(strx1,"22222")~=nil or string.find(stry1,"22222")~=nil then
+    return 2
+  end
+  return 0
+end
+
+a=true--黑子先行
+
+grid.onItemClick=function(l,v,p,i)
+  --轮流下棋的逻辑
+  if pos[i].value=="0" then--如果这个位置没下过棋
+    if a then--如果是黑子
+      pos[i].value="1"
+      v.background=BlackPieceDrawable
+     else--如果是白子
+      pos[i].value="2"
+      v.background=WhitePieceDrawable
+    end
+    a=not(a)
+    判断=判断是否五子连珠(p)
+    if 判断==1 then
+      print("黑子胜")
+    end
+    if 判断==2 then
+      print("白子胜")
+    end
+    tstv.Text="坐标：("..tostring(x)..","..tostring(y)..","..tostring(x1)..","..tostring(y1)..")"
+    tstv.Text=tstv.Text.."\nstrx="..strx
+    tstv.Text=tstv.Text.."\nstry="..stry
+    tstv.Text=tstv.Text.."\nstrx1="..strx1
+    tstv.Text=tstv.Text.."\nstry1="..stry1
+   else--如果这个位置下过棋
+    print("这里下过了")
+  end
+end》》
+
+
+
+
+
+《《滚动效果库》》
+《《--滚动效果库
+--Github:https://github.com/EverythingMe/overscroll-decor.git
+
+
+
+--一行代码解决滚动效果(listID 是列表的id)
+OverScrollDecoratorHelper.setUpOverScroll(listID);
+
+》》
+
+
+
+
+
+
+《《Glide 图片加载组件》》
+《《
+import "androidx.recyclerview.widget.*"
+import "com.bumptech.glide.Glide"
+import "com.scwang.smartrefresh.header.*"
+import "com.dingyi.adapter.LuaRecyclerAdapter"
+import "com.scwang.smartrefresh.layout.SmartRefreshLayout"
+import "aikesi.recyclerview.widget.*"
+
+activity.setTheme(android.R.style.Theme_Holo_Light)
+
+local lay={
+  LinearLayout;
+  layout_width='match_parent';
+  layout_height='match_parent';
+  background='#fffcefe8';
+  {
+    SmartRefreshLayout;
+    id="pull";
+    EnableRefresh=true;--下拉刷新
+    EnableLoadMore=true;--上拉加载
+    layout_width='match_parent';
+    layout_height='match_parent';
+    RefreshHeader=MaterialHeader(this);
+    {
+      RecyclerView;
+      id="list";
+      layout_width='match_parent';
+      layout_height='match_parent';
+      layoutManager=StaggeredGridLayoutManager(3,StaggeredGridLayoutManager.VERTICAL);
+    };
+  };
+};
+activity.setContentView(loadlayout(lay))--布局视图
+
+local item={
+  LinearLayout;
+  padding="8";
+  orientation='vertical';
+  layout_width='match_parent';
+  {
+    CardView;
+    id="card",
+    layout_height='50%w';
+    layout_width='match_parent';
+    radius='5';
+    {
+      ImageView;
+      id="img";
+      layout_width='match_parent';
+      layout_height='match_parent';
+      scaleType='fitXY';
+    };
+    {
+      TextView;
+      id="txt";
+      Visibility='gone';
+    };
+  };
+};
+
+local adapter=LuaRecyclerAdapter(activity,item)
+list.adapter=adapter
+
+adapter.setImageLoader{
+  loadImage=function(view,url)
+    Glide.with(activity).load(url).thumbnail(0.2).into(view);
+    --Glide.with(activity).load(url).thumbnail(0.2).placeholder(R.drawable.loading).error(R.drawable.icon).into(view);
+end}
+
+页数=1
+Http.get("http://39.97.238.221/lovecomic/photo/list?page="..页数.."&pageSize=15&cid=000000&type=new",function(code,body)
+  if code==200 then
+    local json=import"cjson".decode(body)
+    table.foreach(json.object_list,function(k,v)
+      adapter.add{img=v.path,txt=v.path,card={
+          onClick=function(v)
+            local txt=v.getChildAt(1).text
+            print(txt)
+        end}
+      }
+    end)
+
+   else
+    print("网络错误"..code)
+  end
+end)
+
+pull.setFooterHeight(0)
+pull.setPrimaryColors({0xffffffff,0xFF2196F3});
+pull.setOnRefreshLoadMoreListener{
+  onRefresh=function()--刷新监听
+  end,
+  onLoadMore=function()--加载监听
+    页数=页数+1
+    Http.get("http://39.97.238.221/lovecomic/photo/list?page="..页数.."&pageSize=15&cid=000000&type=new",function(code,body)
+      if code==200 then
+        pull.finishLoadMore()
+        local json=import"cjson".decode(body)
+        table.foreach(json.object_list,function(k,v)
+          adapter.add{img=v.path,txt=v.path,card={
+              onClick=function(v)
+                local txt=v.getChildAt(1).text
+                print(txt)
+            end}
+          }
+        end)
+
+       else
+        print("加载失败")
+        pull.finishLoadMore()
+      end
+    end)
+
+end}
+
+
+
+scroll = luajava.new(LuaRecyclerScrollListener,{
+  onScrollStateChanged=function(r,i)
+
+  end,
+  onScrolled=function(r,i1,i2)
+    print(i1,i2)
+  end
+})
+
+listener1 = LuaRecyclerViewScroll.init()
+listener1.setRecyclerViewScrolledListener(scroll)
+
+list.addOnScrollListener(listener1)
+
+》》
+
+
+
+
+
+
+
+
+
+《《HtmlTextView 富文本》》
+《《--Github:https://github.com/PrivacyApps/html-textview.git
+--[[
+
+HtmlTextView是Android的一个扩展的TextView组件
+
+它可以加载HTML并将其转换为可扩展的显示。
+
+它是WebView组件的替代品，WebView组件在某些Android版本上表现奇怪，在加载时闪烁，等等。
+
+该库还包括一个防止TextView在特定Android版本上崩溃的解决方案，以及从本地可绘制文件夹或互联网加载图像的可能性。
+
+
+]]
+
+
+-- loads html from string and displays cat_pic.png from the app's drawable folder
+-- htv.setHtml('<h2>Hello world</h2><ul><li>cats</li><li>dogs</li></ul><img src=\"cat_pic\"/>',HtmlResImageGetter(htv))
+
+
+
+--// loads html from string and displays cat_pic.png from the app's assets folder
+--htv.setHtml('<h2>Hello world</h2><ul><li>cats</li><li>dogs</li></ul><img src="cat_pic" />',HtmlAssetsImageGetter(htv));
+
+
+
+--// loads html from string and displays http://www.example.com/cat_pic.png from the Internet
+--htv.setHtml('<h2>Hello wold</h2><img src="http网络图片地址" />',HtmlHttpImageGetter(htv));
+》》
+
+
+
+
+
+
+
+
+
+《《YoYo动画库》》
+《《import "com.daimajia.androidanimations.library.Techniques"
+import "com.daimajia.androidanimations.library.YoYo"
+
+btn.onClick=function(v)
+  -- YoYo.with(Techniques.动画类型)
+  YoYo.with(Techniques.RotateInDownRight)
+  .duration(700)
+  .playOn(textView)
+end
+
+--[[
+动画类型大全
+DropOut
+Landing
+TakingOff
+Flash
+Pulse
+RubberBand
+Shake
+Swing
+Wobble
+Bounce
+Tada
+StandUp
+Wave
+Hinge
+RollIn
+RollOut
+BounceIn
+BounceInDown
+BounceInLeft
+BounceInRight
+BounceInUp
+FadeIn
+FadeInUp
+FadeInDown
+FadeInLeft
+FadeInRight
+FadeOut
+FadeOutDown
+FadeOutLeft
+FadeOutRight
+FadeOutUp
+FlipInX
+FlipOutX
+FlipInY
+FlipOutY
+RotateIn
+RotateInDownLeft
+RotateInDownRight
+RotateInUpLeft
+RotateInUpRight
+RotateOut
+RotateOutDownLeft
+RotateOutDownRight
+RotateOutUpLeft
+RotateOutUpRight
+SlideInLeft
+SlideInRight
+SlideInUp
+SlideInDown
+SlideOutLeft
+SlideOutRight
+SlideOutUp
+SlideOutDown
+ZoomIn
+ZoomInDown
+ZoomInLeft
+ZoomInRight
+ZoomInUp
+ZoomOut
+ZoomOutDown
+ZoomOutLeft
+ZoomOutRight
+ZoomOutUp
+]]
+
+》》
+
+
+
+《《Task任务线程的延时与循环》》
+《《
+--延时执行
+function ts(s)
+  Toast.makeText(activity, s,Toast.LENGTH_SHORT).show()
+end
+task(3000,ts("荼山最帅！"))
+
+
+
+》》
+
+
+《《Thread线程的延时与循环》》
+《《
+function ts(s)
+  Toast.makeText(activity, s,Toast.LENGTH_SHORT).show()
+end
+
+thread(function()
+  require "import"
+  Thread.sleep(3000)
+  call("ts","荼山最帅！")
+end)
+
+
+--循环线程
+function run(c,d)
+  for i=1,5 do
+  print(c,d)
+  end
+end
+
+thread(run,1,2)
+
+
+--多线程
+function foo(a,b)
+print(a,b)
+call("run",3,4)
+end
+
+function run(c,d)
+  for i=1,5 do
+  print(c,d)
+  end
+end
+
+thread(run,1,2)
+
+
+
+》》
+
+
+《《侧滑锁定/侧滑禁止滑动》》
+《《
+--锁定/禁止滑动
+侧滑id.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, Gravity.END);
+
+--开启滑动
+侧滑id.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN,Gravity.END);
+》》
+
+
+
+
+
+
+《《PageView禁止左右滑动》》
+《《
+--重写方法
+function uuPageView()
+  return luajava.override(PageView,{
+
+  onInterceptTouchEvent=function(super,event)
+
+    return false
+
+  end,
+
+  onTouchEvent=function(super,event)
+
+    return false
+
+  end
+
+})
+end
+activity.setContentView(loadlayout("layout"))
+》》
+
+
+
+
+
+《《游戏摇杆(绘制)》》
+《《require "import"
+import "android.app.*"
+import "android.os.*"
+import "android.widget.*"
+import "android.view.*"
+import "android.graphics.*"
+--activity.setTitle('AndroLua+')
+--activity.setTheme(android.R.style.Theme_Holo_Light)
+
+--@名字isABane 2737420368
+--
+
+
+布局={
+  FrameLayout,
+  layout_width="fill",
+  layout_height="fill",
+  id="底层",
+  {
+    View,
+    layout_width="fill",
+    layout_height="fill",
+    id="图层",
+  },
+  {
+    TextView;--文本控件
+    layout_width='wrap';--文本宽度
+    layout_height='wrap';--文本高度
+    textColor='#FF000000';--文字颜色
+    text='';--显示的文字
+    textSize='30';--文字大小
+    id="文字",
+  },
+}
+
+activity.setContentView(loadlayout(布局))
+
+data=[500,1000,--点击坐标 建议初始一个位置
+nil,0,--滑动坐标
+0,0,--松开坐标
+0,0,--mCanvas画布坐标
+1,1,--mCanvas画布方法缩小
+5,--圈线粗细
+150,--摇杆外圈半径
+50,--摇杆大小
+0,0,--按钮在外圈坐标 --14.15
+170,--摇杆最外圈
+2,--设置模式 1 摇杆在松手后回归指定位置 2 摇杆停在松手位置 3 摇杆停在点击位置
+300,500,--摇杆回归指定位置 18 19
+nil,--只能与模式1 2混合用 存在则 只有点击到摇杆内部才能启动摇杆 不存在 则摇杆跟随且直接启动
+]
+
+图层.setBackground(LuaDrawable(function(mCanvas,mPaint,mDrawable)--框选绘制
+  mPaint=Paint();
+  mPaint.setColor(0xff7e5cf8)--设置画笔
+  mPaint.setStyle(Paint.Style.STROKE);--画线画法
+  mPaint.setStrokeWidth(data[11])--设置粗细
+
+  --mPaint.setAntiAlias(true)--抗锯齿
+  --mPaint.setDither(true)--: 设定是否使用图像抖动处理，会使绘制出来的图片颜色更加平滑和饱满，图像更加清晰
+  画笔=Paint();
+  画笔.setColor(0xffff0000)--设置画笔
+
+
+  return function(mCanvas)
+    --Thread.sleep(16)
+    mCanvas.translate(data[7],data[8])--画布偏移
+    mCanvas.scale(data[9],data[10])--画布扩缩
+
+
+    if data[3] then--滑动后绘制
+      mCanvas.drawCircle(data[14],data[15],data[13],mPaint)--摇杆按钮
+      mCanvas.drawLine(data[1],data[2],data[14],data[15],mPaint)--摇杆连线
+      mCanvas.drawCircle(data[1],data[2],data[12],mPaint)--摇杆外圈
+      mCanvas.drawCircle(data[1],data[2],data[16],mPaint)--摇杆最外圈
+
+     else
+      mCanvas.drawCircle(data[1],data[2],data[13],mPaint)--静止摇杆按钮
+      mCanvas.drawCircle(data[1],data[2],data[12],mPaint)--摇杆外圈
+      mCanvas.drawCircle(data[1],data[2],data[16],mPaint)--摇杆最外圈
+
+    end
+
+
+    mDrawable.invalidateSelf()--重新画图
+  end
+end))
+
+
+底层.onTouch=function(v,event)--手势滑动
+  --文字.setText(tostring(event.getAction()))
+  if event.getAction()==MotionEvent.ACTION_DOWN then
+    if data[20] then--用最外圈判断
+      if data[16]-两点间距离(data[1],data[2],event.getRawX(),event.getRawY()) > 0 then--在圈内                     
+       else--圈外      
+        if data[17]==1 then
+          data[1],data[2]=data[18],data[19]
+         elseif data[17]==2 then
+          data[1],data[2]=event.getRawX(),event.getRawY()         
+        end
+        return
+      end
+     else
+      data[1] = event.getRawX()
+      data[2] = event.getRawY()
+    end
+    x=event.getRawX()
+    y=event.getRawY()
+   elseif event.getAction()==261 then--多指点击 262有手撤出
+    --获取第二个点击
+    ont=math.abs(y-event.getRawY(1))
+
+   elseif event.getAction()==MotionEvent.ACTION_MOVE then--手指有滑动行为
+
+
+    if event.getPointerCount() > 1 then--多指滑动
+      --data[7]=data[7] + (event.getRawX() - x)
+      --data[8]=data[8] + (event.getRawY() - y)
+
+
+     else--单指滑动
+      data[3],data[4] = 计算坐标函数(event.getRawX(),event.getRawY(),data[7],data[8],data[9],data[10])
+      data[14],data[15] = 计算(data[1],data[2],event.getRawX(),event.getRawY(),data[12])--cos(200,角度,data[1]),sin(200,角度,data[2])
+    end
+    文字.setText(event.getRawX().."\n".."".."\n".."".."\n".."")
+
+   elseif event.getAction()==MotionEvent.ACTION_UP then--手指抬起
+    data[5] = (event.getRawX()-data[7])*(1/data[9])
+    data[6] = (event.getRawY()-data[8])*(1/data[10])
+
+    if data[17]==1 then
+      data[1],data[2]=data[18],data[19]
+     elseif data[17]==2 then
+      data[1],data[2]=event.getRawX(),event.getRawY()
+     elseif data[17]==3 then
+    end
+
+    data[3]=nil--重置滑动判断
+  end
+  return true
+end
+
+function 计算坐标函数(x,y,x2,y2,x3,y3)
+  --x,y相对屏幕坐标
+  --x2,y2相对屏幕画布偏移坐标
+  --x3,y3画布x,y轴放大缩小倍数
+  return (x-x2)/x3,(y-y2)/y3
+end
+
+
+
+function 计算(x,y,x1,y1,斜边)
+  local k=(y-y1)/(x-x1)--斜率
+  -- local b=y-(x*k)
+  local t=math.atan(k)--弧度
+  if x1-x >0 then
+    x2=斜边*math.cos(t)+x
+    y2=斜边*math.sin(t)+y
+   else
+    x2=x-斜边*math.cos(t)
+    y2=y-斜边*math.sin(t)
+  end
+  return x2,y2
+end
+
+function 两点间距离(x,y,x1,y1)
+  return math.sqrt( math.pow((x-x1),2)+math.pow((y-y1),2))
+end》》
+
+
+
+
+
+
+
+《《程序最小化》》
+《《import "android.content.Intent"--记得这个
+intent=Intent();
+intent.setAction("android.intent.action.MAIN");
+intent.addCategory("android.intent.category.HOME");
+activity.startActivity(intent)
+》》
+
+
+
+
+
+
+
+《《判断是否有网络》》
+《《import "android.content.Context"
+xcn=activity.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE).getActiveNetworkInfo();  
+if xcn then
+  print"有网络"
+end
+》》
+
+
+
+
+
+
+《《获取控件颜色》》
+《《import "android.graphics.drawable.ColorDrawable"
+a = id.getBackground().mutate().getColor()
+print(4294967296+a)》》
+
+
+
+
+
+《《数据库常用api》》
+《《--导入
+import "android.database.sqlite.SQLiteDatabase"
+import "android.content.ContentValues"
+
+--数据库路径
+数据库路径=this.getLuaDir() .. "/new.db"
+
+--链接数据库，返回句柄
+db=SQLiteDatabase.openOrCreateDatabase(数据库路径,nil);
+
+--创建数据表
+语句="create table test(_id integer primary key autoincrement, title text, message varchar(20))"
+--db.execSQL(语句)
+
+--添加数据
+contentValues = ContentValues();
+contentValues.put("title","标题");
+contentValues.put("message", "内容");
+db.insert("test",nil,contentValues);
+
+--查询数据
+c=db.rawQuery("select * from test",nil);
+while (c.moveToNext()) do
+  _id = c.getInt(c.getColumnIndex("_id"));
+  title = c.getString(c.getColumnIndex("title"));
+  content = c.getString(c.getColumnIndex("message"));
+  print(_id,title,content)
+end
+
+--更新数据
+contentValues = ContentValues();
+contentValues.put("title", "更新标题");
+contentValues.put("message", "更新内容");
+print(db.update("test", contentValues, "_id = ?", {"2"}));
+
+--删除数据
+db.delete("test","_id = ?",{"1"})
+
+--关闭链接
+db.close();
+》》
+
+
+
+
+
+
+《《图片转base64》》
+《《function 图片转base64(bitmap)
+  local bStream = ByteArrayOutputStream();
+  bitmap.compress(Bitmap.CompressFormat.PNG, 100, bStream);
+  local bytes = bStream.toByteArray();
+  local txt = Base64.encodeToString(bytes, Base64.DEFAULT);
+  return txt
+end》》
+
+
+
+《《base64串转图片》》
+《《function base64串转图片(strin)
+  local bitmapArray = Base64.decode(strin, Base64.DEFAULT);
+  local bitmap = BitmapFactory.decodeByteArray(bitmapArray, 0,#bitmapArray);
+  return bitmap
+end》》
+
+
+《《Chronometer定时器》》
+《《ch.setBase(SystemClock.elapsedRealtime())--用于设置计时器的起始时间
+ch.setFormat("%s")--表示显示MM:SS or HH:MM:SS格式的时间
+ch.start()--用于指定开始计时
+--ch.stop()--用于指定停止计时
+ch.setOnChronometerTickListener{
+  onChronometerTick=function()
+    if SystemClock.elapsedRealtime()-ch.getBase() >=3000 then
+      --3000毫秒后停止计时
+      ch.stop()
+    end
+  end}》》
+
+
+
+
+
+《《图片圆角》》
+《《import "android.graphics.PorterDuffXfermode"
+import "android.graphics.Paint"
+import "android.graphics.RectF"
+import "android.graphics.Bitmap"
+import "android.graphics.PorterDuff$Mode"
+import "android.graphics.Rect"
+import "android.graphics.Canvas"
+import "android.util.Config"
+import "android.graphics.drawable.BitmapDrawable"
+
+function GetRoundedCornerBitmap(bitmap,roundPx)
+  width = bitmap.getWidth()
+  output = Bitmap.createBitmap(width, width,Bitmap.Config.ARGB_8888)
+  canvas = Canvas(output);
+  color = 0xff424242;
+  paint = Paint()
+  rect = Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+  rectF = RectF(rect);
+  paint.setAntiAlias(true);
+  canvas.drawARGB(0, 0, 0, 0);
+  paint.setColor(color);
+  canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
+  paint.setXfermode(PorterDuffXfermode(Mode.SRC_IN));
+  canvas.drawBitmap(bitmap, rect, rect, paint);
+  return output;
+end
+
+RoundPic=GetRoundedCornerBitmap(loadbitmap(activity.getLuaDir().."/a.png"),90)
+
+a.setImageBitmap(RoundPic)》》
+
+
+
+
+
+
+《《防止手机休眠/屏幕长亮》》
+《《import "android.content.Context"
+--开启防止手机休眠
+this.getSystemService(Context.POWER_SERVICE).newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK,"MyTag").acquire()
+
+--关闭防止手机休眠
+this.getSystemService(Context.POWER_SERVICE).newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK,"MyTag").release()
+》》
+
+
+
+
+
+《《Apk签名验证》》
+《《import "android.content.pm.PackageManager"
+--获取包管理器
+local pm = activity.getPackageManager();
+local pm=pm.getPackageInfo(activity.getPackageName(),PackageManager.GET_SIGNATURES).signatures[0].hashCode()
+
+--下面这一段是将校验内容复制到剪切板
+--打包后自己签名打开软件一遍 会自动复制到剪切板 然后复制到下面
+import "android.content.*"
+activity.getSystemService(Context.CLIPBOARD_SERVICE)
+.setText(tostring(pm))--这个获取完后记得删掉
+
+--将获取到的粘贴骚这个pms=后面
+--例如pms=-94378134
+pms=-67151889
+
+if pm~=pms then
+  print"不通过"
+end
+》》
+
+
+
+
+《《本地转换Unicode》》
+《《--利用JSON解析器把Unicode转中文汉字
+--@小菜鸟
+local cjson = require "cjson"
+local json=[[{"name":"]]
+local t=[["}]]
+local Unicode=[[\u5c0f\u83dc\u9e1f\u6700\u5e05]]--Unicode编码
+local zh=json..Unicode..t--把它们结合为json
+local b=[[{"name":"\u5c0f\u83dc\u9e1f\u6700\u5e05"}]]--完整的json
+local data = cjson.decode(zh);  --解析json字符串
+print(data["name"]);  --打印json字符串中的name字段
+》》
+
+
+
+
+
+《《各种传感器》》
+《《import "android.content.Context"
+import "android.hardware.Sensor"
+import "android.hardware.SensorEvent"
+import "android.hardware.SensorEventListener"
+import "android.hardware.SensorManager"
+
+local x轴,y轴,z轴,光线,距离,磁场,温度,陀螺仪,重力,压力
+
+传感器 = activity.getSystemService(Context.SENSOR_SERVICE)
+local 加速度传感器 = 传感器.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+传感器.registerListener(SensorEventListener({ 
+  onSensorChanged=function(event) 
+    x轴 = event.values[0]
+    y轴 = event.values[1]
+    z轴 = event.values[2]
+    print "x轴 "..x轴
+    print "y轴 "..y轴
+    print "z轴 "..z轴
+  end,nil}), 加速度传感器, SensorManager.SENSOR_DELAY_NORMAL)
+
+local 光线传感器 = 传感器.getDefaultSensor(Sensor.TYPE_LIGHT)
+传感器.registerListener(SensorEventListener({ 
+  onSensorChanged=function(event) 
+    光线 = event.values[0]
+    print "光线 "..光线
+  end,nil}), 光线传感器, SensorManager.SENSOR_DELAY_NORMAL)
+
+local 距离传感器 = 传感器.getDefaultSensor(Sensor.TYPE_PROXIMITY)
+传感器.registerListener(SensorEventListener({ 
+  onSensorChanged=function(event) 
+    距离 = event.values[0]
+    print "距离 "..距离
+  end,nil}), 距离传感器, SensorManager.SENSOR_DELAY_NORMAL)
+
+local 磁场传感器 = 传感器.getDefaultSensor(Sensor.TYPE_ORIENTATION)
+传感器.registerListener(SensorEventListener({ 
+  onSensorChanged=function(event) 
+    磁场 = event.values[0]
+    print "磁场 "..磁场
+  end,nil}), 磁场传感器, SensorManager.SENSOR_DELAY_NORMAL)
+
+local 温度传感器 = 传感器.getDefaultSensor(Sensor.TYPE_TEMPERATURE)
+传感器.registerListener(SensorEventListener({ 
+  onSensorChanged=function(event) 
+    温度 = event.values[0]
+    print "温度 "..温度
+  end,nil}), 温度传感器, SensorManager.SENSOR_DELAY_NORMAL)
+
+local 陀螺仪传感器 = 传感器.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
+传感器.registerListener(SensorEventListener({ 
+  onSensorChanged=function(event) 
+    陀螺仪 = event.values[0]
+    print "陀螺仪 "..陀螺仪
+  end,nil}), 陀螺仪传感器, SensorManager.SENSOR_DELAY_NORMAL)
+
+local 重力传感器 = 传感器.getDefaultSensor(Sensor.TYPE_GRAVITY)
+传感器.registerListener(SensorEventListener({ 
+  onSensorChanged=function(event) 
+    重力 = event.values[0]
+    print "重力 "..重力
+  end,nil}), 重力传感器, SensorManager.SENSOR_DELAY_NORMAL)
+
+local 压力传感器 = 传感器.getDefaultSensor(Sensor.TYPE_PRESSURE)
+传感器.registerListener(SensorEventListener({ 
+  onSensorChanged=function(event) 
+    压力 = event.values[0]
+    print "压力 "..压力
+  end,nil}), 压力传感器, SensorManager.SENSOR_DELAY_NORMAL)
+》》
+
+
+
+《《调用系统下载》》
+《《import "android.content.Context"
+import "android.net.Uri"--导入库
+--@小菜鸟
+
+downloadManager=activity.getSystemService(Context.DOWNLOAD_SERVICE);
+url=Uri.parse("http://小菜鸟.apk"); --下载直链
+request=DownloadManager.Request(url);
+request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE|DownloadManager.Request.NETWORK_WIFI);--wifi，移动网络(数据流量)都可以下载
+request.setDestinationInExternalPublicDir("Trinea","小菜鸟.apk");--文件夹,下载文件名
+request.setTitle("小菜鸟app");  --下载标题
+request.setDescription("小菜鸟app，全网最好玩的app");  --详情
+request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+--[[ request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI);
+ request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN);
+ request.setMimeType("application/cn.trinea.download.file");
+]]--各种属性--VISIBILITY_VISIBLE_NOTIFY_COMPLETED表示下载完成后显示通知栏提示。VISIBILITY_HIDDEN表示不显示任何通知栏提示
+downloadManager.enqueue(request);
+》》
+
+
+
+《《控件掉落下移效果》》
+《《import "android.view.animation.TranslateAnimation"
+dhBottom=TranslateAnimation(0,0,0, 1000);--开始掉落的x轴, 掉落到的x轴,开始掉落的y轴, 掉落到的y轴。 
+dhBotto.setDuration(1000);
+id.startAnimation(dhBotto);
+》》
+
+
+《《仿MD对话框》》
+《《layout2={
+  LinearLayout;
+  orientation="vertical";
+  {
+    TextView;
+    text="荼山是不是最帅的？";
+    id="text";
+    layout_marginTop="16dp";
+    textColor="#ff000000";
+    textSize="16sp";
+    layout_margin="15dp";
+  };
+  {
+    LinearLayout;
+    layout_marginRight="18dp";
+    layout_marginTop="10dp";
+    layout_gravity="end";
+    {
+      TextView;
+      textSize="14sp";
+      layout_width="50dp";
+      id="bu1";
+      gravity="center";
+      layout_marginRight="15dp";
+      textColor="#009688";
+      layout_height="30dp";
+      text="当然了";
+    };
+    {
+      TextView;
+      layout_width="50dp";
+      id="bu2";
+      gravity="center";
+      text="是的";
+      textColor="#009688";
+      layout_height="30dp";
+      textSize="14sp";
+    };
+  };
+  {
+    TextView;
+    layout_height="18dp";
+    layout_width="fill";
+  };
+};
+
+local dl=AlertDialog.Builder(activity)
+.setView(loadlayout(layout2))
+dll=dl.show()
+function bu2.onClick()
+  dll.dismiss()
+end
+》》
+
+
+
+
+
+
+《《获取设备标识码》》
+《《import "android.provider.Settings$Secure"
+android_id = Secure.getString(activity.getContentResolver(), Secure.ANDROID_ID)》》
+
+《《获取IMEI》》
+《《import "android.content.Context" 
+imei=activity.getSystemService(Context.TELEPHONY_SERVICE).getDeviceId()》》
+
+《《控件背景渐变动画》》
+《《view=控件id
+color1 = 0xffFF8080;
+color2 = 0xff8080FF;
+color3 = 0xff80ffff;
+color4 = 0xff80ff80;
+import "android.animation.ObjectAnimator"
+import "android.animation.ArgbEvaluator"
+import "android.animation.ValueAnimator"
+import "android.graphics.Color"
+colorAnim = ObjectAnimator.ofInt(view,"backgroundColor",{color1, color2, color3,color4})
+colorAnim.setDuration(3000)
+colorAnim.setEvaluator(ArgbEvaluator())
+colorAnim.setRepeatCount(ValueAnimator.INFINITE)
+colorAnim.setRepeatMode(ValueAnimator.REVERSE)
+colorAnim.start()》》
+
+
+《《精准获取屏幕尺寸》》
+《《function getScreenPhysicalSize(ctx) 
+  import "android.util.DisplayMetrics"
+  dm = DisplayMetrics();
+  ctx.getWindowManager().getDefaultDisplay().getMetrics(dm);
+  diagonalPixels = Math.sqrt(Math.pow(dm.widthPixels, 2) + Math.pow(dm.heightPixels, 2));
+  return diagonalPixels / (160 * dm.density);
+end
+print(getScreenPhysicalSize(activity))》》
+
+
+
+《《发送邮件》》
+《《import "android.content.Intent"
+i = Intent(Intent.ACTION_SEND)
+i.setType("message/rfc822") 
+i.putExtra(Intent.EXTRA_EMAIL, {"2113075983@.com"})
+i.putExtra(Intent.EXTRA_SUBJECT,"Feedback")
+i.putExtra(Intent.EXTRA_TEXT,"Content")
+activity.startActivity(Intent.createChooser(i, "Choice"))》》
+
+《《自定义默认弹窗标题,消息,按钮的颜色》》
+《《dialog=AlertDialog.Builder(this)
+.setTitle("标题")
+.setMessage("消息")
+.setPositiveButton("积极",{onClick=function(v) print"点击了积极按钮"end})
+.setNeutralButton("中立",nil)
+.setNegativeButton("否认",nil)
+.show()
+dialog.create()
+
+
+--更改消息颜色
+message=dialog.findViewById(android.R.id.message)
+message.setTextColor(0xff1DA6DD)
+
+--更改Button颜色
+import "android.graphics.Color"
+dialog.getButton(dialog.BUTTON_POSITIVE).setTextColor(0xff1DA6DD)
+dialog.getButton(dialog.BUTTON_NEGATIVE).setTextColor(0xff1DA6DD)
+dialog.getButton(dialog.BUTTON_NEUTRAL).setTextColor(0xff1DA6DD)
+
+--更改Title颜色
+import "android.text.SpannableString"
+import "android.text.style.ForegroundColorSpan"
+import "android.text.Spannable"
+sp = SpannableString("标题")
+sp.setSpan(ForegroundColorSpan(0xff1DA6DD),0,#sp,Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
+dialog.setTitle(sp)》》
+
+
+《《获取手机存储空间》》
+《《--获取手机内置剩余存储空间
+ function GetSurplusSpace()
+ fs =  StatFs(Environment.getDataDirectory().getPath())
+ return Formatter.formatFileSize(activity, (fs.getAvailableBytes()))
+ end
+
+ --获取手机内置存储总空间
+ function GetTotalSpace()
+ path = Environment.getExternalStorageDirectory()
+ stat = StatFs(path.getPath())
+ blockSize = stat.getBlockSize()
+ totalBlocks = stat.getBlockCount()
+ return Formatter.formatFileSize(activity, blockSize * totalBlocks)
+ end》》
+
+
+《《获取视频第一帧》》
+《《function GetVideoFrame(path)
+  import "android.media.MediaMetadataRetriever"
+  media = MediaMetadataRetriever()
+  media.setDataSource(tostring(path))
+  return media.getFrameAtTime()
+end》》
+
+《《选择文件模块》》
+《《import "android.widget.ArrayAdapter"
+import "android.widget.LinearLayout"
+import "android.widget.TextView"
+import "java.io.File"
+import "android.widget.ListView"
+import "android.app.AlertDialog"
+function ChoiceFile(StartPath,callback)
+  --创建ListView作为文件列表
+  lv=ListView(activity).setFastScrollEnabled(true)
+  --创建路径标签
+  cp=TextView(activity)
+  lay=LinearLayout(activity).setOrientation(1).addView(cp).addView(lv)
+  ChoiceFile_dialog=AlertDialog.Builder(activity)--创建对话框
+  .setTitle("选择文件")
+  .setView(lay)
+  .show()
+  adp=ArrayAdapter(activity,android.R.layout.simple_list_item_1)
+  lv.setAdapter(adp)
+  function SetItem(path)
+    path=tostring(path)
+    adp.clear()--清空适配器
+    cp.Text=tostring(path)--设置当前路径
+    if path~="/" then--不是根目录则加上../
+      adp.add("../")
+    end
+    ls=File(path).listFiles()
+    if ls~=nil then
+      ls=luajava.astable(File(path).listFiles()) --全局文件列表变量
+      table.sort(ls,function(a,b)
+        return (a.isDirectory()~=b.isDirectory() and a.isDirectory()) or ((a.isDirectory()==b.isDirectory()) and a.Name<b.Name)
+      end)
+    else
+      ls={}
+    end
+    for index,c in ipairs(ls) do
+      if c.isDirectory() then--如果是文件夹则
+        adp.add(c.Name.."/")
+      else--如果是文件则
+        adp.add(c.Name)
+      end
+    end
+  end
+  lv.onItemClick=function(l,v,p,s)--列表点击事件
+    项目=tostring(v.Text)
+    if tostring(cp.Text)=="/" then
+      路径=ls[p+1]
+    else
+      路径=ls[p]
+    end
+
+    if 项目=="../" then
+      SetItem(File(cp.Text).getParentFile())
+    elseif 路径.isDirectory() then
+      SetItem(路径)
+    elseif 路径.isFile() then
+      callback(tostring(路径))
+      ChoiceFile_dialog.hide()
+    end
+
+  end
+
+  SetItem(StartPath)
+end
+
+--ChoiceFile(StartPath,callback)
+--第一个参数为初始化路径,第二个为回调函数
+--原创》》
+
+《《选择路径模块》》
+《《require "import"
+import "android.widget.ArrayAdapter"
+import "android.widget.LinearLayout"
+import "android.widget.TextView"
+import "java.io.File"
+import "android.widget.ListView"
+import "android.app.AlertDialog"
+function ChoicePath(StartPath,callback)
+  --创建ListView作为文件列表
+  lv=ListView(activity).setFastScrollEnabled(true)
+  --创建路径标签
+  cp=TextView(activity)
+  lay=LinearLayout(activity).setOrientation(1).addView(cp).addView(lv)
+  ChoiceFile_dialog=AlertDialog.Builder(activity)--创建对话框
+  .setTitle("选择路径")
+  .setPositiveButton("OK",{
+  onClick=function()
+  callback(tostring(cp.Text))
+  end})
+.setNegativeButton("Canel",nil)
+  .setView(lay)
+  .show()
+  adp=ArrayAdapter(activity,android.R.layout.simple_list_item_1)
+  lv.setAdapter(adp)
+  function SetItem(path)
+    path=tostring(path)
+    adp.clear()--清空适配器
+    cp.Text=tostring(path)--设置当前路径
+    if path~="/" then--不是根目录则加上../
+      adp.add("../")
+    end
+    ls=File(path).listFiles()
+    if ls~=nil then
+      ls=luajava.astable(File(path).listFiles()) --全局文件列表变量
+      table.sort(ls,function(a,b)
+        return (a.isDirectory()~=b.isDirectory() and a.isDirectory()) or ((a.isDirectory()==b.isDirectory()) and a.Name<b.Name)
+      end)
+    else
+      ls={}
+    end
+    for index,c in ipairs(ls) do
+      if c.isDirectory() then--如果是文件夹则
+        adp.add(c.Name.."/")
+      end
+    end
+  end
+  lv.onItemClick=function(l,v,p,s)--列表点击事件
+    项目=tostring(v.Text)
+    if tostring(cp.Text)=="/" then
+      路径=ls[p+1]
+    else
+      路径=ls[p]
+    end
+
+    if 项目=="../" then
+      SetItem(File(cp.Text).getParentFile())
+    elseif 路径.isDirectory() then
+      SetItem(路径)
+    elseif 路径.isFile() then
+      callback(tostring(路径))
+      ChoiceFile_dialog.hide()
+    end
+
+  end
+
+  SetItem(StartPath)
+end
+
+
+import "android.os.*"
+ChoicePath(Environment.getExternalStorageDirectory().toString(),
+function(path)
+print(path)
+end)
+
+--第一个参数为初始化路径,第二个为回调函数
+--原创》》
+
+
+
+《《获取视图中的所有文本》》
+《《function GetAllText(view)
+textTable={}
+function GetText(Parent)
+local number=Parent.getChildCount()
+for i=0,number do
+local view=Parent.getChildAt(i)
+if pcall(function()view.addView(TextView(activity))end) then
+GetText(view)
+elseif pcall(function()view.getText()end) then
+table.insert(textTable,tostring(view.Text))
+end
+end
+end
+GetText(view)
+return textTable
+end
+
+print(table.unpack(GetAllText(Parent)))》》
+
+
+
+
+
+
+
+
+《《控件圆角》》
+《《function CircleButton(view,InsideColor,radiu)
+  import "android.graphics.drawable.GradientDrawable"
+  drawable = GradientDrawable() 
+  drawable.setShape(GradientDrawable.RECTANGLE) 
+  drawable.setColor(InsideColor)
+  drawable.setCornerRadii({radiu,radiu,radiu,radiu,radiu,radiu,radiu,radiu});
+  view.setBackgroundDrawable(drawable)
+end
+角度=50
+控件id=ed
+控件颜色=0xFF09639C
+CircleButton(控件id,控件颜色,角度)》》
+
+《《匹配汉字》》
+《《function filter_spec_chars(s)
+	local ss = {}
+	for k = 1, #s do
+		local c = string.byte(s,k)
+		if not c then break end
+		if (c>=48 and c<=57) or (c>= 65 and c<=90) or (c>=97 and c<=122) then
+			if not string.char(c):find("%w") then
+   table.insert(ss, string.char(c))
+	end
+ 	elseif c>=228 and c<=233 then
+			local c1 = string.byte(s,k+1)
+			local c2 = string.byte(s,k+2)
+			if c1 and c2 then
+				local a1,a2,a3,a4 = 128,191,128,191
+				if c == 228 then a1 = 184
+				elseif c == 233 then a2,a4 = 190,c1 ~= 190 and 191 or 165
+				end
+				if c1>=a1 and c1<=a2 and c2>=a3 and c2<=a4 then
+					k = k + 2
+					table.insert(ss, string.char(c,c1,c2))
+				end
+			end
+		end
+	end
+	return table.concat(ss)
+end
+print(filter_spec_chars("A1B2汉C3D4字E5F6,,,"))
+--来源网络,加了个if过滤掉英文与数字,使其只捕获中文》》
+
+
+
+《《播放音乐与视频》》
+《《import "android.media.MediaPlayer"
+mediaPlayer =  MediaPlayer()
+
+--初始化参数
+mediaPlayer.reset()
+
+--设置播放资源
+mediaPlayer.setDataSource("storage/sdcard0/a.mp3")
+
+--开始缓冲资源
+mediaPlayer.prepare()
+
+--是否循环播放该资源
+mediaPlayer.setLooping(true)
+
+--缓冲完成的监听
+mediaPlayer.setOnPreparedListener(MediaPlayer.OnPreparedListener() {
+    onPrepared=function(mediaPlayer
+        mediaPlayer.start()
+   end});
+
+--是否在播放
+mediaPlayer.isPlaying()
+
+--暂停播放
+mediaPlayer.pause()
+
+--从30位置开始播放
+mediaPlayer.seekTo(30)
+
+--停止播放
+mediaPlayer.stop()
+
+
+
+
+
+
+--播放视频
+--视频的播放与音乐播放过程一样：
+
+--先创建一个媒体对象
+import "android.media.MediaPlayer"
+mediaPlayer =  MediaPlayer()
+--初始化参数
+mediaPlayer.reset()
+
+--设置播放资源
+mediaPlayer.setDataSource("storage/sdcard0/a.mp4")
+
+--拿到显示的SurfaceView
+sh = surfaceView.getHolder()
+sh.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS)
+
+--设置显示SurfaceView
+mediaPlayer.setDisplay(sh)
+
+--设置音频流格式
+mediaPlayer.setAudioStreamType(AudioManager.Stream_Music)
+
+--开始缓冲资源
+mediaPlayer.prepare()
+
+--缓冲完成的监听
+mediaPlayer.setOnPreparedListener(MediaPlayer.OnPreparedListener{
+   onPrepared=function(mediaPlayer)
+		--开始播放
+        mediaPlayer.start()
+   end
+});
+
+--释放播放器
+mediaPlayer.release()
+
+
+--非原创》》
+
+
+
+《《获取系统SDK，Android版本及设备型号》》
+《《device_model = Build.MODEL --设备型号 
+
+version_sdk = Build.VERSION.SDK --设备SDK版本 
+
+version_release = Build.VERSION.RELEASE --设备的系统版本》》
+
+
+
+《《控件颜色修改》》
+《《import "android.graphics.PorterDuffColorFilter"
+import "android.graphics.PorterDuff"
+
+--修改按钮颜色
+button.getBackground().setColorFilter(PorterDuffColorFilter(0xFFFB7299,PorterDuff.Mode.SRC_ATOP))
+
+--修改编辑框颜色
+edittext.getBackground().setColorFilter(PorterDuffColorFilter(0xFFFB7299,PorterDuff.Mode.SRC_ATOP));
+
+--修改Switch颜色
+switch.ThumbDrawable.setColorFilter(PorterDuffColorFilter(0xFFFB7299,PorterDuff.Mode.SRC_ATOP));
+switch.TrackDrawable.setColorFilter(PorterDuffColorFilter(0xFFFB7299,PorterDuff.Mode.SRC_ATOP))
+
+--修改ProgressBar颜色
+progressbar.IndeterminateDrawable.setColorFilter(PorterDuffColorFilter(0xFFFB7299,PorterDuff.Mode.SRC_ATOP))
+
+--修改SeekBar滑条颜色
+seekbar.ProgressDrawable.setColorFilter(PorterDuffColorFilter(0xFFFB7299,PorterDuff.Mode.SRC_ATOP))
+--修改SeekBar滑块颜色
+seekbar.Thumb.setColorFilter(PorterDuffColorFilter(0xFFFB7299,PorterDuff.Mode.SRC_ATOP))》》
+
+
+
+
+
+《《修改对话框按钮颜色》》
+《《function DialogButtonFilter(dialog,button,WidgetColor)
+if Build.VERSION.SDK_INT >= 21 then
+import "android.graphics.PorterDuffColorFilter"
+import "android.graphics.PorterDuff"
+if button==1 then
+dialog.getButton(dialog.BUTTON_POSITIVE).setTextColor(WidgetColor)
+elseif button==2 then
+dialog.getButton(dialog.BUTTON_NEGATIVE).setTextColor(WidgetColor)
+elseif button==3 then
+dialog.getButton(dialog.BUTTON_NEUTRAL).setTextColor(WidgetColor)
+end
+end
+end
+--第一个参数为对话框的变量
+--第二个参数为1时，则修改POSITIVE按钮颜色,为二则修改NEGATIVE按钮颜色,为三则修改NEUTRAL按钮颜色
+--第三个参数为要修改成的颜色》》
+
+
+
+
+
+
+
+《《查询本地所有视频》》
+《《function QueryAllVideo()
+import "android.provider.MediaStore"
+cursor = activity.ContentResolver
+mImageUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+mCursor = cursor.query(mImageUri,nil,nil,nil,MediaStore.Video.Media.DATE_TAKEN)
+mCursor.moveToLast()
+VideoTable={}
+while mCursor.moveToPrevious() do
+   path = mCursor.getString(mCursor.getColumnIndex(MediaStore.Video.Media.DATA))
+   table.insert(VideoTable,tostring(path))
+end
+mCursor.close()
+return VideoTable
+end
+--返回一个表》》
+
+
+
+
+《《查询本地所有图片》》
+《《function QueryAllImage()
+import "android.provider.MediaStore"
+cursor = activity.ContentResolver
+mImageUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+mCursor = cursor.query(mImageUri,nil,nil,nil,MediaStore.Images.Media.DATE_TAKEN)
+mCursor.moveToLast()
+imageTable={}
+while mCursor.moveToPrevious() do
+   path = mCursor.getString(mCursor.getColumnIndex(MediaStore.Images.Media.DATA))
+   table.insert(imageTable,tostring(path))
+end
+mCursor.close()
+return imageTable
+end
+--返回一个表》》
+
+
+
+
+《《递归查找文件》》
+《《function outPath(ret) 
+for i,p in pairs(luajava.astable(ret)) do
+print(p)
+end
+end
+function find(catalog,name)
+ local n=0
+ local t=os.clock()
+ local ret={}
+ require "import"
+ import "java.io.File" 
+ import "java.lang.String"
+ function FindFile(catalog,name)
+   local name=tostring(name)
+   local ls=catalog.listFiles() or File{}
+   for 次数=0,#ls-1 do
+     --local 目录=tostring(ls[次数])
+     local f=ls[次数]
+     if f.isDirectory() then--如果是文件夹则继续匹配
+       FindFile(f,name)
+     else--如果是文件则
+       n=n+1
+       if n%1000==0 then
+         print(n,os.clock()-t)
+       end
+      local nm=f.Name
+       if string.find(nm,name) then
+         --thread(insert,目录)
+         table.insert(ret,tostring(f))
+       end
+     end
+   luajava.clear(f)
+   end
+ end
+ FindFile(catalog,name)
+ call("outPath",ret)
+end
+
+import "java.io.File"
+
+catalog=File("/sdcard/AndroLua")
+name=".j?pn?g"
+thread(find,catalog,name)》》
+
+《《获取手机内置存储路径》》
+《《Environment.getExternalStorageDirectory().toString()》》
+
+
+
+
+《《获取已安装程序的包名、版本号、最后更新时间、图标、应用名称》》
+《《function GetAppInfo(包名)
+  import "android.content.pm.PackageManager"
+  local pm = activity.getPackageManager();
+  local 图标 = pm.getApplicationInfo(tostring(包名),0)
+  local 图标 = 图标.loadIcon(pm);
+  local pkg = activity.getPackageManager().getPackageInfo(包名, 0); 
+  local 应用名称 = pkg.applicationInfo.loadLabel(activity.getPackageManager())
+  local 版本号 = activity.getPackageManager().getPackageInfo(包名, 0).versionName
+  local 最后更新时间 = activity.getPackageManager().getPackageInfo(包名, 0).lastUpdateTime
+  local cal = Calendar.getInstance();
+  cal.setTimeInMillis(最后更新时间); 
+  local 最后更新时间 = cal.getTime().toLocaleString()
+  return 包名,版本号,最后更新时间,图标,应用名称
+end》》
+
+《《获取指定安装包的包名,图标,应用名》》
+《《import "android.content.pm.PackageManager"
+import "android.content.pm.ApplicationInfo"
+function GetApkInfo(archiveFilePath)
+pm = activity.getPackageManager()
+info = pm.getPackageArchiveInfo(archiveFilePath, PackageManager.GET_ACTIVITIES); 
+if info ~= nil then
+  appInfo = info.applicationInfo;
+ appName = tostring(pm.getApplicationLabel(appInfo))
+  packageName = appInfo.packageName; --安装包名称 
+  version=info.versionName; --版本信息 
+   icon = pm.getApplicationIcon(appInfo);--图标
+end
+return packageName,version,icon
+end》》
+
+《《获取某程序是否安装》》
+《《if pcall(function() activity.getPackageManager().getPackageInfo("包名",0) end) then
+  print("安装了")
+else
+  print("没安装")
+end》》
+
+《《设置TextView字体风格》》
+《《import "android.graphics.Paint"
+--设置中划线
+id.getPaint().setFlags(Paint. STRIKE_THRU_TEXT_FLAG)
+--设置下划线
+id.getPaint().setFlags(Paint. UNDERLINE_TEXT_FLAG )
+--设置加粗
+id.getPaint().setFakeBoldText(true)
+--设置斜体
+id.getPaint().setTextSkewX(0.2)
+
+--设置TypeFace
+import "android.graphics.Typeface"
+id.getPaint().setTypeface()
+--参数列表
+Typeface.DEFAULT 默认字体
+Typeface.DEFAULT_BOLD 加粗字体
+Typeface.MONOSPACE monospace字体
+Typeface.SANS_SERIF sans字体
+Typeface.SERIF serif字体》》
+
+
+
+《《缩放图片》》
+《《function rotateToFit(bm,degrees)
+    import "android.graphics.Matrix"
+    import "android.graphics.Bitmap"
+    width = bm.getWidth()
+    height = bm.getHeight()
+    matrix =  Matrix()
+    matrix.postRotate(degrees)
+    bmResult = Bitmap.createBitmap(bm, 0, 0, width, height, matrix, true)
+    return bmResult
+  end
+bm=loadbitmap(图片路径)
+缩放级别=2
+rotateToFit(bm,degrees)
+--非原创》》
+
+《《获取运营商名称》》
+《《import "android.content.Context" 
+运营商名称 = this.getSystemService(Context.TELEPHONY_SERVICE).getNetworkOperatorName()
+print(运营商名称)
+--添加权限   READ_PHONE_STATE》》
+
+
+《《Drawable着色》》
+《《function ToColor(path,color)
+ local  aa=BitmapDrawable(loadbitmap(tostring(path)))
+   aa.setColorFilter(PorterDuffColorFilter(color,PorterDuff.Mode.SRC_ATOP))
+return aa
+end》》
+
+
+
+
+《《保存图片到本地》》
+《《function SavePicture(name,bm)
+if  bm then
+import "java.io.FileOutputStream"
+import "java.io.File"
+import "android.graphics.Bitmap"
+name=tostring(name)
+f = File(name)
+out = FileOutputStream(f)
+bm.compress(Bitmap.CompressFormat.PNG,90, out)
+out.flush()
+out.close()
+return true
+else
+return false
+end
+end》》
+
+
+
+
+《《调用应用商店搜索应用》》
+《《import "android.content.Intent"
+import "android.net.Uri"
+intent = Intent("android.intent.action.VIEW")
+intent .setData(Uri.parse( "market://details?id="..activity.getPackageName()))
+this.startActivity(intent)》》
+
+
+
+《《分享》》
+《《--分享文件
+function Sharing(path)
+  import "android.webkit.MimeTypeMap"
+  import "android.content.Intent"
+  import "android.net.Uri"
+  import "java.io.File"
+  FileName=tostring(File(path).Name)
+  ExtensionName=FileName:match("%.(.+)")
+  Mime=MimeTypeMap.getSingleton().getMimeTypeFromExtension(ExtensionName)
+  intent = Intent();
+  intent.setAction(Intent.ACTION_SEND);
+  intent.setType(Mime);
+  file = File(path);
+  uri = Uri.fromFile(file);
+  intent.putExtra(Intent.EXTRA_STREAM,uri);
+  intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+  activity.startActivity(Intent.createChooser(intent, "分享到:"));
+  end
+
+--分享文字
+text="分享的内容" 
+intent=Intent(Intent.ACTION_SEND); 
+intent.setType("text/plain"); 
+intent.putExtra(Intent.EXTRA_SUBJECT, "分享"); 
+intent.putExtra(Intent.EXTRA_TEXT, text); 
+intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); 
+activity.startActivity(Intent.createChooser(intent,"分享到:")); 》》
+
+
+《《调用其它程序打开文件》》
+《《function OpenFile(path)
+  import "android.webkit.MimeTypeMap"
+  import "android.content.Intent"
+  import "android.net.Uri"
+  import "java.io.File"
+  FileName=tostring(File(path).Name)
+  ExtensionName=FileName:match("%.(.+)")
+  Mime=MimeTypeMap.getSingleton().getMimeTypeFromExtension(ExtensionName)
+  if Mime then 
+    intent = Intent(); 
+    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); 
+    intent.setAction(Intent.ACTION_VIEW); 
+    intent.setDataAndType(Uri.fromFile(File(path)), Mime); 
+    activity.startActivity(intent);
+  else
+    Toastc("找不到可以用来打开此文件的程序")
+  end
+end》》
+
+
+《《图片圆角》》
+《《function GetRoundedCornerBitmap(bitmap,roundPx) 
+  import "android.graphics.PorterDuffXfermode"
+  import "android.graphics.Paint"
+  import "android.graphics.RectF"
+  import "android.graphics.Bitmap"
+  import "android.graphics.PorterDuff$Mode"
+  import "android.graphics.Rect"
+  import "android.graphics.Canvas"
+  import "android.util.Config"
+  width = bitmap.getWidth()
+  output = Bitmap.createBitmap(width, width,Bitmap.Config.ARGB_8888)
+  canvas = Canvas(output); 
+  color = 0xff424242; 
+  paint = Paint()
+  rect = Rect(0, 0, bitmap.getWidth(), bitmap.getHeight()); 
+  rectF = RectF(rect); 
+  paint.setAntiAlias(true);
+  canvas.drawARGB(0, 0, 0, 0); 
+  paint.setColor(color); 
+  canvas.drawRoundRect(rectF, roundPx, roundPx, paint); 
+  paint.setXfermode(PorterDuffXfermode(Mode.SRC_IN)); 
+  canvas.drawBitmap(bitmap, rect, rect, paint); 
+  return output; 
+end
+import "android.graphics.drawable.BitmapDrawable"
+圆角弧度=50
+bitmap=loadbitmap(picturePath)
+RoundPic=GetRoundedCornerBitmap(bitmap)》》
+
+
+
+《《一键加群与QQ聊天》》
+《《import "android.net.Uri"
+import "android.content.Intent"
+--加群
+url="mqqapi://card/show_pslcard?src_type=internal&version=1&uin=383792635&card_type=group&source=qrcode"
+activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+
+--QQ聊天
+url="mqqwpa://im/chat?chat_type=wpa&uin=2113075983"
+activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+
+
+--跳转酷安个人主页
+url="coolmarket://www.coolapk.com/u/10086"
+activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+》》
+
+
+
+
+
+
+《《发送短信》》
+《《--后台发送短信
+ require "import"
+ import "android.telephony.*"
+ SmsManager.getDefault().sendTextMessage(tostring(号码), nil, tostring(内容), nil, nil)
+
+--调用系统发送短信
+import "android.content.Intent"
+import "android.net.Uri"
+uri = Uri.parse("smsto:"..号码)
+intent = Intent(Intent.ACTION_SENDTO, uri)
+intent.putExtra("sms_body",内容)
+intent.setAction("android.intent.action.VIEW")
+activity.startActivity(intent)》》
+
+
+《《判断数组中是否存在某个值》》
+《《function Table_exists(tables,value)
+for index,content in pairs(tables) do
+if content:find(value) then
+return true
+end
+end
+end》》
+
+
+《《字符串操作》》
+《《strings="左中右"
+
+--取字符串左边
+左=strings:match("(.+)中")
+
+
+--取字符串中间
+中=strings:match("左(.-)右")
+
+
+--取字符串右边
+右=strings:match("(.+)右")
+
+--替换
+string.gsub(原字符串,替换的字符串,替换成的字符串)
+
+--匹配子串位置
+起始位置,结束位置=string.find(字符串,子串)
+
+
+--按位置捕获字符串
+string.sub(字符串,子串起始位置,子串结束位置)》》
+
+
+《《剪切板操作》》
+《《import "android.content.Context" 
+--导入类
+
+a=activity.getSystemService(Context.CLIPBOARD_SERVICE).getText() 
+--获取剪贴板 
+
+activity.getSystemService(Context.CLIPBOARD_SERVICE).setText(edit.Text) 
+--写入剪贴板》》
+
+《《各种事件》》
+《《function main(...)
+  --...是newActivity传递过来的参数。
+  print("入口函数",...)
+end
+
+function onCreate()
+  print("窗口创建")
+end
+
+function onStart()
+  print("活动开始")
+end
+
+function onResume()
+  print("返回程序")
+end
+
+function onPause()
+  print("活动暂停")
+end
+
+function onStop()
+  print("活动停止")
+end
+
+function onDestroy()
+  print("程序已退出")
+end
+
+function onResult(name,...)
+  --name：返回的活动名称
+  --...：返回的参数
+  print("返回活动",name,...)
+end
+
+function onCreateOptionsMenu(menu)
+  --menu：选项菜单。
+  menu.add("菜单")
+end
+
+function onOptionsItemSelected(item)
+  --item：选中的菜单项
+  print(item.Title)
+end
+
+function onConfigurationChanged(config)
+  --config：配置信息
+  print("屏幕方向关闭")
+end
+
+function onKeyDown(keycode,event)
+  --keycode：键值
+  --event：事件
+  print("按键按下",keycode)
+end
+
+function onKeyUp(keycode,event)
+  --keycode：键值
+  --event：事件
+  print("按键抬起",keycode)
+end
+
+function onKeyLongPress(keycode,event)
+  --keycode：键值
+  --event：事件
+  print("按键长按",keycode)
+end
+
+function onTouchEvent(event)
+  --event：事件
+  print("触摸事件",event)
+end
+
+function onKeyDown(c,e)
+  if c==4 then
+--返回键事件
+end
+end
+
+
+id.onClick=function()
+--控件被单击
+end
+
+id.onLongClick=function()
+--控件被长按
+end
+
+
+id.onItemClick=function(p,v,i,s)
+--列表项目被单击
+项目=v.Text
+return true
+end
+
+id.onItemLongClick=function(p,v,i,s)
+--列表项目被长按
+项目=v.Text
+return true
+end
+
+
+id.onItemLongClick=function(p,v,i,s)
+--列表项目被长按
+项目=v.Text
+return true
+end
+
+--Spinner的项目单击事件
+id.onItemSelected=function(l,v,p,i) 
+项目=v.Text
+end
+
+--ExpandableListView的父项目与子项目单击事件
+id.onGroupClick=function(l,v,p,s)
+  print(v.Text..":GroupClick")
+end
+
+id.onChildClick=function(l,v,g,c)
+  print(v.Text..":ChildClick")
+end》》
+
+
+《《Shell执行》》
+《《function exec(cmd)
+local p=io.popen(string.format('%s',cmd))
+local s=p:read("*a")
+p:close()
+return s
+end
+
+print(exec("echo  ...."))
+
+部分常用命令:
+--删除文件或文件夹
+rm -r /路径
+
+--复制文件或文件夹
+cp -r inpath outpath
+
+--移动文件或文件夹
+mv -r inpath outpath
+
+--挂载系统目录
+mount -o remount,rw path
+
+--修改系统文件权限
+chmod 755 /system/build.prop
+
+--重启
+reboot  
+
+--关机
+reboot -p
+
+--重启至recovery
+reboot recovery》》

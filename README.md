@@ -1,7 +1,7 @@
 # element-plus-vite-starter
 
-![alt text](figs/README-image.png)
 
+![alt text](docs/home_page.png)
 ## Project setup
 
 ```bash
@@ -83,4 +83,34 @@ const toast = () => {
 
 const value1 = ref(true);
 </script>
+```
+
+### 工程结构分析
+
+```txt
+├─api
+├─assets
+│  ├─images
+│  └─styles
+├─components
+│  ├─Breadcrumb
+│  ├─Carousel
+│  ├─Custom
+│  ├─Tree
+│  └─Upload
+│      ├─filepond
+│      └─uppy
+├─router
+├─utils
+│  ├─config
+│  ├─http
+│  ├─log
+│  ├─model
+│  └─storage
+└─views
+    ├─dashboard
+    │  ├─about
+    │  └─home
+    ├─error
+    └─portal        
 ```

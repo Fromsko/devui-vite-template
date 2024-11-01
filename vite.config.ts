@@ -9,15 +9,15 @@ const pathSrc = path.resolve(__dirname, 'src')
 export default defineConfig({
   resolve: {
     alias: {
-      '~/': `${pathSrc}/`,
       '@': pathSrc,
     },
   },
   css: {
     preprocessorOptions: {
       scss: {
-        api: "modern-compiler" // or 'modern'
-      }
+        api: 'modern-compiler', // 或 "modern"，"legacy"
+        importers: [],
+      },
     }
   },
   plugins: [

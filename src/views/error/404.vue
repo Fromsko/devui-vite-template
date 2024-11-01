@@ -1,9 +1,6 @@
 <template>
   <div class="page-style">
     <h1>页面丢失了</h1>
-    <d-button variant="solid" :loading="showLoading" @click="handleClick">
-      Click Me
-    </d-button>
   </div>
 </template>
 

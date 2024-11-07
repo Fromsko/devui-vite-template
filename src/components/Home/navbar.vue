@@ -2,12 +2,11 @@
     <div class="navbar bg-base-100">
         <div class="flex-1">
             <RouterLink class="btn btn-ghost text-xl" to="/">
-                <span class="tooltip tooltip-bottom" data-tip="返回主页">{{ appTitle }}</span>
+                <span class="tooltip tooltip-bottom" data-tip="返回主页">{{ store.title }}</span>
             </RouterLink>
         </div>
-
         <div class="flex-none gap-2">
-            <div class="form-control">
+            <div class="form-control" v-show="store.isOpen">
                 <input type="text" placeholder="Search" class="input input-bordered w-24 md:w-auto" />
             </div>
             <div class="dropdown dropdown-end">
@@ -18,20 +17,11 @@
                     </div>
                 </div>
                 <ul tabindex="0"
-                    class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
-                    <li>
-
-                        <RouterLink class="justify-between" to="/dashboard/system">
-                            Dashbord
-                            <span class="badge">New</span>
-                        </RouterLink>
+                    class="dropdown-content menu bg-base-100 rounded-box z-[1] w-28 p-2 shadow items-center">
+                    <li v-for="(value, key, index) of store.items" :key="index">
+                        <RouterLink :to="value" v-if="value !== 'logout'"> {{ key }} </RouterLink>
+                        <button v-else @click="toggleLogout">{{ value }}</button>
                     </li>
-                    <li>
-                        <RouterLink class="justify-between" to="/api">
-                            文档
-                        </RouterLink>
-                    </li>
-                    <li><a>Logout</a></li>
                 </ul>
             </div>
         </div>
@@ -39,7 +29,7 @@
 </template>
 
 <script lang="ts" setup>
-    import { ref } from 'vue'
+    import { useConfigStore } from '@/utils/stores/useConfigStore'
 
-    const appTitle = ref<String>('Fromsko')
+    const { navConfig: store, toggleLogout } = useConfigStore()
 </script>

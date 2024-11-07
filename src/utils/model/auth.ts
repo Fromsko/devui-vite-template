@@ -3,12 +3,12 @@
   Description: Auth model define
 */
 
-type AuthParmas = {
+type AuthParams = {
     username: string
     password: string
     email?: string
 }
 
 export {
-    AuthParmas
+    AuthParams as AuthParmas
 }

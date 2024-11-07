@@ -3,9 +3,9 @@
   Description: Auth api
 */
 import instance from "@/utils/http/request"
-import { AuthParmas } from '@/utils/model/auth'
+import { AuthParmas as AuthParams } from '@/utils/model/auth'
 
-const login = (params: AuthParmas) => {
+const login = (params: AuthParams) => {
     return instance({
         url: '/user/login',
         method: 'post',

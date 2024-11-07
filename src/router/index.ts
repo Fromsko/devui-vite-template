@@ -27,6 +27,11 @@ const routes: Array<RouteRecordRaw> = [
                     }
                 ]
             },
+            {
+                path: "auth",
+                name: "authView",
+                component: () => import('@/views/auth/index.vue')
+            },
         ],
     },
     {

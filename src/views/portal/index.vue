@@ -1,5 +1,5 @@
 <template>
-    <div id="warpper">
+    <div id="wrapper">
         <NavBar />
         <div id="container" :style="containerStyle">
             <RouterView />
@@ -37,7 +37,7 @@
 
 
 <style lang="scss" scoped>
-    #warpper {
+    #wrapper {
         height: 100vh;
     }
 

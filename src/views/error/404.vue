@@ -4,19 +4,20 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { ref } from 'vue'
-const showLoading = ref(false)
+<script lang="ts" setup>
+import { ref } from "vue";
+
+const showLoading = ref(false);
 const handleClick = () => {
-  showLoading.value = true
+  showLoading.value = true;
 
   setTimeout(() => {
-    showLoading.value = false
-  }, 2000)
-}
+    showLoading.value = false;
+  }, 2000);
+};
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .page-style {
   display: flex;
   height: 100%;

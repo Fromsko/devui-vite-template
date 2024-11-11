@@ -1,81 +1,88 @@
-/** 
-  File: request.ts
-  Description: Axios 请求封装
-*/
-import router from '@/router'
-import axios from 'axios'
-import config from '~/utils/config'
+import config from "@/utils/config";
+import { log } from "@/utils/log/web_log";
+import GetErrorMsg, { ErrorMessage, RequestStatus } from "@/utils/models/status";
+import axios, { AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from "axios";
+import { ResponseData } from "@/utils/models/auth";
 
-const TOKEN_ERROR = 'Token 已过期'
-const NETWORK_ERROR = '网络异常'
+class RequestManager {
+  private service;
 
-const service = axios.create({
-    baseURL: config.baseApi,
-    timeout: 8000,
-})
+  constructor() {
+    this.service = axios.create();
 
-// 请求封装
-service.interceptors.request.use((req: any) => {
-    const headers = req.headers
+    this.initializeRequestInterceptor();
+    this.initializeResponseInterceptor();
 
-    if (!headers.Authorization) {
-        headers.Authorization = 'bear fromsko'
+    this.setBaseUrl();
+    this.setupRequestMethods();
+  }
+
+  request = async <T = any>(options: AxiosRequestConfig): Promise<T> => {
+    if (options.method?.toLowerCase() === "get") {
+      options.params = options.data;
     }
-    return req
-})
+    return this.service(options);
+  };
 
-// 响应封装
-service.interceptors.response.use((res: any) => {
-    const { code, data, msg } = res.data
+  private initializeRequestInterceptor() {
+    this.service.interceptors.request.use((req: InternalAxiosRequestConfig) => {
+      const token = this.getToken();
+      if (token) {
+        req.headers.Authorization = token;
+      }
+      return req;
+    }, error => {
+      return Promise.reject(error);
+    });
+  }
 
-    if (code === 200) {
-        return data
-    } else if (code === 40001) {
-        // log.error(TOKEN_ERROR)
-        setTimeout(() => {
-            router.push('/login')
-        }, 1500)
-        return Promise.reject(TOKEN_ERROR)
+  private initializeResponseInterceptor() {
+    this.service.interceptors.response.use((res: AxiosResponse) => {
+      const { code, msg }: ResponseData = res.data;
+      if ((code) === RequestStatus.SUCCESS) {
+        return res.data;
+      } else {
+        return this.handleError(code, msg);
+      }
+    }, error => {
+      return Promise.reject(ErrorMessage.TokenError);
+    });
+  }
+
+  private getToken(): string | undefined {
+    log.warning("使用的模拟 Token");
+    return "bear fromsko";
+  }
+
+  private handleError(code: number, msg: string): Promise<never> {
+    return Promise.reject(
+      GetErrorMsg(code)
+    );
+  }
+
+  private setBaseUrl() {
+    if (config.useMock === "true") {
+      this.service.defaults.baseURL = config.mockApi;
     } else {
-        // ElMessage.error(msg || NETWORK_ERROR)
-        return Promise.reject(msg || NETWORK_ERROR)
+      this.service.defaults.baseURL = config.baseApi;
     }
-})
+  }
 
-interface RequestOptions {
-    method?: string
-    mock?: boolean
-    params?: any
-    data?: any
-    url: string
+  private setupRequestMethods() {
+    // 动态添加请求方法
+    ["get", "post", "put", "delete"].forEach((method) => {
+      (this as any)[method] = (url: string, data?: any, options?: AxiosRequestConfig) => {
+        return this.request({
+          url,
+          data,
+          method,
+          ...options
+        });
+      };
+    });
+  }
 }
 
-function request(options: RequestOptions): any {
-    options.method = options.method || 'get'
+const manager = new RequestManager();
 
-    if (options.method.toLowerCase() === 'get') {
-        options.params = options.data
-    }
-
-    if (config.env === 'prod') {
-        service.defaults.baseURL = config.baseApi
-    } else {
-        service.defaults.baseURL = config.mock ? config.mockApi : config.baseApi
-    }
-
-    return service(options)
-}
-
-['get', 'post', 'delete', 'put'].forEach((item) => {
-    // 使用 as any 来避免类型检查错误
-    ; (request as any)[item] = (url: string, data: any, options: any) => {
-        return request({
-            url,
-            data,
-            method: item,
-            ...options,
-        })
-    }
-})
-
-export default request
+export default manager.request;

@@ -2,7 +2,8 @@
 <template>
   <div class="sk-breadcrumb">
     <d-breadcrumb>
-      <d-breadcrumb-item v-for="(item, index) in breadList" :key="index" :to="item.path" class="bread-style">
+      <d-breadcrumb-item v-for="(item, index) in breadList" :key="index" :to="item.path"
+                         class="bread-style">
         <router-link :to=item.path>
           {{ item.name }}
         </router-link>
@@ -12,32 +13,32 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref, watch } from 'vue'
-  import { RouteLocationMatched, useRoute } from 'vue-router'
+import { ref, watch } from "vue";
+import { RouteLocationMatched, useRoute } from "vue-router";
 
-  const route = useRoute()
-  const breadList = ref<RouteLocationMatched[]>([])
+const route = useRoute();
+const breadList = ref<RouteLocationMatched[]>([]);
 
-  watch(
-    () => route.matched,
-    (matchedRoutes: RouteLocationMatched[]) => {
+watch(
+  () => route.matched,
+  (matchedRoutes: RouteLocationMatched[]) => {
 
-      breadList.value = matchedRoutes
-      console.log(breadList.value);
-    },
-    { immediate: true }
-  )
+    breadList.value = matchedRoutes;
+    console.log(breadList.value);
+  },
+  { immediate: true }
+);
 </script>
 
 <style lang="scss" scoped>
-  .sk-breadcrumb {
-    margin-bottom: 8px;
-    user-select: none;
+.sk-breadcrumb {
+  margin-bottom: 8px;
+  user-select: none;
 
-    .bread-style {
-      span {
-        font-size: 14px;
-      }
+  .bread-style {
+    span {
+      font-size: 14px;
     }
   }
+}
 </style>

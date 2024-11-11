@@ -1,60 +1,88 @@
-import { defineStore } from 'pinia';
-import { reactive } from 'vue';
+import { defineStore } from "pinia";
+import { onBeforeMount, reactive, watch } from "vue";
+import storage from "@/utils/storage";
 
 export interface ConfigStore {
-    title: String,
-    isOpen: boolean,
-    isLogin: boolean,
-    items: { [key: string]: string }
+  title: String,
+  isLogin: boolean,
+  items: { [key: string]: string }
 }
 
-export const useConfigStore = defineStore('ConfigStore', () => {
-    const navConfig: ConfigStore = reactive({
-        items: {},
-        isOpen: false,
-        isLogin: false,
-        title: 'Fromsko',
-    })
+export const useConfigStore = defineStore("ConfigStore", () => {
+  const navConfig: ConfigStore = reactive({
+    items: {},
+    isLogin: false,
+    title: "Fromsko"
+  });
 
-    const getAppTitle = (): String => {
-        return navConfig.title
+  const getAppTitle = (): String => {
+    return navConfig.title;
+  };
+
+  const toggleNavConfig = (): ConfigStore => {
+    return navConfig;
+  };
+
+  const setupItems = () => {
+    if (navConfig.isLogin) {
+      navConfig.items = {
+        "接口文档": "/api",
+        "控制台": "/dashboard/system",
+        "退出登录": "logout"
+      };
+    } else {
+      navConfig.items = { "登录": "/auth" };
     }
+  };
 
-    const toggleNavConfig = (): ConfigStore => {
-        return navConfig
+  // 基础版本
+  const hasValidToken = () => {
+    const token = storage.getItem("token");
+    if (typeof token === "string") {
+      try {
+        const parsedToken = JSON.parse(token);
+        return Object.keys(parsedToken).length > 0;
+      } catch (e) {
+        return false;
+      }
     }
+    return false;
+  };
 
-    const setNavConfig = (isOpen: boolean) => {
-        navConfig.isOpen = isOpen
-    }
+  const setLoginStatus = (isLogin: boolean) => {
+    navConfig.isLogin = isLogin;
+  };
 
-    const setItems = (items: { [key: string]: string } | null = null) => {
-        if (items === null) {
-            navConfig.items = {
-                "API接口": "/api",
-                "控制台": "/dashboard/system",
-                "退出登录": "logout",
-            }
-        } else {
-            navConfig.items = items
-        }
-        return navConfig.items
-    }
+  const setLogoutStatus = () => {
+    storage.clearItem("token");
+    navConfig.isLogin = false;
+  };
 
-    const logout = () => {
-        if (navConfig.isLogin) {
-            navConfig.isLogin = false
-        }
-        setItems({ "登录": "/auth" })
-    }
+  // 设置 Token 信息
+  const setTokenInfo = (token: string) => {
+    storage.setItem("token", token);
+  };
 
-    setItems()
+  // 清除 Token 信息
+  const clearTokenInfo = () => storage.clearItem("token");
 
-    return {
-        navConfig,
-        setNavConfig,
-        toggleNavConfig,
-        toggleLogout: logout,
-        toggleAppTitle: getAppTitle,
-    };
+  onBeforeMount(() => {
+    navConfig.isLogin = hasValidToken();
+    setupItems();
+  });
+
+  watch(() => navConfig.isLogin, (status: boolean) => {
+    console.log(status);
+    setupItems();
+  });
+
+  return {
+    navConfig,
+    setLoginStatus,
+    setLogoutStatus,
+    setTokenInfo,
+    clearTokenInfo,
+    toggleNavConfig,
+    toggleAppTitle: getAppTitle
+  };
 });

@@ -1,51 +1,47 @@
 <template>
-    <div id="wrapper">
-        <NavBar />
-        <div id="container" :style="containerStyle">
-            <RouterView />
-        </div>
-        <FootBar v-show="isFooterShow" />
+  <div id="wrapper">
+    <NavBar />
+    <div id="container" :style="containerStyle">
+      <RouterView />
     </div>
+    <FootBar v-show="isFooterShow" />
+  </div>
 </template>
 
 <script lang="ts" setup>
-    import FootBar from '@/components/Home/FootBar.vue'
-    import NavBar from '@/components/Home/navbar.vue'
-    import { computed, ref, watch } from 'vue'
-    import { useRoute } from 'vue-router'
+import FootBar from "@/components/Home/FootBar.vue";
+import NavBar from "@/components/Home/navbar.vue";
+import { computed, ref, watch } from "vue";
+import { useRoute } from "vue-router";
 
-    const isFooterShow = ref<boolean>(true)
-    const route = useRoute()
+const isFooterShow = ref<boolean>(true);
+const route = useRoute();
 
-    // 监听 route.name 的变化
-    watch(() => route.name, (newName) => {
-        if (newName !== 'IndexHomeView') {
-            isFooterShow.value = false
-        } else {
-            isFooterShow.value = true
-        }
-    })
+// 监听 route.name 的变化
+watch(() => route.name, (newName) => {
+  isFooterShow.value = newName === "IndexHomeView";
+});
 
-    // 计算容器的样式
-    const containerStyle = computed(() => {
-        const footerHeight = isFooterShow.value ? '68px' : '0px';
-        return {
-            height: `calc(100vh - 66px - ${footerHeight})`
-        };
-    });
+// 计算容器的样式
+const containerStyle = computed(() => {
+  const footerHeight = isFooterShow.value ? "68px" : "0px";
+  return {
+    height: `calc(100vh - 66px - ${footerHeight})`
+  };
+});
 </script>
 
 
 <style lang="scss" scoped>
-    #wrapper {
-        height: 100vh;
-    }
+#wrapper {
+  height: 100vh;
+}
 
-    #container {
-        transition: height 0.3s ease;
-        background-image: url('../../assets/images/background.png');
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-    }
+#container {
+  transition: height 0.3s ease;
+  background-image: url('../../assets/images/background.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
 </style>

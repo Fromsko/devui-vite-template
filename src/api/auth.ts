@@ -1,24 +1,37 @@
-/** 
-  File: auth.ts
-  Description: Auth api
-*/
-import instance from "@/utils/http/request"
-import { AuthParmas as AuthParams } from '@/utils/model/auth'
+import useAuthClient from "@/utils/http/auth";
+import { LoginParams, RegisterParams, ResponseData } from "@/utils/models/auth";
 
-const login = (params: AuthParams) => {
-    return instance({
-        url: '/user/login',
-        method: 'post',
-        data: params
-    })
+
+export const authClient = useAuthClient();
+
+export enum eventType {
+  Login = "login",
+  Register = "register",
 }
 
-const logout = () => {
-    return instance({
-        url: '/user/logout',
-        method: 'post',
-    })
+export declare type hookParams = {
+  viewName: eventType,
+  formData: LoginParams | RegisterParams,
+  callBack: (finished: boolean, resp: ResponseData | string) => void
 }
 
-export { login, logout }
-
+export const useHook = async (params: hookParams) => {
+  let instance: ResponseData;
+  try {
+    switch (params.viewName) {
+      case eventType.Register:
+        instance = await authClient.register(
+          params.formData as RegisterParams
+        );
+        break;
+      case eventType.Login:
+      default:
+        instance = await authClient.login(
+          params.formData as LoginParams
+        );
+    }
+    params.callBack(true, instance);
+  } catch (err) {
+    params.callBack(false, err as string);
+  }
+};

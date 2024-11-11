@@ -1,20 +1,20 @@
-import { ThemeServiceInit, infinityTheme } from 'devui-theme';
+import { infinityTheme, ThemeServiceInit } from "devui-theme";
 import { createApp } from "vue";
-import { createPinia} from 'pinia'
+import { createPinia } from "pinia";
 
 import App from "@/App.vue";
-import router from '@/router';
-import DevUI from 'vue-devui';
+import router from "@/router";
+import DevUI from "vue-devui";
 
-import '@/assets/styles/main.css';
-import '@devui-design/icons/icomoon/devui-icon.css';
+import "@/assets/styles/main.css";
+import "@devui-design/icons/icomoon/devui-icon.css";
 
-ThemeServiceInit({ infinityTheme }, 'infinityTheme');
+ThemeServiceInit({ infinityTheme }, "infinityTheme");
 
 const pinia = createPinia();
 const app = createApp(App);
 
-app.use(pinia)
-app.use(DevUI)
-app.use(router)
+app.use(pinia);
+app.use(DevUI);
+app.use(router);
 app.mount("#app");

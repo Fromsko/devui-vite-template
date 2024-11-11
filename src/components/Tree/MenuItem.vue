@@ -1,6 +1,6 @@
 <template>
   <template v-if="menuItem.subMenu">
-    <d-sub-menu :title="menuItem.label" :key="menuItem.key">
+    <d-sub-menu :key="menuItem.key" :title="menuItem.label">
       <template #icon>
         <i :class="menuItem.icon"></i>
       </template>
@@ -11,7 +11,7 @@
   </template>
   <template v-else>
     <d-menu-item :key="menuItem.key" :title="menuItem.label">
-      <template #icon v-if="menuItem.icon">
+      <template v-if="menuItem.icon" #icon>
         <i :class="menuItem.icon"></i>
       </template>
       <span>{{ menuItem.label }}</span>
@@ -20,22 +20,22 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent } from "vue";
 
 interface MenuItemType {
-  key: string
-  label: string
-  icon?: string
-  subMenu?: MenuItemType[]
+  key: string;
+  label: string;
+  icon?: string;
+  subMenu?: MenuItemType[];
 }
 
 export default defineComponent({
-  name: 'MenuItem',
+  name: "MenuItem",
   props: {
     menuItem: {
       type: Object as () => MenuItemType,
-      required: true,
-    },
-  },
-})
+      required: true
+    }
+  }
+});
 </script>

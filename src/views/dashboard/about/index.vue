@@ -7,23 +7,23 @@
 </template>
 
 <script lang="ts" setup>
-  import UploadView from "@/components/Upload/filepond/index.vue"
-  import { onBeforeMount, onMounted, ref } from 'vue'
+import UploadView from "@/components/Upload/filepond/index.vue";
+import { onBeforeMount, onMounted, ref } from "vue";
 
-  let uploadStyle = ref<Array<string>>(['skeleton', 'size-2/3'])
+let uploadStyle = ref<Array<string>>(["skeleton", "size-2/3"]);
 
 
-  onBeforeMount(() => {
-    let timer = setInterval(() => {
-      uploadStyle.value = uploadStyle.value.slice(1)
+onBeforeMount(() => {
+  let timer = setInterval(() => {
+    uploadStyle.value = uploadStyle.value.slice(1);
 
-      clearInterval(timer)
-    }, 3000);
-  })
+    clearInterval(timer);
+  }, 3000);
+});
 
-  onMounted(() => {
+onMounted(() => {
 
-  })
+});
 </script>
 
 <style scoped></style>

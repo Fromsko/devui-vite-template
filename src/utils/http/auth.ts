@@ -4,11 +4,19 @@ import { LoginParams, RegisterParams } from "@/utils/models/auth";
 const useAuthClient = () => {
   return {
     login: async (params: LoginParams) => {
-      return await instance({
-        url: "/api/v1/login",
-        method: "post",
-        data: params
-      });
+      // return await instance({
+      //   url: "/api/v1/login",
+      //   method: "post",
+      //   data: params
+      // });
+      return {
+        code: 200,
+        msg: "login success",
+        data: {
+          Token: "sk-mock",
+          UserID: "mock"
+        }
+      }
     },
     register: async (params: RegisterParams) => {
       return await instance({

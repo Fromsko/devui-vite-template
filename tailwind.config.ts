@@ -17,7 +17,7 @@ const tailwindConfig: Config = {
     styled: true,
     utils: true,
     prefix: "",
-    logs: true,
+    logs: false,
     themeRoot: ":root",
   }
 };
